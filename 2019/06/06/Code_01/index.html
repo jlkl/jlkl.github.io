@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="0x00 前言起初和老师商讨了一下，打算从属性页入手，设计一个综合的包含登录注册框的完整的控件。后来发现属性页只能在开发的时候调出（网上找到了一些解决方法但是没有调试出），对windows程序设计也不太熟。后来还是采用了最初想到的调用控件提供的方法进行登录注册的方法，登录和注册模块分别提供 UserLogin 和 UserRegister 方法，相关登录注册信息作为参数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用户注册和登录ActiveX控件">
+<meta property="og:url" content="https://jlkl.github.io/2019/06/06/Code_01/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="0x00 前言起初和老师商讨了一下，打算从属性页入手，设计一个综合的包含登录注册框的完整的控件。后来发现属性页只能在开发的时候调出（网上找到了一些解决方法但是没有调试出），对windows程序设计也不太熟。后来还是采用了最初想到的调用控件提供的方法进行登录注册的方法，登录和注册模块分别提供 UserLogin 和 UserRegister 方法，相关登录注册信息作为参数。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214348.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214431.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214454.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214520.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214534.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214559.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214626.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214646.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214701.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214714.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214755.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214851.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214912.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214951.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606215013.png">
+<meta property="article:published_time" content="2019-06-06T13:39:53.000Z">
+<meta property="article:modified_time" content="2020-01-27T09:08:28.353Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Code">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2019/06/06/Code_01/20190606214348.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2019/06/06/Code_01/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>用户注册和登录ActiveX控件 | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">32</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2019/06/06/Code_01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用户注册和登录ActiveX控件
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-06-06 21:39:53" itemprop="dateCreated datePublished" datetime="2019-06-06T21:39:53+08:00">2019-06-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-27 17:08:28" itemprop="dateModified" datetime="2020-01-27T17:08:28+08:00">2020-01-27</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2019/06/06/Code_01/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/06/06/Code_01/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>起初和老师商讨了一下，打算从属性页入手，设计一个综合的包含登录注册框的完整的控件。后来发现属性页只能在开发的时候调出（网上找到了一些解决方法但是没有调试出），对windows程序设计也不太熟。后来还是采用了最初想到的调用控件提供的方法进行登录注册的方法，登录和注册模块分别提供 UserLogin 和 UserRegister 方法，相关登录注册信息作为参数。</p>
+<a id="more"></a>
+<h2 id="0x01-需求"><a href="#0x01-需求" class="headerlink" title="0x01 需求"></a>0x01 需求</h2><p>采用ActiveX控件编程技术，完成下面ActiveX控件。</p>
+<p>1）完成一个用户注册ActiveX控件（用户名、密码、邮箱、生日、身份证、手机等相关新），其中用户名、密码、身份证、手机等相关数据类型验证）。并调用ActiveX控件进行功能演示。</p>
+<p>2）完成一个用户登录的控件ActiveX控件，要求用户名，用户密码（用户密码设置为软键盘输入），验证码。并进行ActiveX控件调用演示，可以不使用数据库存储，例如文件存放用户名和密码，进行登录。</p>
+<p>平台要求：采用 MFC ActiveX编写，界面可以其他编程语言</p>
+<h2 id="0x02-总体设计"><a href="#0x02-总体设计" class="headerlink" title="0x02 总体设计"></a>0x02 总体设计</h2><h3 id="2-1-登录模块设计"><a href="#2-1-登录模块设计" class="headerlink" title="2.1 登录模块设计"></a>2.1 登录模块设计</h3><p>创建一个自定义方法 UserLogin ，将用户名，密码作为参数</p>
+<p><img src="/2019/06/06/Code_01/20190606214348.png" alt></p>
+<p>登录模块相较于注册模块简单，函数流程如下</p>
+<p><img src="/2019/06/06/Code_01/20190606214431.png" alt></p>
+<p>用户名格式检验使用正则表达式。使用 GetUser_Password 函数获取文件每一行对应的用户名密码，然后进行判断。具体可以参数注册模块设计。</p>
+<p><img src="/2019/06/06/Code_01/20190606214454.png" alt></p>
+<h3 id="2-2-注册模块设计"><a href="#2-2-注册模块设计" class="headerlink" title="2.2 注册模块设计"></a>2.2 注册模块设计</h3><p>创建一个自定义方法 UserRegister ，将用户名，密码，邮箱等信息作为参数</p>
+<p><img src="/2019/06/06/Code_01/20190606214520.png" alt></p>
+<p>函数大致流程如图</p>
+<p><img src="/2019/06/06/Code_01/20190606214534.png" alt></p>
+<p>从MFC传递过来的信息为CString类型，注意类型转换</p>
+<h4 id="2-2-1-格式检验"><a href="#2-2-1-格式检验" class="headerlink" title="2.2.1 格式检验"></a>2.2.1 格式检验</h4><p><img src="/2019/06/06/Code_01/20190606214559.png" alt></p>
+<p>regex 库，使用正则表达式的方式对用户信息进行格式校验，reg1 存储正则表达式，rerResult1 存储匹配到的字符串，bValid1 存储判断的结果，最后再判断匹配结果就可以了。验证邮箱，身份证号，手机也是同样的。、</p>
+<h4 id="2-2-2-判断是否已经注册"><a href="#2-2-2-判断是否已经注册" class="headerlink" title="2.2.2 判断是否已经注册"></a>2.2.2 判断是否已经注册</h4><p><img src="/2019/06/06/Code_01/20190606214626.png" alt></p>
+<p>从文件中一行一行地读取，GetUser_Password 函数获取每一行对应的用户名和密码，然后通过 strcmp 函数比较两个字符串是否相等来判断是否已经注册。</p>
+<p>GetUser_Password 函数实现如下，二阶指针便于传递参数。也是通过正则的方式匹配，rerResult.str(1) 获取第一个匹配到的子串，即用户名。rerResult.str(2) 获取第二个匹配到的子串，即密码。然后通过二阶指针的方式传递变量。</p>
+<p><img src="/2019/06/06/Code_01/20190606214646.png" alt></p>
+<p>最后简单的 c 语言文件操作将注册信息写入到文件中</p>
+<p><img src="/2019/06/06/Code_01/20190606214701.png" alt></p>
+<p>文件存储格式如下</p>
+<p><img src="/2019/06/06/Code_01/20190606214714.png" alt></p>
+<h3 id="2-3-MFC-应用程序设计"><a href="#2-3-MFC-应用程序设计" class="headerlink" title="2.3 MFC 应用程序设计"></a>2.3 MFC 应用程序设计</h3><p>使用了标签控件Tab Control 来切换登录和注册窗口，具体使用方法可以参见附录。</p>
+<p><img src="/2019/06/06/Code_01/20190606214755.png" alt></p>
+<p><img src="/2019/06/06/Code_01/20190606214851.png" alt></p>
+<p>添加 AxtiveX 控件并绑定变量，调用其他 MFC 控件获取用户输入，最后调用 AxtiveX 控件的 UserLogin 方法就可以了。</p>
+<h4 id="2-3-1-获取验证码"><a href="#2-3-1-获取验证码" class="headerlink" title="2.3.1 获取验证码"></a>2.3.1 获取验证码</h4><p>GetRand 函数随机生成一个 4 位字符串存储于变量 randcheckcode 中，之后调用 MFC 接口 GetDlgItem 获取 ID 号为 IDC_BUTTON3 的按钮句柄，再设置 caption 为验证码，以显示出来。</p>
+<p><img src="/2019/06/06/Code_01/20190606214912.png" alt></p>
+<h4 id="2-3-2-软键盘输入用户密码"><a href="#2-3-2-软键盘输入用户密码" class="headerlink" title="2.3.2 软键盘输入用户密码"></a>2.3.2 软键盘输入用户密码</h4><p>考虑了调用系统软键盘的方式，但是测试了ShellExec 和 CreateProcess，都只能打开记事本，不能打开软键盘。</p>
+<p><a href="https://blog.csdn.net/flushhip/article/details/83008317" target="_blank" rel="noopener">https://blog.csdn.net/flushhip/article/details/83008317</a></p>
+<p>按这篇文章的说法是 32 位程序运行在 64 位环境下会重定向 SysWOW64 下，而这个目录下没有 osk.exe 所以调用失败，但是我尝试了文章的解决方法，也把 osk.exe 复制过去了，还是打不开。无奈只能自己手写一个软键盘。</p>
+<p>以按钮 “q” 为例，维护了一个全局 CString 变量 password，点击按钮 “q” 时，向这个字符串添加字符 “q”， displaypassword 用于在页面上显示。有点投机取巧，而且这种方法很麻烦，每一个字符需对应一个按钮。</p>
+<p><img src="/2019/06/06/Code_01/20190606214951.png" alt></p>
+<h4 id="2-3-3-用户登录"><a href="#2-3-3-用户登录" class="headerlink" title="2.3.3 用户登录"></a>2.3.3 用户登录</h4><p>首先判断验证码是否正确，然后将输入信息作为参数传递给 UserLogin 函数。这里需要注意第一行 UpdateData() 是必需的，他的作用是将用户在输入框输入内容同步到绑定的变量。</p>
+<p><img src="/2019/06/06/Code_01/20190606215013.png" alt></p>
+<h2 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h2><p>C 和 C++ 一个难点在于类型的转换，好在网上都能找到比较方便简洁的转换方法。由于ActiveX 控件不能直接下断点调试，只能将代码提到MFC应用程序中调试，很费时间。</p>
+<p>软键盘实现密码登录那里并不是最优解法，没有调用到系统自带或第三方的软键盘，很浪费资源。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>[1] UniCode下CString转char* 的方法  <a href="https://blog.csdn.net/neverup_/article/details/5664733" target="_blank" rel="noopener">https://blog.csdn.net/neverup_/article/details/5664733</a></p>
+<p>[2] 标签控件Tab Control  <a href="http://www.jizhuomi.com/software/207.html" target="_blank" rel="noopener">http://www.jizhuomi.com/software/207.html</a></p>
+<p>[3] MFC连接mysql登录注册  <a href="https://blog.csdn.net/qq_29503183/article/details/81257983" target="_blank" rel="noopener">https://blog.csdn.net/qq_29503183/article/details/81257983</a></p>
+<p>[4] 一个视图显示ActiveX控件的属性页<a href="https://www.xuebuyuan.com/846502.html?mobile=0" target="_blank" rel="noopener">https://www.xuebuyuan.com/846502.html?mobile=0</a></p>
+<p>[5] regex 类的使用 <a href="https://blog.csdn.net/l357630798/article/details/78235307" target="_blank" rel="noopener">https://blog.csdn.net/l357630798/article/details/78235307</a></p>
+<p>[6] windwos调用系统软键盘   <a href="https://blog.csdn.net/flushhip/article/details/83008317" target="_blank" rel="noopener">https://blog.csdn.net/flushhip/article/details/83008317</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2019/06/06/Code_01/" title="用户注册和登录ActiveX控件">https://jlkl.github.io/2019/06/06/Code_01/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Code/" rel="tag"># Code</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/05/04/Other-01/" rel="prev" title="Socks 代理实现抢课">
+      <i class="fa fa-chevron-left"></i> Socks 代理实现抢课
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/26/C_C++_01/" rel="next" title="C语言基础">
+      C语言基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-需求"><span class="nav-number">2.</span> <span class="nav-text">0x01 需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-总体设计"><span class="nav-number">3.</span> <span class="nav-text">0x02 总体设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-登录模块设计"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 登录模块设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-注册模块设计"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 注册模块设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-格式检验"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.2.1 格式检验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-判断是否已经注册"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2.2 判断是否已经注册</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-MFC-应用程序设计"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 MFC 应用程序设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-获取验证码"><span class="nav-number">3.3.1.</span> <span class="nav-text">2.3.1 获取验证码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-软键盘输入用户密码"><span class="nav-number">3.3.2.</span> <span class="nav-text">2.3.2 软键盘输入用户密码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-用户登录"><span class="nav-number">3.3.3.</span> <span class="nav-text">2.3.3 用户登录</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-总结"><span class="nav-number">4.</span> <span class="nav-text">0x03 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">218k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

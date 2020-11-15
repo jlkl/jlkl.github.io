@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="1 Java 概述2014 Java8 2017 Java9 Java11 LTS版 2 Java 程序设计环境2.1 Java 术语 JDK: Java开发工具(包含JRE)  JRE: Java运行环境  Java SE (Standard Edition) 标准版本：用于桌面或者简单服务器应用的Java平台  Java EE (Enterprise Edition) 企业版本：用于复杂服务器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 基础">
+<meta property="og:url" content="https://jlkl.github.io/2020/08/23/Java_01/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="1 Java 概述2014 Java8 2017 Java9 Java11 LTS版 2 Java 程序设计环境2.1 Java 术语 JDK: Java开发工具(包含JRE)  JRE: Java运行环境  Java SE (Standard Edition) 标准版本：用于桌面或者简单服务器应用的Java平台  Java EE (Enterprise Edition) 企业版本：用于复杂服务器">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2020/08/23/Java_01/20200807171300.png">
+<meta property="article:published_time" content="2020-08-23T07:16:59.000Z">
+<meta property="article:modified_time" content="2020-08-23T07:32:28.105Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2020/08/23/Java_01/20200807171300.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2020/08/23/Java_01/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Java 基础 | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">32</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2020/08/23/Java_01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-08-23 15:16:59 / Modified: 15:32:28" itemprop="dateCreated datePublished" datetime="2020-08-23T15:16:59+08:00">2020-08-23</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/08/23/Java_01/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/23/Java_01/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>7.9k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>10 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-Java-概述"><a href="#1-Java-概述" class="headerlink" title="1 Java 概述"></a>1 Java 概述</h2><p>2014 Java8</p>
+<p>2017 Java9</p>
+<p>Java11 LTS版</p>
+<h2 id="2-Java-程序设计环境"><a href="#2-Java-程序设计环境" class="headerlink" title="2 Java 程序设计环境"></a>2 Java 程序设计环境</h2><h3 id="2-1-Java-术语"><a href="#2-1-Java-术语" class="headerlink" title="2.1 Java 术语"></a>2.1 Java 术语</h3><ul>
+<li><p>JDK: Java开发工具(包含JRE)</p>
+</li>
+<li><p>JRE: Java运行环境</p>
+</li>
+<li><p>Java SE (Standard Edition) 标准版本：用于桌面或者简单服务器应用的Java平台</p>
+</li>
+<li><p>Java EE (Enterprise Edition) 企业版本：用于复杂服务器应用的Java平台</p>
+</li>
+<li><p>Java ME (Micro Edition) 微型版本：用于小型设备的Java平台</p>
+</li>
+<li><p>NetBeans：Oracle公司的集成开发环境</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<h3 id="2-2-命令行工具编译运行"><a href="#2-2-命令行工具编译运行" class="headerlink" title="2.2 命令行工具编译运行"></a>2.2 命令行工具编译运行</h3><p>javac 是一个 Java 编译器，将文件 Welcome.java 编译成 Welcome.class，java 程序启动 Java 虚拟机，虚拟机执行类文件中的字节码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">javac Welcome.java</span><br><span class="line">java Welcome</span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li><code>java Welcome</code>，java 区分大小写</li>
+<li>javac 需要文件名（Welcome.java），而运行程序时，只需指定类名，不需要带扩展名 <code>.java</code> 或 <code>.class</code></li>
+</ul>
+<p>常见错误及解决方法：</p>
+<p><a href="https://docs.oracle.com/javase/tutorial/getStarted/problems/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/getStarted/problems/index.html</a></p>
+<h3 id="2-3-JShell"><a href="#2-3-JShell" class="headerlink" title="2.3 JShell"></a>2.3 JShell</h3><p>Java 9 以上，交互式窗口</p>
+<blockquote>
+<p>那么何时开始使用IDE工具呢？标准是：如果你还离不开这个IDE工具，那么你就不能使用这个IDE工具；只有当你十分清楚在IDE工具里单击每一个菜单，单击每一个按钮……IDE工具在底层为你做的每个细节时，才可以使用IDE工具！</p>
+</blockquote>
+<h2 id="3-Java-基本程序设计"><a href="#3-Java-基本程序设计" class="headerlink" title="3 Java 基本程序设计"></a>3 Java 基本程序设计</h2><h3 id="3-1-简单结构"><a href="#3-1-简单结构" class="headerlink" title="3.1 简单结构"></a>3.1 简单结构</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FirstSample</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello World!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li>Java 区分大小写</li>
+<li>Java 类名必须以字母开头，后面跟字母和数字的组合，长度基本没有限制，但不能用 Java 保留字。采用驼峰命名法（camel case），CamelCase</li>
+<li>源代码文件名必须与公共类名字相同，并用 <code>.java</code> 为拓展名</li>
+<li>main 方法必须声明为 public</li>
+</ul>
+<h3 id="3-2-注释"><a href="#3-2-注释" class="headerlink" title="3.2 注释"></a>3.2 注释</h3><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">/**/</span></span><br><span class="line">以<span class="comment">/**开头,*/</span>结束，多用于类的注释</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-数据类型"><a href="#3-3-数据类型" class="headerlink" title="3.3 数据类型"></a>3.3 数据类型</h3><p>强类型语言，8中基本类型</p>
+<h4 id="3-3-1-整型"><a href="#3-3-1-整型" class="headerlink" title="3.3.1 整型"></a>3.3.1 整型</h4><table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">字节数</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">4</td>
+<td align="center">-2147483648~2147483647(刚超过20亿)</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">2</td>
+<td align="center">-32 768~32 767</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">8</td>
+<td align="center">-9223372036854775808~9223372036854775807</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">1</td>
+<td align="center">-128~127</td>
+</tr>
+</tbody></table>
+<ul>
+<li>long 类型后面有一个后缀 L 或 l (40000000L)。十六进制 0x 或 0X。八进制前缀 0</li>
+<li>Java 7 开始加上前缀 0b 或 0B 可以写二进制数。另外还可以为数字变量加上下划线，如 1_000_000 表示 100 万</li>
+</ul>
+<h4 id="3-3-2-浮点类型"><a href="#3-3-2-浮点类型" class="headerlink" title="3.3.2 浮点类型"></a>3.3.2 浮点类型</h4><table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">字节数</th>
+<th align="center">有效位数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">float</td>
+<td align="center">4</td>
+<td align="center">6~7位</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">8</td>
+<td align="center">15位</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>float 类型后有一个后缀 F 或 f ，没有后缀的浮点数值默认为 double 类型</p>
+</li>
+<li><p>三个特殊的浮点数值：<br>正无穷大、负无穷大、NaN（不是一个数字）<br>Double.POSITIVE_INFINITY、Double.NEGATIVE_INFINITY、Double.NaN分别表示这三个特殊值<br>==注意判断时不能直接 == ，使用 <code>Double.isNaN</code> 方法判断==</p>
+</li>
+<li><p>==浮点值不适用于无法接受舍入误差的金融计算==<br>如，<code>System.out.println(2.0-1.1)</code>将打印出 0.8999999999999999 而不是 0.9，这是因为浮点数值采用二进制系统表示，在其中无法精确地表示分数 1/10，对于这种情况换用 <code>BigDecimal</code> 类</p>
+</li>
+</ul>
+<h4 id="3-3-3-char-类型"><a href="#3-3-3-char-类型" class="headerlink" title="3.3.3 char 类型"></a>3.3.3 char 类型</h4><p>最好不要使用这种类型</p>
+<blockquote>
+<p>1个java的char字符并不完全等于一个unicode的字符。char采用的UCS-2编码，是一种淘汰的UTF-16编码，编码方式最多有65536种，远远少于当今Unicode拥有11万字符的需求。java只好对后来新增的Unicode字符用2个char拼出1个Unicode字符。导致String中char的数量不等于unicode字符的数量。 </p>
+</blockquote>
+<h4 id="3-3-4-boolean-类型"><a href="#3-3-4-boolean-类型" class="headerlink" title="3.3.4 boolean 类型"></a>3.3.4 boolean 类型</h4><p>boolean 只有两个值 true 和 false</p>
+<ul>
+<li>java中 true != 1,false != 0</li>
+</ul>
+<h3 id="3-4-变量与常量"><a href="#3-4-变量与常量" class="headerlink" title="3.4 变量与常量"></a>3.4 变量与常量</h3><p>Java 10 开始，可以使用 var 关键字而无需指定类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">12</span>;</span><br><span class="line"><span class="keyword">var</span> c = <span class="string">"hello"</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-1-常量"><a href="#3-4-1-常量" class="headerlink" title="3.4.1 常量"></a>3.4.1 常量</h4><p>用 <code>final</code> 指示常量，表示这个常量只能被赋值一次。习惯上，常量名使用全大写。</p>
+<h4 id="3-4-2-枚举类型"><a href="#3-4-2-枚举类型" class="headerlink" title="3.4.2 枚举类型"></a>3.4.2 枚举类型</h4><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">enum</span> <span class="title">Size</span> &#123;<span class="title">SMALL</span>, <span class="title">MEDIUM</span>, <span class="title">LARGE</span>&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-5-运算符"><a href="#3-5-运算符" class="headerlink" title="3.5 运算符"></a>3.5 运算符</h3><p><img src="/2020/08/23/Java_01/20200807171300.png" alt="image-20200807171257887"></p>
+<h3 id="3-6-字符串"><a href="#3-6-字符串" class="headerlink" title="3.6 字符串"></a>3.6 字符串</h3><p>字符串用双引号括起来</p>
+<ol>
+<li><p>子串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String greeting = <span class="string">"Hello"</span>;</span><br><span class="line">String s = greeting.substring(<span class="number">0</span>, <span class="number">3</span>);<span class="comment">//左闭右开思想</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>拼接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String message = <span class="string">"Hello"</span> + <span class="string">"World"</span>;</span><br></pre></td></tr></table></figure>
+
+<p>连在一起，用界定符分隔，用 <code>join</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String all = String.join(<span class="string">"/"</span>, <span class="string">"S"</span>, <span class="string">"M"</span>, <span class="string">"L"</span>, <span class="string">"XL"</span>);</span><br><span class="line"><span class="comment">// all is string "S/M/L/XL"</span></span><br></pre></td></tr></table></figure>
+
+<p>Java 11 还提供了一个 repeat 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String repeated = <span class="string">"Java"</span>.repeat(<span class="number">3</span>);</span><br><span class="line"><span class="comment">// "JavaJavaJava"比较字符串是否相等</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>判断字符串相等</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"Hello"</span>.equals(greeting);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构建字符串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">StringBuilder builder = <span class="keyword">new</span> StringBuilder();<span class="comment">//Java5+</span></span><br><span class="line">builder.append(ch);</span><br><span class="line">builder.append(str);</span><br><span class="line">String myString = builder.toString();</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="3-7-输入与输出"><a href="#3-7-输入与输出" class="headerlink" title="3.7 输入与输出"></a>3.7 输入与输出</h3><h4 id="3-7-1-读取输入"><a href="#3-7-1-读取输入" class="headerlink" title="3.7.1 读取输入"></a>3.7.1 读取输入</h4><p>首先构造一个与 System.in 相关联的 Scanner 对象，然后使用 Scanner 对象的方法进行读取</p>
+<p>Scanner 对象属于 java.util 包，==不属于 java.lang 包的，都需要 import==</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This program demonstrates console input.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.10 2004-02-10</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Cay Horstmann</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InputTest</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      Scanner in = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// get first input</span></span><br><span class="line">      System.out.print(<span class="string">"What is your name? "</span>);</span><br><span class="line">      String name = in.nextLine();</span><br><span class="line"></span><br><span class="line">      <span class="comment">// get second input</span></span><br><span class="line">      System.out.print(<span class="string">"How old are you? "</span>);</span><br><span class="line">      <span class="keyword">int</span> age = in.nextInt();</span><br><span class="line"></span><br><span class="line">      <span class="comment">// display output on console</span></span><br><span class="line">      System.out.println(<span class="string">"Hello, "</span> + name + <span class="string">". Next year, you'll be "</span> + (age + <span class="number">1</span>));</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Java 6 引入 Console 类读取密码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Console cons = System.console();</span><br><span class="line">String username = cons.readLine(<span class="string">"Username: "</span>);</span><br><span class="line"><span class="keyword">char</span>[] passwd = cons.readPassword(<span class="string">"Password: "</span>);<span class="comment">//安全起见，返回密码存放在字符数组中。密码处理完成后，应马上用一个填充值覆盖字符数组元素</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-7-2-格式化输出"><a href="#3-7-2-格式化输出" class="headerlink" title="3.7.2 格式化输出"></a>3.7.2 格式化输出</h4><p>System.out.print 和 C 语言的语法差不多</p>
+<p>格式化打印时间：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">System.out.printf(<span class="string">"%tc"</span>, <span class="keyword">new</span> Date());</span><br><span class="line"><span class="comment">//周六 8月 08 18:12:27 CST 2020</span></span><br><span class="line"></span><br><span class="line">Y	年	m	月	d	日	H	时	M	分	S	秒</span><br></pre></td></tr></table></figure>
+
+<p>一个参数可被多次使用，添加索引方式，索引必须以 <code>%</code> 开头，以 <code>$</code> 结束</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.out.printf(<span class="string">"%1$s %2$tB %2$tm, %2$tY"</span>, <span class="string">"Due date: "</span>, <span class="keyword">new</span> Date());</span><br><span class="line"><span class="comment">//Due date:  八月 08, 2020</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 <code>&lt;</code> 知识前面的参数将被再次使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.printf(<span class="string">"%s %tB %&lt;tm, %&lt;tY"</span>, <span class="string">"Due date: "</span>, <span class="keyword">new</span> Date());</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-7-3-文件输入输出"><a href="#3-7-3-文件输入输出" class="headerlink" title="3.7.3 文件输入输出"></a>3.7.3 文件输入输出</h4><h3 id="3-8-大数"><a href="#3-8-大数" class="headerlink" title="3.8 大数"></a>3.8 大数</h3><p>BigInteger 和 BigDecimal 可以分实现任意精度的整数和浮点数的计算</p>
+<p>valueof 方法将普通的数值转化成大数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BigInteger a = BigInteger.valueOf(<span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<p>不能使用算法运算符(+和*)处理大数，而需要使用 add 和 multipy 方法</p>
+<h2 id="4-对象与类"><a href="#4-对象与类" class="headerlink" title="4 对象与类"></a>4 对象与类</h2><h3 id="4-1-访问控制符"><a href="#4-1-访问控制符" class="headerlink" title="4.1 访问控制符"></a>4.1 访问控制符</h3><ul>
+<li>private —— 仅对本类可见</li>
+<li>public —— 对外部完全可见</li>
+<li>protected —— 对本包和所有子类可见</li>
+<li>默认，不需要修饰符 —— 对本包可见</li>
+</ul>
+<h3 id="4-2-包"><a href="#4-2-包" class="headerlink" title="4.2 包"></a>4.2 包</h3><p>用命令行编译运行带包的 java 文件层，需要在上一层且带上包名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">javac inheritance\ManagerTest.java</span><br><span class="line">java inheritance.ManagerTest</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-继承"><a href="#5-继承" class="headerlink" title="5 继承"></a>5 继承</h2><h3 id="5-1-类，超类和子类"><a href="#5-1-类，超类和子类" class="headerlink" title="5.1 类，超类和子类"></a>5.1 类，超类和子类</h3><p>已存在的类被称为超类（superclass）、基类（base class）或父类（parent class）；新类被称为子类（subclass）、派生类（derived class）或孩子类（child class）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.horstmann.corejava;</span><br><span class="line"></span><br><span class="line"><span class="comment">// the classes in this file are part of this package</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.time.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">// import statements come after the package statement</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.11 2015-05-08</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Cay Horstmann</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Employee</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">private</span> String name;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">double</span> salary;</span><br><span class="line">   <span class="keyword">private</span> LocalDate hireDay;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">Employee</span><span class="params">(String name, <span class="keyword">double</span> salary, <span class="keyword">int</span> year, <span class="keyword">int</span> month, <span class="keyword">int</span> day)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.name = name;</span><br><span class="line">      <span class="keyword">this</span>.salary = salary;</span><br><span class="line">      hireDay = LocalDate.of(year, month, day);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> name;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getSalary</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> salary;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> LocalDate <span class="title">getHireDay</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> hireDay;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">raiseSalary</span><span class="params">(<span class="keyword">double</span> byPercent)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">double</span> raise = salary * byPercent / <span class="number">100</span>;</span><br><span class="line">      salary += raise;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Manager</span> <span class="keyword">extends</span> <span class="title">Employee</span></span>&#123;</span><br><span class="line">	……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>覆盖方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getSalary</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">double</span> baseSalary = <span class="keyword">super</span>.getSalary();</span><br><span class="line">    <span class="comment">//不能直接用salary，因为它在Employee类中是private的</span></span><br><span class="line">	<span class="keyword">return</span> baseSalary+bonus;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>子类构造器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Manager</span><span class="params">(String name, <span class="keyword">double</span> salary, <span class="keyword">int</span> year, <span class="keyword">int</span> month, <span class="keyword">int</span> day)</span></span>&#123;</span><br><span class="line">	<span class="keyword">super</span>(name, salary, year. month, day);</span><br><span class="line">	bonus = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-1-1-阻止继承：final-类和方法"><a href="#5-1-1-阻止继承：final-类和方法" class="headerlink" title="5.1.1 阻止继承：final 类和方法"></a>5.1.1 阻止继承：final 类和方法</h4><p>阻止派生 Executive 类的子类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Executiv</span> <span class="keyword">extends</span> <span class="title">Manager</span></span>&#123;</span><br><span class="line">	……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样设置方法为 final ，子类就不可以覆盖这个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Employee</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">getName</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-1-2-抽象类"><a href="#5-1-2-抽象类" class="headerlink" title="5.1.2 抽象类"></a>5.1.2 抽象类</h4><p>抽象类声明抽象的方法，具体实现是在子类。抽象类方便方法调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> abstractClasses;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> String <span class="title">getDescription</span><span class="params">()</span></span>;</span><br><span class="line">   <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.name = name;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> name;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">extends</span> <span class="title">Person</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> String <span class="title">getDescription</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">"a student majoring in "</span> + major;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-Object：所有类的超类"><a href="#5-2-Object：所有类的超类" class="headerlink" title="5.2 Object：所有类的超类"></a>5.2 Object：所有类的超类</h3><p>可以用 Object 类型变量引用任何类型的对象。具体操作时需要进行强制类型转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Object obj = <span class="keyword">new</span> Employee(<span class="string">"Hacker"</span>, <span class="number">3500</span>);</span><br><span class="line">Employee e = (Employee)obj;</span><br></pre></td></tr></table></figure>
+
+<p>只有基本类型不是对象，所有数组类型，包括基本类型的数组都拓展了 Object 类</p>
+<h3 id="5-3-泛型数组列表"><a href="#5-3-泛型数组列表" class="headerlink" title="5.3 泛型数组列表"></a>5.3 泛型数组列表</h3><p>Java 中允许在运行中确定数组的大小，更简单的方法是使用  ArrayList 类，类似于数组，但在添加或删除元素的时候，能自动调整数组容量。</p>
+<p>尖括号中类型参数不允许是基本类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;Employee&gt; staff = <span class="keyword">new</span> ArrayList&lt;Employee&gt;();</span><br><span class="line"><span class="comment">//or</span></span><br><span class="line">ArrayList&lt;Employee&gt; staff = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="comment">//java10 可以使用 var</span></span><br><span class="line"><span class="keyword">var</span> staff = <span class="keyword">new</span> ArrayList&lt;Employee&gt;();</span><br><span class="line"></span><br><span class="line">staff.add(<span class="keyword">new</span> Employee(<span class="string">"Hacker"</span>,...));</span><br><span class="line">staff.set(i, harry);</span><br><span class="line">Employee e = staff.get(i);</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-4-反射"><a href="#5-4-反射" class="headerlink" title="5.4 反射"></a>5.4 反射</h3><p><a href="https://javasec.org/javase/Reflection/Reflection.html" target="_blank" rel="noopener">https://javasec.org/javase/Reflection/Reflection.html</a></p>
+<h2 id="6-接口、lambda-表达式与内部类"><a href="#6-接口、lambda-表达式与内部类" class="headerlink" title="6 接口、lambda 表达式与内部类"></a>6 接口、lambda 表达式与内部类</h2><h3 id="6-1-接口"><a href="#6-1-接口" class="headerlink" title="6.1 接口"></a>6.1 接口</h3><p>接口不是类，而是对希望符合这个接口的类的一组需求。</p>
+<p>Comparable 接口代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Comparable</span>&lt;<span class="title">T</span>&gt;</span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(T other)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在接口中所有方法都自动是 public，不过在实现的时候，必须把方法声明为 public</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Employee</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Employee</span>&gt;</span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Compares employees by salary</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> other another Employee object</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> a negative value if this employee has a lower salary than</span></span><br><span class="line"><span class="comment">    * otherObject, 0 if the salaries are the same, a positive value otherwise</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Employee other)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> Double.compare(salary, other.salary);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>为什么不把接口设计为抽象类呢？</strong></p>
+<p>一个类智能继承一个类但能实现多个接口。</p>
+<p>Java 设计者选择了不支持多重继承，因为其会让语言变得非常复杂或者降低效率。</p>
+</blockquote>
+<h3 id="6-2-lambda-表达式"><a href="#6-2-lambda-表达式" class="headerlink" title="6.2 lambda 表达式"></a>6.2 lambda 表达式</h3><p>Lambda 允许把函数作为一个方法的参数（函数作为参数传递进方法中）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> lambda;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.swing.*;</span><br><span class="line"><span class="keyword">import</span> javax.swing.Timer;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This program demonstrates the use of lambda expressions.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0 2015-05-12</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Cay Horstmann</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LambdaTest</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> planets = <span class="keyword">new</span> String[] &#123; <span class="string">"Mercury"</span>, <span class="string">"Venus"</span>, <span class="string">"Earth"</span>, <span class="string">"Mars"</span>, </span><br><span class="line">         <span class="string">"Jupiter"</span>, <span class="string">"Saturn"</span>, <span class="string">"Uranus"</span>, <span class="string">"Neptune"</span> &#125;;</span><br><span class="line">      System.out.println(Arrays.toString(planets));</span><br><span class="line">      System.out.println(<span class="string">"Sorted in dictionary order:"</span>);</span><br><span class="line">      Arrays.sort(planets);</span><br><span class="line">      System.out.println(Arrays.toString(planets));</span><br><span class="line">      System.out.println(<span class="string">"Sorted by length:"</span>);</span><br><span class="line">      Arrays.sort(planets, (first, second) -&gt; first.length() - second.length());</span><br><span class="line">      System.out.println(Arrays.toString(planets));</span><br><span class="line">            </span><br><span class="line">      <span class="keyword">var</span> timer = <span class="keyword">new</span> Timer(<span class="number">1000</span>, event -&gt;</span><br><span class="line">         System.out.println(<span class="string">"The time is "</span> + <span class="keyword">new</span> Date()));</span><br><span class="line">      timer.start();   </span><br><span class="line">         </span><br><span class="line">      <span class="comment">// keep program running until user selects "OK"</span></span><br><span class="line">      JOptionPane.showMessageDialog(<span class="keyword">null</span>, <span class="string">"Quit program?"</span>);</span><br><span class="line">      System.exit(<span class="number">0</span>);         </span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-代理"><a href="#6-3-代理" class="headerlink" title="6.3 代理"></a>6.3 代理</h3><p>动态代理（Dynamic Proxy）的机制：可以在运行期动态创建给定接口的新类。</p>
+<p><a href="https://javasec.org/javase/DynamicProxy/DynamicProxy.html" target="_blank" rel="noopener">https://javasec.org/javase/DynamicProxy/DynamicProxy.html</a></p>
+<h2 id="7-异常处理"><a href="#7-异常处理" class="headerlink" title="7 异常处理"></a>7 异常处理</h2><p><a href="https://www.runoob.com/java/java-exceptions.html" target="_blank" rel="noopener">https://www.runoob.com/java/java-exceptions.html</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2020/08/23/Java_01/" title="Java 基础">https://jlkl.github.io/2020/08/23/Java_01/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/27/Web_15/" rel="prev" title="Linux SUID 提权">
+      <i class="fa fa-chevron-left"></i> Linux SUID 提权
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/23/Java_02/" rel="next" title="Java Web 基础">
+      Java Web 基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Java-概述"><span class="nav-number">1.</span> <span class="nav-text">1 Java 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Java-程序设计环境"><span class="nav-number">2.</span> <span class="nav-text">2 Java 程序设计环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Java-术语"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 Java 术语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-命令行工具编译运行"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 命令行工具编译运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-JShell"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 JShell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Java-基本程序设计"><span class="nav-number">3.</span> <span class="nav-text">3 Java 基本程序设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-简单结构"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 简单结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-注释"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-数据类型"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-1-整型"><span class="nav-number">3.3.1.</span> <span class="nav-text">3.3.1 整型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-2-浮点类型"><span class="nav-number">3.3.2.</span> <span class="nav-text">3.3.2 浮点类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-3-char-类型"><span class="nav-number">3.3.3.</span> <span class="nav-text">3.3.3 char 类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-4-boolean-类型"><span class="nav-number">3.3.4.</span> <span class="nav-text">3.3.4 boolean 类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-变量与常量"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 变量与常量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-1-常量"><span class="nav-number">3.4.1.</span> <span class="nav-text">3.4.1 常量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-2-枚举类型"><span class="nav-number">3.4.2.</span> <span class="nav-text">3.4.2 枚举类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-运算符"><span class="nav-number">3.5.</span> <span class="nav-text">3.5 运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-字符串"><span class="nav-number">3.6.</span> <span class="nav-text">3.6 字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-7-输入与输出"><span class="nav-number">3.7.</span> <span class="nav-text">3.7 输入与输出</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-7-1-读取输入"><span class="nav-number">3.7.1.</span> <span class="nav-text">3.7.1 读取输入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-7-2-格式化输出"><span class="nav-number">3.7.2.</span> <span class="nav-text">3.7.2 格式化输出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-7-3-文件输入输出"><span class="nav-number">3.7.3.</span> <span class="nav-text">3.7.3 文件输入输出</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-8-大数"><span class="nav-number">3.8.</span> <span class="nav-text">3.8 大数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-对象与类"><span class="nav-number">4.</span> <span class="nav-text">4 对象与类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-访问控制符"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 访问控制符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-包"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-继承"><span class="nav-number">5.</span> <span class="nav-text">5 继承</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-类，超类和子类"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 类，超类和子类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-1-阻止继承：final-类和方法"><span class="nav-number">5.1.1.</span> <span class="nav-text">5.1.1 阻止继承：final 类和方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-2-抽象类"><span class="nav-number">5.1.2.</span> <span class="nav-text">5.1.2 抽象类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-Object：所有类的超类"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 Object：所有类的超类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-泛型数组列表"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 泛型数组列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-反射"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 反射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-接口、lambda-表达式与内部类"><span class="nav-number">6.</span> <span class="nav-text">6 接口、lambda 表达式与内部类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-接口"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-lambda-表达式"><span class="nav-number">6.2.</span> <span class="nav-text">6.2 lambda 表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-代理"><span class="nav-number">6.3.</span> <span class="nav-text">6.3 代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-异常处理"><span class="nav-number">7.</span> <span class="nav-text">7 异常处理</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">218k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

