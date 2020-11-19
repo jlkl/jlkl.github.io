@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://jlkl.github.io/2020/11/19/Web_17/</loc>
+    
+    <lastmod>2020-11-19</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://jlkl.github.io/2020/11/06/Web_16/</loc>
     
     <lastmod>2020-11-15</lastmod>
@@ -277,106 +284,106 @@
 
   <url>
     <loc>https://jlkl.github.io/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
+    <loc>https://jlkl.github.io/tags/Film/</loc>
+    <lastmod>2020-11-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://jlkl.github.io/tags/Code/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/C-C/</loc>
-    <lastmod>2020-11-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://jlkl.github.io/tags/Film/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/Web/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/Java/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/XXE/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/PHP/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/Python/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/Reverse/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/XSS/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/CTF/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/Linux/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/Node-js/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://jlkl.github.io/tags/JavaScript/</loc>
-    <lastmod>2020-11-15</lastmod>
+    <lastmod>2020-11-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
