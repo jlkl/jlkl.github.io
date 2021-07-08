@@ -1192,7 +1192,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #8bd13c;
+  background: #ff26b5;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2705,4 +2705,22 @@ ul.breadcrumb li + li:last-child {
 }
 .busuanzi-value {
   color: #1890ff;
+}
+body {
+  background: url("/images/bg2.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 50% 50%;
+}
+.content-wrap {
+  opacity: 0.8;
+}
+.sidebar {
+  opacity: 0.8;
+}
+.header-inner {
+  background: rgba(255,255,255,0.8);
+}
+.popup {
+  opacity: 0.8;
 }
