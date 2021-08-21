@@ -161,7 +161,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">36</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">37</span></a>
 
   </li>
   </ul>
@@ -186,6 +186,86 @@
             
 
   <div class="posts-expand">
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2019/01/05/Web_12/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/05/Web_12/" class="post-title-link" itemprop="url">Web基础漏洞之文件上传</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-01-05 15:22:18 / Modified: 15:28:39" itemprop="dateCreated datePublished" datetime="2019-01-05T15:22:18+08:00">2019-01-05</time>
+            </span>
+
+          
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>9 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><p>&emsp;本来打算是作为一个系列一直更新下去，讲解基础漏洞的原理、基本防御和攻击方法。但是看到师傅们的总结都很全面，尝试总结了一下发现大多都是照搬，只有等到有新的东西才写下来啦。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/05/Web_12/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
         
   
   
@@ -707,92 +787,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2018/05/26/Web_03/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Str3am.jpg">
-      <meta itemprop="name" content="Str3am">
-      <meta itemprop="description" content="这个人很懒，什么也没留下">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Str3am's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/26/Web_03/" class="post-title-link" itemprop="url">浅析SOME攻击</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-05-26 12:00:00" itemprop="dateCreated datePublished" datetime="2018-05-26T12:00:00+08:00">2018-05-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-27 17:12:31" itemprop="dateModified" datetime="2020-01-27T17:12:31+08:00">2020-01-27</time>
-              </span>
-
-          
-  
-  
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>1.9k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>2 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>&emsp;&emsp;SOME（Same Origin Method Execution），同源方式执行，不同于 XSS 盗取用户 cookie 为目的，直接劫持 cookie 经行操作，和 CSRF 攻击很类似，不同的是 CSRF 是构造一个请求，而 SOME 则希望脚本代码被执行。<br>&emsp;&emsp;非常感谢兔子师傅@Homaebic在分享会上的分享，才有了这篇文章。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/05/26/Web_03/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2018/05/26/Web_02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -856,6 +850,92 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2018/05/26/Web_02/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2018/05/26/Web_03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/05/26/Web_03/" class="post-title-link" itemprop="url">浅析SOME攻击</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-26 12:00:00" itemprop="dateCreated datePublished" datetime="2018-05-26T12:00:00+08:00">2018-05-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-27 17:12:31" itemprop="dateModified" datetime="2020-01-27T17:12:31+08:00">2020-01-27</time>
+              </span>
+
+          
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>&emsp;&emsp;SOME（Same Origin Method Execution），同源方式执行，不同于 XSS 盗取用户 cookie 为目的，直接劫持 cookie 经行操作，和 CSRF 攻击很类似，不同的是 CSRF 是构造一个请求，而 SOME 则希望脚本代码被执行。<br>&emsp;&emsp;非常感谢兔子师傅@Homaebic在分享会上的分享，才有了这篇文章。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/05/26/Web_03/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -962,93 +1042,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2018/04/20/Web_06/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Str3am.jpg">
-      <meta itemprop="name" content="Str3am">
-      <meta itemprop="description" content="这个人很懒，什么也没留下">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Str3am's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/20/Web_06/" class="post-title-link" itemprop="url">DDCTF-2018 Writeup</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-20 07:32:28" itemprop="dateCreated datePublished" datetime="2018-04-20T07:32:28+08:00">2018-04-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-27 17:13:17" itemprop="dateModified" datetime="2020-01-27T17:13:17+08:00">2020-01-27</time>
-              </span>
-
-          
-  
-  
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>4.7k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>6 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h2><h3 id="数据库的秘密"><a href="#数据库的秘密" class="headerlink" title="数据库的秘密"></a>数据库的秘密</h3><p>打开链接提示<code>非法链接，只允许来自 123.232.23.245 的访问</code>，于是添加 X-Forwarded-For 字段，尝试了 Burp 的 Bwapass Waf 插件，还是感觉火狐的 Mdify Headers 好用。</p>
-<p>进入页面之后，发现是一个查询文章的功能，结合题目判断是一道 sqli。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/20/Web_06/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1121,7 +1114,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1190,7 +1183,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="Symbols count total">295k</span>
+    <span title="Symbols count total">306k</span>
 </div> 
 
 <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>

