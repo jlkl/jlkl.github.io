@@ -389,13 +389,6 @@
   </url>
   
   <url>
-    <loc>https://jlkl.github.io/tags/C-C/</loc>
-    <lastmod>2022-05-30</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://jlkl.github.io/tags/Film/</loc>
     <lastmod>2022-05-30</lastmod>
     <changefreq>daily</changefreq>
@@ -431,6 +424,13 @@
   </url>
   
   <url>
+    <loc>https://jlkl.github.io/tags/C-C/</loc>
+    <lastmod>2022-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://jlkl.github.io/tags/Python/</loc>
     <lastmod>2022-05-30</lastmod>
     <changefreq>daily</changefreq>
@@ -438,14 +438,14 @@
   </url>
   
   <url>
-    <loc>https://jlkl.github.io/tags/PHP/</loc>
+    <loc>https://jlkl.github.io/tags/Reverse/</loc>
     <lastmod>2022-05-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://jlkl.github.io/tags/Reverse/</loc>
+    <loc>https://jlkl.github.io/tags/PHP/</loc>
     <lastmod>2022-05-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -473,13 +473,6 @@
   </url>
   
   <url>
-    <loc>https://jlkl.github.io/tags/Linux/</loc>
-    <lastmod>2022-05-30</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://jlkl.github.io/tags/Node-js/</loc>
     <lastmod>2022-05-30</lastmod>
     <changefreq>daily</changefreq>
@@ -488,6 +481,13 @@
   
   <url>
     <loc>https://jlkl.github.io/tags/JavaScript/</loc>
+    <lastmod>2022-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://jlkl.github.io/tags/Linux/</loc>
     <lastmod>2022-05-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
