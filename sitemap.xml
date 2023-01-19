@@ -396,6 +396,13 @@
   </url>
   
   <url>
+    <loc>https://jlkl.github.io/tags/CTF/</loc>
+    <lastmod>2023-01-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://jlkl.github.io/tags/Pentest/</loc>
     <lastmod>2023-01-19</lastmod>
     <changefreq>daily</changefreq>
@@ -404,13 +411,6 @@
   
   <url>
     <loc>https://jlkl.github.io/tags/XSS/</loc>
-    <lastmod>2023-01-19</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://jlkl.github.io/tags/CTF/</loc>
     <lastmod>2023-01-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
