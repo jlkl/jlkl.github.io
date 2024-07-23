@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Str3am.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Str3am.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Damion:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://jlkl.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="AWD Java PatchAWD线下赛修复jar&#x2F;war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法 反编译成Maven项目对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事） 手动仅使用原始Java进行反编译并打包可以参考：AWD离线-Jar文件冷补丁 下面记录反编译成Maven项目并进行修复的步骤  反编译jar包，使用IDEA反编译插件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWD Java Patch">
+<meta property="og:url" content="https://jlkl.github.io/2024/07/23/Java-11/index.html">
+<meta property="og:site_name" content="Str3am&#39;s Blog">
+<meta property="og:description" content="AWD Java PatchAWD线下赛修复jar&#x2F;war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法 反编译成Maven项目对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事） 手动仅使用原始Java进行反编译并打包可以参考：AWD离线-Jar文件冷补丁 下面记录反编译成Maven项目并进行修复的步骤  反编译jar包，使用IDEA反编译插件">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/aUalG9xdhdK2iUfIPonWJ9dobP-gwf8d4QPFRr-CaUY.png">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/kyPOuUVtXhXtzARwh4T9IMVmyCJ50AxuiQ0-8kLvU2E.png">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/capnmijQMwKIiZ_nrwmGvEXxWkJOGrycRdC8G76V1Bc.png">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/UAakS6VlGTeRjgF0YQYUVMPbQuVtC57R1WTOtCotg80.png">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/_M8s03uF-kHMyWGsrZldv92LU3REFvuTF5PspXjqYrQ.png">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/ieIfcyGEfFf0RlwiSDiaoESGkBlR7eYk1pBOGwO9L5E.png">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/nGED2T2TAp53QbPH1So0Tzm2UDbm1GPY0LnWzkPJLuo.png">
+<meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/IHs0qSWrBixGunPWRLb2vs5tcUaFc0n-KpkiVXmdZB8.png">
+<meta property="article:published_time" content="2024-07-23T02:37:09.000Z">
+<meta property="article:modified_time" content="2024-07-23T02:47:44.951Z">
+<meta property="article:author" content="Str3am">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlkl.github.io/2024/07/23/Java-11/aUalG9xdhdK2iUfIPonWJ9dobP-gwf8d4QPFRr-CaUY.png">
+
+<link rel="canonical" href="https://jlkl.github.io/2024/07/23/Java-11/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>AWD Java Patch | Str3am's Blog</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fcdffc3f3c9531fca765ea966be04985";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Str3am's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Str3am's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags<span class="badge">16</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">44</span></a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2024/07/23/Java-11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AWD Java Patch
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-07-23 10:37:09 / Modified: 10:47:44" itemprop="dateCreated datePublished" datetime="2024-07-23T10:37:09+08:00">2024-07-23</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2024/07/23/Java-11/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2024/07/23/Java-11/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="AWD-Java-Patch"><a href="#AWD-Java-Patch" class="headerlink" title="AWD Java Patch"></a>AWD Java Patch</h1><p>AWD线下赛修复jar/war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法</p>
+<h2 id="反编译成Maven项目"><a href="#反编译成Maven项目" class="headerlink" title="反编译成Maven项目"></a>反编译成Maven项目</h2><p>对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事）</p>
+<p>手动仅使用原始Java进行反编译并打包可以参考：<a href="https://mp.weixin.qq.com/s/hKXYudjEj2Z7nIC1k6NoWQ" target="_blank" rel="noopener">AWD离线-Jar文件冷补丁</a></p>
+<p>下面记录反编译成Maven项目并进行修复的步骤</p>
+<ol>
+<li>反编译jar包，使用IDEA反编译插件还原源代码，反编译出来还是jar包，直接解压即可</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Library/Java/JavaVirtualMachines/jdk-17.0.11.jdk/Contents/Home/bin/java -cp <span class="string">"/Applications/IntelliJ IDEA.app/Contents/plugins/java-decompiler/lib/java-decompiler.jar"</span> org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler -dgs=<span class="literal">true</span> &lt;jar_path&gt; &lt;output_path&gt;</span><br></pre></td></tr></table></figure>
+
+<p>最新版IDEA的反编译插件需要java17</p>
+<ol start="2">
+<li>导入源代码，创建一个空的Maven项目，然后将反编译后<code>/BOOT-INF/classes</code>下的源代码复制到<code>/src/main/java</code> 路径下。视check情况选择是否将<code>resources</code> 下资源文件一起导入</li>
+</ol>
+<a id="more"></a>
+
+<p><img src="/2024/07/23/Java-11/aUalG9xdhdK2iUfIPonWJ9dobP-gwf8d4QPFRr-CaUY.png" alt="image"></p>
+<ol start="3">
+<li>导入依赖库，将<code>BOOT-INF/lib</code>下的依赖复制到项目的lib文件文件夹下（没有这个文件夹，需要自己新建，一般在项目的第一级目录），在<code>文件-项目结构-项目设置-库</code>中将lib文件夹添加为库文件夹，此步骤是解决在离线情况下缺少依赖的问题</li>
+<li>用反编译出的<code>pom.xml</code> 文件覆盖创建的Maven项目中的<code>pom.xml</code> 文件</li>
+<li>修复代码并打包，修改Java源代码，或者根据漏洞点直接修改<code>pom.xml</code> 文件中依赖的版本号，然后使用Maven进行打包，当然也可以直接在在IDEA中点点点。Springboot项目在<code>pom.xml</code> 内置了打包插件，所以选择Maven打包而不是构建成工件的<code>jar</code>或者<code>war</code>包的形式，需要根据实际情况选择如何打包</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/23/Java-11/kyPOuUVtXhXtzARwh4T9IMVmyCJ50AxuiQ0-8kLvU2E.png" alt="image"></p>
+<p>以上展示的是打包一个完整的jar包的步骤，成功完成后会在<code>/target</code> 目录输出修复好的<code>jar</code>包文件，直接<code>-jar</code> 运行即可，当然也可以直接选择使用压缩软件对编译好的class文件进行替换，看文章说Bandizip可以保证替换前后jar包和war包的可用性，使用Maczip测试确实出现如下报错</p>
+<p><img src="/2024/07/23/Java-11/capnmijQMwKIiZ_nrwmGvEXxWkJOGrycRdC8G76V1Bc.png" alt="image"></p>
+<h3 id="jar-uf更新class文件"><a href="#jar-uf更新class文件" class="headerlink" title="jar uf更新class文件"></a><code>jar uf</code>更新class文件</h3><p>那么除了使用Bandizip还有其他方法可以更新class文件而不影响jar包和war包的可用性呢，答案是肯定的，可以使用<code>jar uf</code>命令来更新class文件</p>
+<p>需要注意在jar包内class文件的真实包名，如下图，这里需要在包名前添加<code>BOOT-INF/classes/</code> 前缀</p>
+<p><img src="/2024/07/23/Java-11/UAakS6VlGTeRjgF0YQYUVMPbQuVtC57R1WTOtCotg80.png" alt="image"></p>
+<p>同时注意根据包名创建文件夹，IDEA中直接把<code>target</code>目录改名为<code>BOOT-INF</code> 即可</p>
+<p><img src="/2024/07/23/Java-11/_M8s03uF-kHMyWGsrZldv92LU3REFvuTF5PspXjqYrQ.png" alt="image"></p>
+<p>命令示例</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jar uf vulnspringboot-1.0-SNAPSHOT.jar BOOT-INF/classes/org/example/controller/SCtfController.class</span><br></pre></td></tr></table></figure>
+
+<h2 id="Javassist修改jar包字节码"><a href="#Javassist修改jar包字节码" class="headerlink" title="Javassist修改jar包字节码"></a>Javassist修改jar包字节码</h2><p>可以用以下项目作为脚手架：</p>
+<ul>
+<li><a href="https://github.com/silentEAG/java-patch" target="_blank" rel="noopener">https://github.com/silentEAG/java-patch</a></li>
+</ul>
+<p>非常便捷，在<code>main</code>函数中指定要修改的jar包路径，然后在<code>ExamplePatch</code> 类的<code>patch</code> 方法中编写Javassist修改字节码逻辑即可，同样因为jar包结构问题，需要注意<code>BOOT-INF/classes/</code> 路径问题</p>
+<p><img src="/2024/07/23/Java-11/ieIfcyGEfFf0RlwiSDiaoESGkBlR7eYk1pBOGwO9L5E.png" alt="image"></p>
+<p>修改jar包中class内容</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CtClass c1 = <span class="keyword">new</span> PatchClass(<span class="string">"org.example.controller.SCtfController"</span>, <span class="string">"BOOT-INF/classes/"</span>).getCtClass();</span><br><span class="line">CtMethod write1 = c1.getDeclaredMethod(<span class="string">"index"</span>);</span><br><span class="line">write1.insertBefore(<span class="string">"System.out.println(\"Sakura\");"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>修改jar包中依赖的class</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PatchLibrary patchLibrary = <span class="keyword">new</span> PatchLibrary(<span class="string">"hessian-4.0.4.jar"</span>,  <span class="string">"BOOT-INF/lib/"</span>);</span><br><span class="line">CtClass c4 = patchLibrary.getCtClass(<span class="string">"com.alipay.hessian.NameBlackListFilter"</span>);</span><br><span class="line">CtMethod write4 = c4.getDeclaredMethod(<span class="string">"resolve"</span>);</span><br><span class="line">write4.insertBefore(<span class="string">"System.out.println(\"Sakura\");"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>同时也支持直接修改class，主要针对tomcat环境</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// we want to change /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/com/ctf/BoardServlet.class</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// addClassRootPath</span></span><br><span class="line">patch.addClassRootPath(<span class="string">"/usr/local/tomcat/webapps/ROOT/WEB-INF/classes/"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// rewrite it with Javassist</span></span><br><span class="line">CtClass c2 = <span class="keyword">new</span> PatchClass(<span class="string">"com.ctf.BoardServlet"</span>, <span class="string">""</span>).getCtClass();</span><br><span class="line">CtMethod write2 = c2.getDeclaredMethod(<span class="string">"index"</span>);</span><br><span class="line">write2.insertBefore(<span class="string">"System.out.println(\"Sakura\");"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// make sure you set `cleanAfterPatch` = false</span></span><br><span class="line">patch.setCleanAfterPatch(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// then you'll find it in `patch/`</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="JarEditor修改jar包"><a href="#JarEditor修改jar包" class="headerlink" title="JarEditor修改jar包"></a>JarEditor修改jar包</h2><ul>
+<li><a href="https://github.com/Liubsyy/JarEditor/" target="_blank" rel="noopener">https://github.com/Liubsyy/JarEditor/</a></li>
+</ul>
+<p>比较推荐的方法，IDE插件直接修改jar包内容。对于外部包，右键jar包，<code>Add Library</code> ，就可以直接修改了</p>
+<p><img src="/2024/07/23/Java-11/nGED2T2TAp53QbPH1So0Tzm2UDbm1GPY0LnWzkPJLuo.png" alt="image"></p>
+<p>修改完成后，点击<code>Save（Compile）</code>，编译并保存当前修改的java内容，最后点击<code>Build Jar</code>，将编译保存的类文件写入Jar包中</p>
+<p>经测试，目前好像没有修改未在jar包中class的功能，对于tomcat环境，可以将<code>classes</code>文件夹压缩并修改为jar后缀即可修改</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>几种方法优先推荐JarEditor修改jar包，其他思路比如JByteMod直接修改字节码因为普适性不高并没有做演示</p>
+<p>同时也测试了arthas用于AWD修复jar包，但由于arthas采用agent原理，有些class并没有被jvm加载导致内存编译功能错误，还是更适用于应急响应以及bug诊断场景</p>
+<p><img src="/2024/07/23/Java-11/IHs0qSWrBixGunPWRLb2vs5tcUaFc0n-KpkiVXmdZB8.png" alt="image"></p>
+<h2 id="Refference"><a href="#Refference" class="headerlink" title="Refference"></a>Refference</h2><ul>
+<li><a href="https://mp.weixin.qq.com/s/hKXYudjEj2Z7nIC1k6NoWQ" target="_blank" rel="noopener">AWD离线-Jar文件冷补丁</a></li>
+<li><a href="https://github.com/Jlan45/AWDJavaWebPatch" target="_blank" rel="noopener">Jlan45/AWDJavaWebPatch: 通过jar包快速生成patch模版</a></li>
+<li><a href="https://github.com/silentEAG/java-patch" target="_blank" rel="noopener">silentEAG/java-patch: awd/awdp 小工具，使用 javassist 对 jar 包进行 patch</a></li>
+<li><a href="https://juejin.cn/post/7381715292924477492" target="_blank" rel="noopener">JarEditor插件：可直接编辑jar包的IDEA插件</a></li>
+<li><a href="https://github.com/Liubsyy/JarEditor/" target="_blank" rel="noopener">Liubsyy/JarEditor: IDEA plugin for directly editing and modifying files in jar without decompression. （一款无需解压直接编辑修改jar包内文件的IDEA插件）</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Str3am
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://jlkl.github.io/2024/07/23/Java-11/" title="AWD Java Patch">https://jlkl.github.io/2024/07/23/Java-11/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/14/Web-23/" rel="prev" title="Pocsuite3 Source Analysis">
+      <i class="fa fa-chevron-left"></i> Pocsuite3 Source Analysis
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AWD-Java-Patch"><span class="nav-number">1.</span> <span class="nav-text">AWD Java Patch</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#反编译成Maven项目"><span class="nav-number">1.1.</span> <span class="nav-text">反编译成Maven项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jar-uf更新class文件"><span class="nav-number">1.1.1.</span> <span class="nav-text">jar uf更新class文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Javassist修改jar包字节码"><span class="nav-number">1.2.</span> <span class="nav-text">Javassist修改jar包字节码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JarEditor修改jar包"><span class="nav-number">1.3.</span> <span class="nav-text">JarEditor修改jar包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Refference"><span class="nav-number">1.5.</span> <span class="nav-text">Refference</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Str3am"
+      src="/images/Str3am.jpg">
+  <p class="site-author-name" itemprop="name">Str3am</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没留下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jlkl" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jlkl" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:str3am@qq.com" title="E-Mail → mailto:str3am@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-fw fa-rss"></i>RSS</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Friends
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://0xmj.github.io/" title="http:&#x2F;&#x2F;0xmj.github.io&#x2F;" rel="noopener" target="_blank">Mang0</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.cnblogs.com/sn1per/" title="https:&#x2F;&#x2F;www.cnblogs.com&#x2F;sn1per&#x2F;" rel="noopener" target="_blank">Sn1per</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.siriyang.cn/" title="https:&#x2F;&#x2F;blog.siriyang.cn&#x2F;" rel="noopener" target="_blank">Siriyang</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://yyz9.cn/" title="https:&#x2F;&#x2F;yyz9.cn&#x2F;" rel="noopener" target="_blank">yyz</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Str3am</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">417k</span>
+</div> 
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+<script>
+  function timer() {
+    var ages = moment.preciseDiff(moment(),moment(20200108,"YYYYMMDD"));
+    ages = ages.replace(/years?/, "年");
+    ages = ages.replace(/months?/, "月");
+    ages = ages.replace(/days?/, "天");
+    ages = ages.replace(/hours?/, "小时");
+    ages = ages.replace(/minutes?/, "分");
+    ages = ages.replace(/seconds?/, "秒");
+    ages = ages.replace(/\d+/g, '<span style="color:#1890ff">$&</span>');
+    div.innerHTML = `我已在此等候你 ${ages}`;
+  }
+  var div = document.createElement("div");
+  //插入到copyright之后
+  var copyright = document.querySelector(".copyright");
+  document.querySelector(".footer-inner").insertBefore(div, copyright.nextSibling);
+  timer();
+  setInterval("timer()",1000)
+</script>
+
+
+
+
+  <script async src="/js/cursor/love.min.js"></script>
+
+
+
+
+  <script src="/js/cursor/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="我的第  undefined  位朋友，">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      -->
+      <span class="site-uv">
+     我的第  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_uv"></span>  位朋友，
+    </span>
+    <!--
+      <span class="post-meta-divider">|</span>
+    -->
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <!--
+        <span class="post-meta-item-icon">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="历经  undefined  次回眸才与你相遇">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      -->
+      <span class="site-pv">
+     历经  <span style="margin:0 5px;" class="busuanzi-value" id="busuanzi_value_site_pv"></span>  次回眸才与你相遇
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: true,
+      notify: true,
+      appId: '3IVY8n0VhhMlAUHBsp34Pxx7-gzGzoHsz',
+      appKey: 'DjdjX2sAzBG2G1G5c6amlBnv',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'en' || 'zh-cn',
+      path: location.pathname,
+      recordIP: true,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

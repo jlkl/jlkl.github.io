@@ -161,7 +161,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">43</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives<span class="badge">44</span></a>
 
   </li>
   </ul>
@@ -186,6 +186,98 @@
             
 
   <div class="posts-expand">
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2024/07/23/Java-11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Str3am.jpg">
+      <meta itemprop="name" content="Str3am">
+      <meta itemprop="description" content="这个人很懒，什么也没留下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Str3am's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/07/23/Java-11/" class="post-title-link" itemprop="url">AWD Java Patch</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-07-23 10:37:09 / Modified: 10:47:44" itemprop="dateCreated datePublished" datetime="2024-07-23T10:37:09+08:00">2024-07-23</time>
+            </span>
+
+          
+  
+  
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="AWD-Java-Patch"><a href="#AWD-Java-Patch" class="headerlink" title="AWD Java Patch"></a>AWD Java Patch</h1><p>AWD线下赛修复jar/war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法</p>
+<h2 id="反编译成Maven项目"><a href="#反编译成Maven项目" class="headerlink" title="反编译成Maven项目"></a>反编译成Maven项目</h2><p>对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事）</p>
+<p>手动仅使用原始Java进行反编译并打包可以参考：<a href="https://mp.weixin.qq.com/s/hKXYudjEj2Z7nIC1k6NoWQ" target="_blank" rel="noopener">AWD离线-Jar文件冷补丁</a></p>
+<p>下面记录反编译成Maven项目并进行修复的步骤</p>
+<ol>
+<li>反编译jar包，使用IDEA反编译插件还原源代码，反编译出来还是jar包，直接解压即可</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Library/Java/JavaVirtualMachines/jdk-17.0.11.jdk/Contents/Home/bin/java -cp <span class="string">"/Applications/IntelliJ IDEA.app/Contents/plugins/java-decompiler/lib/java-decompiler.jar"</span> org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler -dgs=<span class="literal">true</span> &lt;jar_path&gt; &lt;output_path&gt;</span><br></pre></td></tr></table></figure>
+
+<p>最新版IDEA的反编译插件需要java17</p>
+<ol start="2">
+<li>导入源代码，创建一个空的Maven项目，然后将反编译后<code>/BOOT-INF/classes</code>下的源代码复制到<code>/src/main/java</code> 路径下。视check情况选择是否将<code>resources</code> 下资源文件一起导入</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/07/23/Java-11/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
         
   
   
@@ -933,98 +1025,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jlkl.github.io/2021/08/21/Java_05/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Str3am.jpg">
-      <meta itemprop="name" content="Str3am">
-      <meta itemprop="description" content="这个人很懒，什么也没留下">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Str3am's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/21/Java_05/" class="post-title-link" itemprop="url">Jdk7u21 Gadget Chain</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-08-21 20:08:10 / Modified: 20:19:16" itemprop="dateCreated datePublished" datetime="2021-08-21T20:08:10+08:00">2021-08-21</time>
-            </span>
-
-          
-  
-  
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>11k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>13 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在ysoserial 的payloads目录下 有一个jdk7u21，以往的反序列化Gadget都是需要借助第三方库才可以成功执行，但是jdk7u21的Gadget执行过程中所用到的所有类都存在在JDK中</p>
-<p><strong>影响版本：</strong></p>
-<ul>
-<li>JDK &lt;= 7u21</li>
-</ul>
-<p><strong>测试环境：</strong></p>
-<ul>
-<li>JDK 7u21</li>
-</ul>
-<p>pom.xml</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.12.0.GA<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>需要添加javassist依赖</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/21/Java_05/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1097,7 +1097,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1169,7 +1169,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="Symbols count total">414k</span>
+    <span title="Symbols count total">417k</span>
 </div> 
 
 <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
