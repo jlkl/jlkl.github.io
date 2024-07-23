@@ -215,7 +215,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-07-23 10:37:09 / Modified: 10:47:44" itemprop="dateCreated datePublished" datetime="2024-07-23T10:37:09+08:00">2024-07-23</time>
+              <time title="Created: 2024-07-23 10:37:09 / Modified: 11:14:04" itemprop="dateCreated datePublished" datetime="2024-07-23T10:37:09+08:00">2024-07-23</time>
             </span>
 
           
@@ -243,7 +243,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="AWD-Java-Patch"><a href="#AWD-Java-Patch" class="headerlink" title="AWD Java Patch"></a>AWD Java Patch</h1><p>AWD线下赛修复jar/war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法</p>
+          <p>AWD线下赛修复jar/war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法</p>
 <h2 id="反编译成Maven项目"><a href="#反编译成Maven项目" class="headerlink" title="反编译成Maven项目"></a>反编译成Maven项目</h2><p>对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事）</p>
 <p>手动仅使用原始Java进行反编译并打包可以参考：<a href="https://mp.weixin.qq.com/s/hKXYudjEj2Z7nIC1k6NoWQ" target="_blank" rel="noopener">AWD离线-Jar文件冷补丁</a></p>
 <p>下面记录反编译成Maven项目并进行修复的步骤</p>
@@ -253,9 +253,6 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Library/Java/JavaVirtualMachines/jdk-17.0.11.jdk/Contents/Home/bin/java -cp <span class="string">"/Applications/IntelliJ IDEA.app/Contents/plugins/java-decompiler/lib/java-decompiler.jar"</span> org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler -dgs=<span class="literal">true</span> &lt;jar_path&gt; &lt;output_path&gt;</span><br></pre></td></tr></table></figure>
 
 <p>最新版IDEA的反编译插件需要java17</p>
-<ol start="2">
-<li>导入源代码，创建一个空的Maven项目，然后将反编译后<code>/BOOT-INF/classes</code>下的源代码复制到<code>/src/main/java</code> 路径下。视check情况选择是否将<code>resources</code> 下资源文件一起导入</li>
-</ol>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/07/23/Java-11/#more" rel="contents">

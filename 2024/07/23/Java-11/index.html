@@ -49,12 +49,12 @@
   };
 </script>
 
-  <meta name="description" content="AWD Java PatchAWD线下赛修复jar&#x2F;war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法 反编译成Maven项目对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事） 手动仅使用原始Java进行反编译并打包可以参考：AWD离线-Jar文件冷补丁 下面记录反编译成Maven项目并进行修复的步骤  反编译jar包，使用IDEA反编译插件">
+  <meta name="description" content="AWD线下赛修复jar&#x2F;war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法 反编译成Maven项目对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事） 手动仅使用原始Java进行反编译并打包可以参考：AWD离线-Jar文件冷补丁 下面记录反编译成Maven项目并进行修复的步骤  反编译jar包，使用IDEA反编译插件还原源代码，反编译出来还是j">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AWD Java Patch">
 <meta property="og:url" content="https://jlkl.github.io/2024/07/23/Java-11/index.html">
 <meta property="og:site_name" content="Str3am&#39;s Blog">
-<meta property="og:description" content="AWD Java PatchAWD线下赛修复jar&#x2F;war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法 反编译成Maven项目对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事） 手动仅使用原始Java进行反编译并打包可以参考：AWD离线-Jar文件冷补丁 下面记录反编译成Maven项目并进行修复的步骤  反编译jar包，使用IDEA反编译插件">
+<meta property="og:description" content="AWD线下赛修复jar&#x2F;war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法 反编译成Maven项目对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事） 手动仅使用原始Java进行反编译并打包可以参考：AWD离线-Jar文件冷补丁 下面记录反编译成Maven项目并进行修复的步骤  反编译jar包，使用IDEA反编译插件还原源代码，反编译出来还是j">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/aUalG9xdhdK2iUfIPonWJ9dobP-gwf8d4QPFRr-CaUY.png">
 <meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/kyPOuUVtXhXtzARwh4T9IMVmyCJ50AxuiQ0-8kLvU2E.png">
@@ -65,7 +65,7 @@
 <meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/nGED2T2TAp53QbPH1So0Tzm2UDbm1GPY0LnWzkPJLuo.png">
 <meta property="og:image" content="https://jlkl.github.io/2024/07/23/Java-11/IHs0qSWrBixGunPWRLb2vs5tcUaFc0n-KpkiVXmdZB8.png">
 <meta property="article:published_time" content="2024-07-23T02:37:09.000Z">
-<meta property="article:modified_time" content="2024-07-23T02:47:44.951Z">
+<meta property="article:modified_time" content="2024-07-23T03:14:04.656Z">
 <meta property="article:author" content="Str3am">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Web">
@@ -228,7 +228,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-07-23 10:37:09 / Modified: 10:47:44" itemprop="dateCreated datePublished" datetime="2024-07-23T10:37:09+08:00">2024-07-23</time>
+              <time title="Created: 2024-07-23 10:37:09 / Modified: 11:14:04" itemprop="dateCreated datePublished" datetime="2024-07-23T10:37:09+08:00">2024-07-23</time>
             </span>
 
           
@@ -275,7 +275,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="AWD-Java-Patch"><a href="#AWD-Java-Patch" class="headerlink" title="AWD Java Patch"></a>AWD Java Patch</h1><p>AWD线下赛修复jar/war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法</p>
+        <p>AWD线下赛修复jar/war包一直手忙脚乱，此篇文章记录几种常用的Java jar包修复方法</p>
 <h2 id="反编译成Maven项目"><a href="#反编译成Maven项目" class="headerlink" title="反编译成Maven项目"></a>反编译成Maven项目</h2><p>对比于手动编译打包，反编译成Maven项目更加方便快捷（Maven其实也就是干这个事）</p>
 <p>手动仅使用原始Java进行反编译并打包可以参考：<a href="https://mp.weixin.qq.com/s/hKXYudjEj2Z7nIC1k6NoWQ" target="_blank" rel="noopener">AWD离线-Jar文件冷补丁</a></p>
 <p>下面记录反编译成Maven项目并进行修复的步骤</p>
@@ -285,11 +285,11 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Library/Java/JavaVirtualMachines/jdk-17.0.11.jdk/Contents/Home/bin/java -cp <span class="string">"/Applications/IntelliJ IDEA.app/Contents/plugins/java-decompiler/lib/java-decompiler.jar"</span> org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler -dgs=<span class="literal">true</span> &lt;jar_path&gt; &lt;output_path&gt;</span><br></pre></td></tr></table></figure>
 
 <p>最新版IDEA的反编译插件需要java17</p>
+<a id="more"></a>
+
 <ol start="2">
 <li>导入源代码，创建一个空的Maven项目，然后将反编译后<code>/BOOT-INF/classes</code>下的源代码复制到<code>/src/main/java</code> 路径下。视check情况选择是否将<code>resources</code> 下资源文件一起导入</li>
 </ol>
-<a id="more"></a>
-
 <p><img src="/2024/07/23/Java-11/aUalG9xdhdK2iUfIPonWJ9dobP-gwf8d4QPFRr-CaUY.png" alt="image"></p>
 <ol start="3">
 <li>导入依赖库，将<code>BOOT-INF/lib</code>下的依赖复制到项目的lib文件文件夹下（没有这个文件夹，需要自己新建，一般在项目的第一级目录），在<code>文件-项目结构-项目设置-库</code>中将lib文件夹添加为库文件夹，此步骤是解决在离线情况下缺少依赖的问题</li>
@@ -442,7 +442,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AWD-Java-Patch"><span class="nav-number">1.</span> <span class="nav-text">AWD Java Patch</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#反编译成Maven项目"><span class="nav-number">1.1.</span> <span class="nav-text">反编译成Maven项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jar-uf更新class文件"><span class="nav-number">1.1.1.</span> <span class="nav-text">jar uf更新class文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Javassist修改jar包字节码"><span class="nav-number">1.2.</span> <span class="nav-text">Javassist修改jar包字节码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JarEditor修改jar包"><span class="nav-number">1.3.</span> <span class="nav-text">JarEditor修改jar包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Refference"><span class="nav-number">1.5.</span> <span class="nav-text">Refference</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#反编译成Maven项目"><span class="nav-number">1.</span> <span class="nav-text">反编译成Maven项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jar-uf更新class文件"><span class="nav-number">1.1.</span> <span class="nav-text">jar uf更新class文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Javassist修改jar包字节码"><span class="nav-number">2.</span> <span class="nav-text">Javassist修改jar包字节码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JarEditor修改jar包"><span class="nav-number">3.</span> <span class="nav-text">JarEditor修改jar包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Refference"><span class="nav-number">5.</span> <span class="nav-text">Refference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
